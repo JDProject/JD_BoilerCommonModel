@@ -207,9 +207,9 @@ namespace JD_BoilerCommonModel.CommonModel
         }
         #endregion
 
-        #region 9.放热系数折算
+        #region 9.放热系数折算  烟气参数未确定
         /// <summary>
-        /// 
+        /// 9.放热系数折算
         /// </summary>
         /// <param name="dT1"></param>
         /// <param name="dT2"></param>
@@ -251,5 +251,82 @@ namespace JD_BoilerCommonModel.CommonModel
         #endregion
 
 
+        #region  10.燃烧产物辐射放热系数Alphan
+        /// <summary>
+        /// 10.燃烧产物辐射放热系数Alphan
+        /// 换热器型式不为1的时候用
+        /// </summary>
+        /// <param name="drlxs">燃料型式rlxs</param>
+        /// <param name="drmzl">燃煤种类rmzl</param>
+        /// <param name="dTwb">外壁温Twb</param>
+        /// <param name="dp"></param>
+        /// <param name="ds"></param>
+        /// <param name="dT3"></param>
+        /// <param name="dT4"></param>
+        /// <param name="dNUll">烟气参数</param>
+        /// <param name="dlodelta">烟气空间的深度</param>
+        /// <param name="dTodelta">烟气温度</param>
+        /// <param name="dln">烟气空间后管束深度ln</param>
+        /// <param name="Qn"></param>
+        /// <param name="dAlphan"></param>
+        private static int CalculateRadiateHeaReleaseCoefficient(double drlxs, double drmzl, double dTwb, double dp, double ds, double dT3, double dT4, double dNUll, double dlodelta, double dTodelta, double dln,out double Qn,out double dAlphan)
+        {
+            dQn = 0;
+            dAlphan = 0;
+
+            return 0;
+        }
+        /// <summary>
+        /// 10.燃烧产物辐射放热系数Alphan
+        /// 换热器型式=1的时候用
+        /// </summary>
+        /// <param name="drlxs">燃料型式rlxs</param>
+        /// <param name="drmzl">燃煤种类rmzl</param>
+        /// <param name="dTwb">外壁温Twb</param>
+        /// <param name="dp"></param>
+        /// <param name="ds"></param>
+        /// <param name="dT3"></param>
+        /// <param name="dT4"></param>
+        /// <param name="dNUll">烟气参数</param>
+        /// <param name="dlodelta">烟气空间的深度</param>
+        /// <param name="dTodelta">烟气温度</param>
+        /// <param name="dSigMaXp"></param>
+        /// <param name="ds1"></param>
+        /// <param name="Qn"></param>
+        /// <param name="dAlphan"></param>
+        /// <returns></returns>
+        private static int CalculateRadiateHeaReleaseCoefficient(double drlxs, double drmzl, double dTwb, double dp, double ds, double dT3, double dT4, double dNUll, double dlodelta, double dTodelta,double dSigMaXp, double ds1, out double dQn, out double dAlphan ,double dhrqxs= 1)
+        {
+            dQn = 0;
+            dAlphan = 0;
+
+            return 0;
+        }
+
+        #endregion
+
+        #region 11.管外壁温度Twb
+        /// <summary>
+        /// 11.管外壁温度Twb
+        /// </summary>
+        /// <param name="dhrqxs">换热器型式hrqxs</param>
+        /// <param name="dSRFS">受热方式SRFS</param>
+        /// <param name="dd"></param>
+        /// <param name="dDelTad"></param>
+        /// <param name="dl"></param>
+        /// <param name="dz1"></param>
+        /// <param name="dz2"></param>
+        /// <param name="di1"></param>
+        /// <param name="dT1"></param>
+        /// <param name="dAlpha1"></param>
+        /// <param name="dH"></param>
+        /// <param name="dTwb"></param>
+        /// <returns></returns>
+        public static int CalculateOuterWallTemperature(double dhrqxs, double dSRFS, double dd, double dDelTad, double dl, double dz1, double dz2, double di1, double dT1, double dAlpha1, double dH, out double dTwb)
+        {
+            dTwb = 0;
+            return 0;
+        }
+        #endregion 
     }
 }
