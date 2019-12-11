@@ -112,7 +112,7 @@ namespace JD_BoilerCommonModel.CommonModel
             //Step21:计算烟窗有效辐射面积Hyc
             double Hyc = xyc * Fyc;
             //Step22:计算烟窗热有效系数PeSaiyc
-            double dPeSaiyc = xyc * Zetayc;
+            double PeSaiyc = xyc * Zetayc;
             //Step23:计算平均热有效系数PeSaicp
             PeSaicp = (PeSaisl * Fsl + PeSaibg * Fbg + PeSaip * Fp + dPeSaiyc * Fyc) / F1;
             //Step7:计算总的有效辐射面积Ht
@@ -310,21 +310,21 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <summary>
         ///  气体或液体燃料辐射减弱系数K计算
         /// </summary>
-        /// <param name="dRn">三原子气体的总容积份额Rn=Rh2o+Rro2</param>
-        /// <param name="dRh2o">烟气中水蒸气容积份额Rh2o</param>
-        /// <param name="dP">炉膛内压力P(MPa)</param>
-        /// <param name="dTtn">炉膛出口烟气温度Ttn(K)</param>
-        /// <param name="ds">有效辐射层厚度s</param>
-        /// <param name="dAlphat">炉膛出口过量空气系数Alphat</param>
-        /// <param name="dCH">燃料应用基碳氢比</param>
-        /// <param name="dglxs">锅炉形式glxs</param>
-        /// <param name="dpzfs">排渣方式pzfs</param>
-        /// <param name="dqyrl">气液燃料种类qyrl</param>
-        /// <param name="dK">辐射减弱系数K</param>
+        /// <param name="rn">三原子气体的总容积份额Rn=rh2o+rro2</param>
+        /// <param name="rh2o">烟气中水蒸气容积份额rh2o</param>
+        /// <param name="p">炉膛内压力p(MPa)</param>
+        /// <param name="Ttn">炉膛出口烟气温度Ttn(K)</param>
+        /// <param name="s">有效辐射层厚度s</param>
+        /// <param name="Alphat">炉膛出口过量空气系数Alphat</param>
+        /// <param name="CH">燃料应用基碳氢比</param>
+        /// <param name="glxs">锅炉形式glxs</param>
+        /// <param name="pzfs">排渣方式pzfs</param>
+        /// <param name="qyrl">气液燃料种类qyrl</param>
+        /// <param name="K">辐射减弱系数K</param>
         /// <returns>是否计算成功（0表示成功）</returns>
-        private static int CalculateGasOrLiquidFuelWeakenCoefficent(double dRn, double dRh2o, double dP, double dTtn, double ds, double dAlphat, double dCH, double dglxs, double dpzfs, double dqyrl, out double dK)
+        private static int CalculateGasOrLiquidFuelWeakenCoefficent(double rn, double rh2o, double p, double Ttn, double s, double Alphat, double CH, double glxs, double pzfs, double qyrl, out double K)
         {
-            dK = 0;
+            K = 0;
             return 0;
         }
         #endregion
@@ -333,17 +333,17 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <summary>
         /// 5.炉膛污染系数zeta计算
         /// </summary>
-        /// <param name="dgzlx">管子类型gzlx</param>
-        /// <param name="dpzfs">排渣方式pzfs</param>
-        /// <param name="dFT">灰熔点温度FT</param>
-        /// <param name="dglxs">锅炉型式glxs</param>
-        /// <param name="drlxs">燃料型式rlxs</param>
-        /// <param name="dsrfs">受热方式srfs</param>
-        /// <param name="dZeTa">炉膛污染系数ZeTa</param>
+        /// <param name="gzlx">管子类型gzlx</param>
+        /// <param name="pzfs">排渣方式pzfs</param>
+        /// <param name="FT">灰熔点温度FT</param>
+        /// <param name="glxs">锅炉型式glxs</param>
+        /// <param name="rlxs">燃料型式rlxs</param>
+        /// <param name="srfs">受热方式srfs</param>
+        /// <param name="ZeTa">炉膛污染系数ZeTa</param>
         /// <returns>是否计算成功（0表示成功）</returns>
-        private static int CalculatePollutionCoefficient(double dgzlx, double dpzfs, double dFT, double dglxs, double drlxs, double dsrfs, out double dZeTa)
+        private static int CalculatePollutionCoefficient(double gzlx, double pzfs, double FT, double glxs, double rlxs, double srfs, out double ZeTa)
         {
-            dZeTa = 0;
+            ZeTa = 0;
             return 0;
         }
         #endregion
@@ -352,17 +352,17 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <summary>
         /// 6.水冷壁有效角系数计算
         /// </summary>
-        /// <param name="dgzlx">管子类型gzlx</param>
-        /// <param name="dsrfs">受热方式srfs</param>
-        /// <param name="dd">几何参数d</param>
-        /// <param name="ds">几何参数s</param>
-        /// <param name="dn">几何参数n</param>
-        /// <param name="de">几何参数e</param>
-        /// <param name="dx">水冷壁有效角系数x</param>
+        /// <param name="gzlx">管子类型gzlx</param>
+        /// <param name="srfs">受热方式srfs</param>
+        /// <param name="d">几何参数d</param>
+        /// <param name="s">几何参数s</param>
+        /// <param name="n">几何参数n</param>
+        /// <param name="e">几何参数e</param>
+        /// <param name="x">水冷壁有效角系数x</param>
         /// <returns>是否计算成功（0表示成功）</returns>
-        private static int CalculateWaterCooledWallEffiectiveCoefficient(double dgzlx, double dsrfs, double dd, double ds, double dn, double de, out double dx)
+        private static int CalculateWaterCooledWallEffiectiveCoefficient(double gzlx, double srfs, double , double s, double n, double e, out double x)
         {
-            dx = 0;
+            x = 0;
             return 0;
         }
         #endregion
@@ -371,24 +371,24 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <summary>
         /// 7.屏区容积与面积计算
         /// </summary>
-        /// <param name="dW">炉膛宽度W</param>
-        /// <param name="dD">炉膛深度D</param>
-        /// <param name="dpwz">屏的位置pwz</param>
-        /// <param name="dn">n</param>
-        /// <param name="ds1">s1</param>
-        /// <param name="ds2">s2</param>
-        /// <param name="dN">N</param>
-        /// <param name="dA">A</param>
-        /// <param name="dAdx">Adx</param>
-        /// <param name="dVp">屏区容积Vp</param>
-        /// <param name="dFjmp">屏区与自由空间界面面积Fjmp</param>
-        /// <param name="dFsbp">屏区水冷壁与过热管总面积Fsbp</param>
+        /// <param name="W">炉膛宽度W</param>
+        /// <param name="D">炉膛深度D</param>
+        /// <param name="pwz">屏的位置pwz</param>
+        /// <param name="n">n</param>
+        /// <param name="s1">s1</param>
+        /// <param name="s2">s2</param>
+        /// <param name="N">N</param>
+        /// <param name="A">A</param>
+        /// <param name="Adx">Adx</param>
+        /// <param name="Vp">屏区容积Vp</param>
+        /// <param name="Fjmp">屏区与自由空间界面面积Fjmp</param>
+        /// <param name="Fsbp">屏区水冷壁与过热管总面积Fsbp</param>
         /// <returns></returns>
-        private static int CalculateScreenAreaVolumnAndArea(double dW, double dD, double dpwz, double dn, double ds1, double ds2, double dN, double dA, double dAdx, out double dVp, out double dFjmp, out double dFsbp)
+        private static int CalculateScreenAreaVolumnAndArea(double W, double , double pwz, double n, double s1, double s2, double N, double A, double Adx, out double Vp, out double Fjmp, out double Fsbp)
         {
-            dVp = 0;
-            dFjmp = 0;
-            dFsbp = 0;
+            Vp = 0;
+            Fjmp = 0;
+            Fsbp = 0;
             return 0;
         }
         #endregion
@@ -397,18 +397,18 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <summary>
         /// 8.屏式换热器角系数计算
         /// </summary>
-        /// <param name="dpwz">屏的位置pwz</param>
-        /// <param name="dd">d</param>
-        /// <param name="dn">n</param>
-        /// <param name="ds1">s1</param>
-        /// <param name="ds2">s2</param>
-        /// <param name="dXp">屏式换热器角系数Xp</param>
-        /// <param name="dSigMaXp">SigMaXp</param>
+        /// <param name="pwz">屏的位置pwz</param>
+        /// <param name="d">d</param>
+        /// <param name="n">n</param>
+        /// <param name="s1">s1</param>
+        /// <param name="s2">s2</param>
+        /// <param name="Xp">屏式换热器角系数Xp</param>
+        /// <param name="SigMaXp">SigMaXp</param>
         /// <returns></returns>
-        private static int CalculateScreenAreaHeatTransferCoefficient(double dpwz, double dd, double dn, double ds1, double ds2, out double dXp, out double dSigMaXp)
+        private static int CalculateScreenAreaHeatTransferCoefficient(double pwz, double , double n, double s1, double s2, out double Xp, out double SigMaXp)
         {
-            dXp = 0;
-            dSigMaXp = 0;
+            Xp = 0;
+            SigMaXp = 0;
             return 0;
         }
         #endregion
@@ -417,41 +417,41 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <summary>
         /// 9.放热系数折算
         /// </summary>
-        /// <param name="dT1"></param>
-        /// <param name="dT2"></param>
-        /// <param name="dAlphan"></param>
-        /// <param name="dAlphak"></param>
-        /// <param name="dhrqxs"></param>
-        /// <param name="dgzlx"></param>
-        /// <param name="dcsfs"></param>
-        /// <param name="drlxs"></param>
-        /// <param name="dp"></param>
-        /// <param name="ds"></param>
-        /// <param name="dTcp">平均温度</param>
+        /// <param name="T1"></param>
+        /// <param name="T2"></param>
+        /// <param name="Alphan"></param>
+        /// <param name="Alphak"></param>
+        /// <param name="hrqxs"></param>
+        /// <param name="gzlx"></param>
+        /// <param name="csfs"></param>
+        /// <param name="rlxs"></param>
+        /// <param name="p"></param>
+        /// <param name="s"></param>
+        /// <param name="Tcp">平均温度</param>
         /// <param name="dNull">烟气参数</param>
-        /// <param name="dd">管束几何参数</param>
-        /// <param name="dl"></param>
-        /// <param name="dlb"></param>
-        /// <param name="dz1"></param>
-        /// <param name="dz2"></param>
-        /// <param name="ds2"></param>
-        /// <param name="dDelTap"></param>
-        /// <param name="dDelTab"></param>
-        /// <param name="dSigMa1"></param>
-        /// <param name="dSigMa2"></param>
-        /// <param name="dhp"></param>
-        /// <param name="dD"></param>
-        /// <param name="dsp"></param>
-        /// <param name="dsb"></param>
-        /// <param name="dH"></param>
-        /// <param name="dAlpha1"></param>
-        /// <param name="dPsip"></param>
+        /// <param name="d">管束几何参数</param>
+        /// <param name="l"></param>
+        /// <param name="lb"></param>
+        /// <param name="z1"></param>
+        /// <param name="z2"></param>
+        /// <param name="s2"></param>
+        /// <param name="DelTap"></param>
+        /// <param name="DelTab"></param>
+        /// <param name="SigMa1"></param>
+        /// <param name="SigMa2"></param>
+        /// <param name="hp"></param>
+        /// <param name="D"></param>
+        /// <param name="sp"></param>
+        /// <param name="sb"></param>
+        /// <param name="H"></param>
+        /// <param name="Alpha1"></param>
+        /// <param name="Psip"></param>
         /// <returns></returns>
-        private static int CalculateHeatReleaseCoefficient(double dT1, double dT2, double dAlphan, double dAlphak, double dhrqxs, double dgzlx, double dcsfs, double drlxs, double dp, double ds, double dTcp, double dNull, double dd, double dl, double dlb, double dz1, double dz2, double ds2, double dDelTap, double dDelTab, double dSigMa1, double dSigMa2, double dhp, double dD, double dsp, double dsb, out double dH, out double dAlpha1, out double dPsip)
+        private static int CalculateHeatReleaseCoefficient(double T1, double T2, double Alphan, double Alphak, double hrqxs, double gzlx, double csfs, double rlxs, double p, double s, double Tcp, double Null, double , double l, double lb, double z1, double z2, double s2, double elTap, double elTab, double SigMa1, double SigMa2, double hp, double , double sp, double sb, out double H, out double Alpha1, out double Psip)
         {
-            dH = 0;
-            dAlpha1 = 0;
-            dPsip = 0;
+            H = 0;
+            Alpha1 = 0;
+            Psip = 0;
             return 0;
         }
         #endregion
@@ -461,23 +461,23 @@ namespace JD_BoilerCommonModel.CommonModel
         /// 10.燃烧产物辐射放热系数Alphan
         /// 换热器型式不为1的时候用
         /// </summary>
-        /// <param name="drlxs">燃料型式rlxs</param>
-        /// <param name="drmzl">燃煤种类rmzl</param>
-        /// <param name="dTwb">外壁温Twb</param>
-        /// <param name="dp"></param>
-        /// <param name="ds"></param>
-        /// <param name="dT3"></param>
-        /// <param name="dT4"></param>
+        /// <param name="rlxs">燃料型式rlxs</param>
+        /// <param name="rmzl">燃煤种类rmzl</param>
+        /// <param name="Twb">外壁温Twb</param>
+        /// <param name="p"></param>
+        /// <param name="s"></param>
+        /// <param name="T3"></param>
+        /// <param name="T4"></param>
         /// <param name="dNUll">烟气参数</param>
-        /// <param name="dlodelta">烟气空间的深度</param>
-        /// <param name="dTodelta">烟气温度</param>
-        /// <param name="dln">烟气空间后管束深度ln</param>
+        /// <param name="lodelta">烟气空间的深度</param>
+        /// <param name="Todelta">烟气温度</param>
+        /// <param name="ln">烟气空间后管束深度ln</param>
         /// <param name="Qn"></param>
         /// <param name="dAlphan"></param>
-        private static int CalculateRadiateHeaReleaseCoefficient(double drlxs, double drmzl, double dTwb, double dp, double ds, double dT3, double dT4, double dNUll, double dlodelta, double dTodelta, double dln, out double Qn, out double dAlphan)
+        private static int CalculateRadiateHeaReleaseCoefficient(double rlxs, double rmzl, double Twb, double p, double s, double T3, double T4, double NUll, double lodelta, double Todelta, double ln, out double Qn, out double Alphan)
         {
-            dQn = 0;
-            dAlphan = 0;
+            Qn = 0;
+            Alphan = 0;
 
             return 0;
         }
@@ -485,25 +485,25 @@ namespace JD_BoilerCommonModel.CommonModel
         /// 10.燃烧产物辐射放热系数Alphan
         /// 换热器型式=1的时候用
         /// </summary>
-        /// <param name="drlxs">燃料型式rlxs</param>
-        /// <param name="drmzl">燃煤种类rmzl</param>
-        /// <param name="dTwb">外壁温Twb</param>
-        /// <param name="dp"></param>
-        /// <param name="ds"></param>
-        /// <param name="dT3"></param>
-        /// <param name="dT4"></param>
+        /// <param name="rlxs">燃料型式rlxs</param>
+        /// <param name="rmzl">燃煤种类rmzl</param>
+        /// <param name="Twb">外壁温Twb</param>
+        /// <param name="p"></param>
+        /// <param name="s"></param>
+        /// <param name="T3"></param>
+        /// <param name="T4"></param>
         /// <param name="dNUll">烟气参数</param>
-        /// <param name="dlodelta">烟气空间的深度</param>
-        /// <param name="dTodelta">烟气温度</param>
-        /// <param name="dSigMaXp"></param>
-        /// <param name="ds1"></param>
+        /// <param name="lodelta">烟气空间的深度</param>
+        /// <param name="Todelta">烟气温度</param>
+        /// <param name="SigMaXp"></param>
+        /// <param name="s1"></param>
         /// <param name="Qn"></param>
-        /// <param name="dAlphan"></param>
+        /// <param name="Alphan"></param>
         /// <returns></returns>
-        private static int CalculateRadiateHeaReleaseCoefficient(double drlxs, double drmzl, double dTwb, double dp, double ds, double dT3, double dT4, double dNUll, double dlodelta, double dTodelta, double dSigMaXp, double ds1, out double dQn, out double dAlphan, double dhrqxs = 1)
+        private static int CalculateRadiateHeaReleaseCoefficient(double rlxs, double rmzl, double Twb, double p, double s, double T3, double T4, double NUll, double lodelta, double Todelta, double SigMaXp, double s1, out double Qn, out double Alphan, double hrqxs = 1)
         {
-            dQn = 0;
-            dAlphan = 0;
+            Qn = 0;
+            Alphan = 0;
 
             return 0;
         }
@@ -514,20 +514,20 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <summary>
         /// 11.管外壁温度Twb
         /// </summary>
-        /// <param name="dhrqxs">换热器型式hrqxs</param>
-        /// <param name="dSRFS">受热方式SRFS</param>
-        /// <param name="dd"></param>
-        /// <param name="dDelTad"></param>
-        /// <param name="dl"></param>
-        /// <param name="dz1"></param>
-        /// <param name="dz2"></param>
-        /// <param name="di1"></param>
+        /// <param name="hrqxs">换热器型式hrqxs</param>
+        /// <param name="SRFS">受热方式SRFS</param>
+        /// <param name="d"></param>
+        /// <param name="DelTad"></param>
+        /// <param name="l"></param>
+        /// <param name="z1"></param>
+        /// <param name="z2"></param>
+        /// <param name="i1"></param>
         /// <param name="dT1"></param>
-        /// <param name="dAlpha1"></param>
-        /// <param name="dH"></param>
-        /// <param name="dTwb"></param>
+        /// <param name="Alpha1"></param>
+        /// <param name="H"></param>
+        /// <param name="Twb"></param>
         /// <returns></returns>
-        public static int CalculateOuterWallTemperature(double dhrqxs, double dSRFS, double dd, double dDelTad, double dl, double dz1, double dz2, double di1, double dT1, double dAlpha1, double dH, out double dTwb)
+        public static int CalculateOuterWallTemperature(double hrqxs, double SRFS, double d, double DelTad, double l, double z1, double z2, double i1, double T1, double Alpha1, double H, out double Twb)
         {
             dTwb = 0;
             return 0;
@@ -543,7 +543,7 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <param name="dcsfs"></param>
         /// <param name="dKeSai"></param>
         /// <returns></returns>
-        public static int CalaulateHeatSurfaceUtilizationCoeddicient(double dhrqxs, double dpwz, double dcsfs, out double dKeSai)
+        public static int CalaulateHeatSurfaceUtilizationCoeddicient(double hrqxs, double pwz, double csfs, out double KeSai)
         {
             dKeSai = 0;
             return 0;
@@ -562,9 +562,9 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <param name="dSRFS"></param>
         /// <param name="dEpsaiLen"></param>
         /// <returns></returns>
-        public static int CalculateHeatingSurfacePollutionCoefficient(double dhrqxs, double drlxs, double dCaO, double dchzz, double dAlphat, double dSRFS, out double dEpsaiLen)
+        public static int CalculateHeatingSurfacePollutionCoefficient(double hrqxs, double rlxs, double CaO, double chzz, double Alphat, double SRFS, out double EpsaiLen)
         {
-            dEpsaiLen = 0;
+            EpsaiLen = 0;
             return 0;
         }
         #endregion
@@ -573,17 +573,17 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <summary>
         /// 14.热利用系数计算
         /// </summary>
-        /// <param name="dhrqxs"></param>
-        /// <param name="drlxs"></param>
-        /// <param name="dgzlx"></param>
-        /// <param name="dCaO"></param>
-        /// <param name="dchzz"></param>
-        /// <param name="dgttjj"></param>
-        /// <param name="dPSai"></param>
+        /// <param name="hrqxs"></param>
+        /// <param name="rlxs"></param>
+        /// <param name="gzlx"></param>
+        /// <param name="CaO"></param>
+        /// <param name="chzz"></param>
+        /// <param name="gttjj"></param>
+        /// <param name="PSai"></param>
         /// <returns></returns>
-        public static int CalculateHeatCoefficient(double dhrqxs, double drlxs, double dgzlx, double dCaO, double dchzz, double dgttjj, out double dPSai)
+        public static int CalculateHeatCoefficient(double hrqxs, double rlxs, double gzlx, double CaO, double chzz, double gttjj, out double PSai)
         {
-            dPSai = 0;
+            PSai = 0;
             return 0;
         }
         #endregion
@@ -592,23 +592,23 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <summary>
         /// 15.烟气流通截面积Fr
         /// </summary>
-        /// <param name="dgzlx">管子类型</param>
-        /// <param name="dcsfs"></param>
-        /// <param name="dhrqxs">换热器型式</param>
-        /// <param name="dd"></param>
-        /// <param name="dl"></param>
-        /// <param name="dz1"></param>
-        /// <param name="dz2"></param>
-        /// <param name="dSigMa1"></param>
-        /// <param name="dSigMa22"></param>
-        /// <param name="dSp"></param>
-        /// <param name="dHp"></param>
-        /// <param name="dD"></param>
-        /// <param name="dFr"></param>
+        /// <param name="gzlx">管子类型</param>
+        /// <param name="csfs"></param>
+        /// <param name="hrqxs">换热器型式</param>
+        /// <param name="d"></param>
+        /// <param name="l"></param>
+        /// <param name="z1"></param>
+        /// <param name="z2"></param>
+        /// <param name="SigMa1"></param>
+        /// <param name="SigMa22"></param>
+        /// <param name="Sp"></param>
+        /// <param name="Hp"></param>
+        /// <param name="D"></param>
+        /// <param name="Fr"></param>
         /// <returns></returns>
-        public static int CalculateFlueGasFlowArea(double dgzlx, double dcsfs, double dhrqxs, double dd, double dl, double dz1, double dz2, double dSigMa1, double dSigMa22, double dSp, double dHp, double dD, out double dFr)
+        public static int CalculateFlueGasFlowArea(double gzlx, double csfs, double hrqxs, double d, double l, double z1, double z2, double SigMa1, double SigMa22, double Sp, double Hp, double D, out double Fr)
         {
-            dFr = 0;
+            Fr = 0;
             return 0;
         }
         #endregion
@@ -618,30 +618,30 @@ namespace JD_BoilerCommonModel.CommonModel
         /// 16.烟气的对流放热系数计算
         /// </summary>
         /// <param name="dgzlx">管子类型</param>
-        /// <param name="dxsfs"></param>
-        /// <param name="dhrqxs">换热器型式</param>
-        /// <param name="dd"></param>
-        /// <param name="dl"></param>
-        /// <param name="dLb"></param>
-        /// <param name="dZ1"></param>
-        /// <param name="dS1"></param>
-        /// <param name="dS2"></param>
-        /// <param name="dDelTap"></param>
-        /// <param name="dDelTab"></param>
-        /// <param name="dHp"></param>
-        /// <param name="dD"></param>
-        /// <param name="dDp"></param>
-        /// <param name="dSb"></param>
-        /// <param name="dT3"></param>
-        /// <param name="dT4"></param>
-        /// <param name="dFr"></param>
-        /// <param name="dQr"></param>
-        /// <param name="dNull"></param>
-        /// <param name="dAlphak"></param>
+        /// <param name="xsfs"></param>
+        /// <param name="hrqxs">换热器型式</param>
+        /// <param name="d"></param>
+        /// <param name="l"></param>
+        /// <param name="Lb"></param>
+        /// <param name="Z1"></param>
+        /// <param name="S1"></param>
+        /// <param name="S2"></param>
+        /// <param name="DelTap"></param>
+        /// <param name="DelTab"></param>
+        /// <param name="Hp"></param>
+        /// <param name="D"></param>
+        /// <param name="Dp"></param>
+        /// <param name="Sb"></param>
+        /// <param name="T3"></param>
+        /// <param name="T4"></param>
+        /// <param name="Fr"></param>
+        /// <param name="Qr"></param>
+        /// <param name="Null"></param>
+        /// <param name="Alphak"></param>
         /// <returns></returns>
-        public static int CalculateFlueGasFlowHeatCoeffiient(double dgzlx, double dxsfs, double dhrqxs, double dd, double dl, double dLb, double dZ1, double dS1, double dS2, double dDelTap, double dDelTab, double dHp, double dD, double dDp, double dSb, double dT3, double dT4, double dFr, double dQr, double dNull, out double dAlphak)
+        public static int CalculateFlueGasFlowHeatCoeffiient(double gzlx, double xsfs, double hrqxs, double d, double l, double Lb, double Z1, double S1, double S2, double DelTap, double DelTab, double Hp, double D, double Dp, double Sb, double T3, double T4, double Fr, double Qr, double Null, out double Alphak)
         {
-            dAlphak = 0;
+            Alphak = 0;
             return 0;
         }
         #endregion
@@ -651,17 +651,17 @@ namespace JD_BoilerCommonModel.CommonModel
         /// 17.管壁向水和蒸汽的放热系数Alpha2
         /// </summary>
         /// <param name="dP1"></param>
-        /// <param name="dP2"></param>
-        /// <param name="di1"></param>
-        /// <param name="di2"></param>
-        /// <param name="dd">管子外径d</param>
-        /// <param name="dSigMa">管子壁厚SigMa</param>
-        /// <param name="dG">工质流量G</param>
-        /// <param name="dAlpha2">管壁向水和蒸汽的放热系数Alpha2</param>
+        /// <param name="P2"></param>
+        /// <param name="i1"></param>
+        /// <param name="i2"></param>
+        /// <param name="d">管子外径d</param>
+        /// <param name="SigMa">管子壁厚SigMa</param>
+        /// <param name="G">工质流量G</param>
+        /// <param name="Alpha2">管壁向水和蒸汽的放热系数Alpha2</param>
         /// <returns></returns>
-        public static int CalculateWaterAngGasHeatCoefficient(double dP1, double dP2, double di1, double di2, double dd, double dSigMa, double dG, out double dAlpha2)
+        public static int CalculateWaterAngGasHeatCoefficient(double P1, double P2, double i1, double i2, double d, double SigMa, double G, out double Alpha2)
         {
-            dAlpha2 = 0;
+            Alpha2 = 0;
             return 0;
         }
         #endregion
@@ -671,20 +671,20 @@ namespace JD_BoilerCommonModel.CommonModel
         /// 18.温压换算系数DelTaT计算
         /// </summary>
         /// <param name="dT1"></param>
-        /// <param name="dT2"></param>
-        /// <param name="dT3"></param>
-        /// <param name="dT4"></param>
-        /// <param name="dgsbz"></param>
-        /// <param name="dns"></param>
-        /// <param name="dnn"></param>
-        /// <param name="dnx"></param>
-        /// <param name="dljxs"></param>
-        /// <param name="ddlzjg"></param>
-        /// <param name="dDelTat"></param>
+        /// <param name="T2"></param>
+        /// <param name="T3"></param>
+        /// <param name="T4"></param>
+        /// <param name="gsbz"></param>
+        /// <param name="ns"></param>
+        /// <param name="nn"></param>
+        /// <param name="nx"></param>
+        /// <param name="ljxs"></param>
+        /// <param name="dlzjg"></param>
+        /// <param name="DelTat"></param>
         /// <returns></returns>
-        public static int CalculateTemperaturePressureConvertCoefficient(double dT1, double dT2, double dT3, double dT4, double dgsbz, double dns, double dnn, double dnx, double dljxs, double ddlzjg, out double dDelTat)
+        public static int CalculateTemperaturePressureConvertCoefficient(double T1, double T2, double T3, double T4, double gsbz, double ns, double nn, double nx, double ljxs, double dlzjg, out double DelTat)
         {
-            dDelTat = 0;
+            DelTat = 0;
             return 0;
         }
         #endregion
