@@ -13,110 +13,110 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <summary>
         /// 有效辐射面积计算
         /// </summary>
-        /// <param name="dP">压力p</param>
-        /// <param name="dVf">炉膛自由容积Vf</param>
-        /// <param name="dVp">屏区面积Vp</param>
-        /// <param name="dFslf">自由容积水冷壁面积Fslf</param>
-        /// <param name="dFbgf">自由容积过热管面积Fbgf</param>
-        /// <param name="dFjmp">屏区与自由空间界面面积Fjmp</param>
-        /// <param name="dFbgp">屏区过热管面积Fbgp</param>
-        /// <param name="dFslp">屏区水冷壁面积Fslp</param>
-        /// <param name="dFp">屏面积Fp</param>
-        /// <param name="dS1">屏参数：节距s1</param>
-        /// <param name="dA">屏参数：高度A</param>
-        /// <param name="dB">屏参数：宽度b</param>
-        /// <param name="dXsl">角系数：Xsl</param>
-        /// <param name="dXbg">角系数：Xbg</param>
-        /// <param name="dXp">角系数：Xp</param>
-        /// <param name="dZeTasl">热有效系数：ZETAsl</param>
-        /// <param name="dZeTabg">热有效系数：ZETAbg</param>
-        /// <param name="dZeTap">热有效系数：ZETAp</param>
-        /// <param name="dycjg">烟窗结构ycjg</param>
-        /// <param name="drlxs">燃料型式rlxs</param>
-        /// <param name="dHslf">结果参数:Hslf</param>
-        /// <param name="dHsl">结果参数:Hsl</param>
-        /// <param name="dHp">结果参数:Hp</param>
-        /// <param name="dHbg">结果参数:Hbg</param>
-        /// <param name="dHt">结果参数:Ht</param>
-        /// <param name="dBu">结果参数:Bu</param>
-        /// <param name="dPeSaicp">结果参数:PeSaicp</param>
+        /// <param name="p">压力p</param>
+        /// <param name="Vf">炉膛自由容积Vf</param>
+        /// <param name="Vp">屏区面积Vp</param>
+        /// <param name="Fslf">自由容积水冷壁面积Fslf</param>
+        /// <param name="Fbgf">自由容积过热管面积Fbgf</param>
+        /// <param name="Fjmp">屏区与自由空间界面面积Fjmp</param>
+        /// <param name="Fbgp">屏区过热管面积Fbgp</param>
+        /// <param name="Fslp">屏区水冷壁面积Fslp</param>
+        /// <param name="Fp">屏面积Fp</param>
+        /// <param name="s1">屏参数：节距s1</param>
+        /// <param name="A">屏参数：高度A</param>
+        /// <param name="b">屏参数：宽度b</param>
+        /// <param name="xsl">角系数：Xsl</param>
+        /// <param name="xbg">角系数：Xbg</param>
+        /// <param name="xp">角系数：Xp</param>
+        /// <param name="ZeTasl">热有效系数：ZETAsl</param>
+        /// <param name="ZeTabg">热有效系数：ZETAbg</param>
+        /// <param name="ZeTap">热有效系数：ZETAp</param>
+        /// <param name="ycjg">烟窗结构ycjg</param>
+        /// <param name="rlxs">燃料型式rlxs</param>
+        /// <param name="Hslf">结果参数:Hslf</param>
+        /// <param name="Hsl">结果参数:Hsl</param>
+        /// <param name="Hp">结果参数:Hp</param>
+        /// <param name="Hbg">结果参数:Hbg</param>
+        /// <param name="Ht">结果参数:Ht</param>
+        /// <param name="Bu">结果参数:Bu</param>
+        /// <param name="PeSaicp">结果参数:PeSaicp</param>
         /// <returns>是否计算成功（0表示成功）</returns>
-        public static int CalculateEffectiveRadioArea(double dP, double dVf, double dVp, double dFslf, double dFbgf, double dFjmp, double dFbgp, double dFslp, double dFp, double dS1, double dA, double dB, double dXsl, double dXbg, double dXp, double dZeTasl, double dZeTabg, double dZeTap, double dycjg, double drlxs, out double dHslf, out double dHsl, out double dHp, out double dHbg, out double dHt, out double dBu, out double dPeSaicp)
+        public static int CalculateEffectiveRadioArea(double p, double Vf, double Vp, double Fslf, double Fbgf, double Fjmp, double Fbgp, double Fslp, double Fp, double s1, double A, double b, double xsl, double xbg, double xp, double ZeTasl, double ZeTabg, double ZeTap, double ycjg, double rlxs, out double Hslf, out double Hsl, out double Hp, out double Hbg, out double Ht, out double Bu, out double PeSaicp)
         {
             //Step1:计算炉膛自由容积的有效辐射层厚度Sf
-            double dSf = (3.6 * dVf) / (dFslf + dFbgf + dFjmp);
+            double sf = (3.6 * Vf) / (Fslf + Fbgf + Fjmp);
             //Step2:由p和Sf调用固体燃料辐射减弱系数计算模块(CalculateSolidFuelWeakenCoefficent)得到Kf
-            double dKf = 0;
+            double kf = 0;
             // CalculateSolidFuelWeakenCoefficent(,)参数不全Hxp20191208
             //Step3:CalculateSolidFuelWeakenCoefficent炉膛自由容积黑度Af
-            double dAf = 1 - Math.Exp(dKf * dP * dSf);
+            double af = 1 - Math.Exp(kf * p * sf);
             //Step4:计算屏间容积有效辐射厚度Sp
-            double dSp = 1.8 / (1 / dA + 1 / dS1 + 1 / dB);
+            double sp = 1.8 / (1 / A + 1 / s1 + 1 / b);
             //Step5:由p和Sp调用固体燃料辐射减弱系数计算模块(CalculateSolidFuelWeakenCoefficent)得到Kp
-            double dKp = 0;
+            double kp = 0;
             CalculateSolidFuelWeakenCoefficent();
             //Step6:计算炉膛屏区黑度Ap
-            double dAp = 1 - Math.Exp(dKp * dP * dSp);
+            double ap = 1 - Math.Exp(kp * p * sp);
             //Step7:计算Bu
-            dBu = (dVf * (1 - dAf) + dVp * (1 - dAp)) / dV1;
+            Bu = (Vf * (1 - af) + Vp * (1 - ap)) / V1;
             //Step8:计算辐射角系数Cslp
-            double dCslp = Math.Sqrt(Math.Pow(dB / dS1, 2) + 1) - dB / dS1;
-            double dCp = 1 - dCslp;
+            double Cslp = Math.Sqrt(Math.Pow(b / s1, 2) + 1) - b / s1;
+            double Cp = 1 - Cslp;
             //Step9:计算屏的曝光不均匀系数Zp
-            double dZp = dAp / dAf + dCp * (1 - dAp);
+            double zp = ap / af + Cp * (1 - ap);
             //Step10:计算计算屏区水冷壁曝光不均匀系数Zslp
-            double dZslp = dAp / dAf + dCslp * (1 - dAp);
+            double Zslp = ap / af + Cslp * (1 - ap);
             //Step11:计算屏区过热管曝光不均匀系数Zbgp
-            double dZbgp = dAp / dAf + dCslp * (1 - dAp);
+            double Zbgp = ap / af + Cslp * (1 - ap);
             //Step12:计算炉膛自由容积有效辐射面积Hslf
-            dHslf = dFslf * dXsl;
+            Hslf = Fslf * xsl;
             //Step13:计算水冷壁有效辐射面积Hsl
-            dHsl = dHslf + dFslp * dXsl * dZslp;
+            Hsl = Hslf + Fslp * xsl * Zslp;
             //Step14:计算水冷壁热有效系数PeSaisl
-            double dPeSaisl = (dFslf * dXsl * dZeTasl + dFslp * dXsl * dZslp * dZeTasl) / dFsl;
+            double PeSaisl = (Fslf * xsl * ZeTasl + Fslp * xsl * Zslp * ZeTasl) / Fsl;
             //Step15:计算过热管有效辐射面积Hbg
-            dHbg = dFbgf * dXbg + dFbgp * dXbg * dZbgp;
+            Hbg = Fbgf * xbg + Fbgp * xbg * Zbgp;
             //Step16:计算过热管热有效系数PeSaibg
-            double dPeSaibg = (dFbgf * dXbg * dZeTabg + dFbgp * dXbg * dZbgp * dZeTabg) / dFbg;
+            double PeSaibg = (Fbgf * xbg * ZeTabg + Fbgp * xbg * Zbgp * ZeTabg) / Fbg;
             //Step17:计算屏的有效辐射面积Hp
-            dHp = dFp * dXp * dZp;
+            Hp = Fp * xp * zp;
             //Step18:计算屏的热有效系数PeSaip
-            dPeSaicp = dXp * dZp * dZeTap;
+            PeSaicp = xp * zp * ZeTap;
             //Step19:计算根据烟窗后的设备得到BaiTa
-            double dZetayc = -1;
-            if (0 == dycjg)
+            double Zetayc = -1;
+            if (0 == ycjg)
             {
-                dZetayc = 0.5;
+                Zetayc = 0.5;
             }
-            else if (1 == dycjg)
+            else if (1 == ycjg)
             {
-                if (1 == drlxs)
+                if (1 == rlxs)
                 {
-                    dZetayc = 0.6 * dZeTasl;
+                    Zetayc = 0.6 * ZeTasl;
                 }
-                else if (2 == drlxs || 3 == drlxs)
+                else if (2 == rlxs || 3 == rlxs)
                 {
-                    dZetayc = 0.8 * dZeTasl;
+                    Zetayc = 0.8 * ZeTasl;
                 }
             }
-            else if (2 == dycjg)
+            else if (2 == ycjg)
             {
-                dZetayc = 0.9 * dZeTasl;
+                Zetayc = 0.9 * ZeTasl;
             }
-            else if (3 == dycjg)
+            else if (3 == ycjg)
             {
-                dZetayc = dZeTasl;
+                Zetayc = ZeTasl;
             }
             //Step20:参照锅炉热力计算标准6-06（p34）
-            double dXyc = 1;
+            double xyc = 1;
             //Step21:计算烟窗有效辐射面积Hyc
-            double dHyc = dXyc * dFyc;
+            double Hyc = xyc * Fyc;
             //Step22:计算烟窗热有效系数PeSaiyc
-            double dPeSaiyc = dXyc * dZetayc;
+            double dPeSaiyc = xyc * Zetayc;
             //Step23:计算平均热有效系数PeSaicp
-            dPeSaicp = (dPeSaisl * dFsl + dPeSaibg * dFbg + dPeSaip * dFp + dPeSaiyc * dFyc) / dF1;
+            PeSaicp = (PeSaisl * Fsl + PeSaibg * Fbg + PeSaip * Fp + dPeSaiyc * Fyc) / F1;
             //Step7:计算总的有效辐射面积Ht
-            dHt = dHsl + dHp + dHbg + dHyc;
+            Ht = Hsl + Hp + Hbg + Hyc;
             return 0;
         }
         #endregion
@@ -125,23 +125,88 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <summary>
         /// 炉膛参数M计算
         /// </summary>
-        /// <param name="dNum">燃烧器布局参数：数量</param>
-        /// <param name="dQ">燃烧器布局参数：燃料量</param>
-        /// <param name="dQ2">燃烧器布局参数：热量</param>
-        /// <param name="dH">燃烧器布局参数：高度</param>
-        /// <param name="nglxs">锅炉形式glxs</param>
-        /// <param name="dVrH">炉膛出口烟气容积VrH</param>
-        /// <param name="dVn2H">Vn2H</param>
-        /// <param name="dVro2H">Vro2H</param>
-        /// <param name="dR">烟气再循环系数r</param>
-        /// <param name="npzfs">排渣方式pzfs</param>
-        /// <param name="nrsqbz">燃烧器布置形式rsqbz</param>
-        /// <param name="dM">炉膛参数M</param>
+        /// <param name="Num">燃烧器布局参数：数量</param>
+        /// <param name="Q">燃烧器布局参数：燃料量</param>
+        /// <param name="Q2">燃烧器布局参数：热量</param>
+        /// <param name="H">燃烧器布局参数：高度</param>
+        /// <param name="glxs">锅炉形式glxs</param>
+        /// <param name="VrH">炉膛出口烟气容积VrH</param>
+        /// <param name="Vn2H">Vn2H</param>
+        /// <param name="Vro2H">Vro2H</param>
+        /// <param name="r">烟气再循环系数r</param>
+        /// <param name="pzfs">排渣方式pzfs</param>
+        /// <param name="rsqbz">燃烧器布置形式rsqbz</param>
+        /// <param name="M">炉膛参数M</param>
         /// <returns>是否计算成功（0表示成功）</returns>
-        public static int CalculateParameterM(double dNum, double dQ, double dQ2, double dH, int nglxs, double dVrH, double dVn2H, double dVro2H, double dR, int npzfs, int nrsqbz, out double dM)
+        public static int CalculateParameterM(double Num, double Q, double Q2, double H, double glxs, double VrH, double Vn2H, double Vro2H, double r, int pzfs, int rsqbz, out double M)
         {
-            dM = 0;
-            return 0;
+            int ret = 0;
+            //Step1:燃烧器平均布置标高
+            double ht = 0;//?
+            //Step2:计算燃烧器相对标高Xt
+            double Xt = 0;
+            if (3 == glxs)
+            {
+                Xt = 0;
+            }
+            else
+            {
+                Xt = ht / Ht;
+            }
+            //Step3:炉内烟气惰性成分参数Rv
+            double rv = (VrH * (1 + r)) / (Vn2H + Vro2H);
+            //Step4:计算M0
+            double M0 = 0;
+            if (0 == pzfs && 1 == glxs)
+            {
+                if (1 == rsqbz)
+                {
+                    M0 = 0.42;
+                }
+                else if (2 == rsqbz || 3 == rsqbz)
+                {
+                    M0 = 0.46;
+                }
+                else
+                {
+                    ret = -2;
+                }
+            }
+            else if (1 == pzfs && 1 == glxs)
+            {
+                M0 = 0.44;
+            }
+            else if (3 == glxs)
+            {
+                M0 = 0.46;
+            }
+            else if (1 == rsqbz && 4 == glxs)
+            {
+                M0 = 0.40;
+            }
+            else if (4 == rsqbz && 4 == glxs)
+            {
+                M0 = 0.36;
+            }
+            else
+            {
+                ret = -3;
+            }
+
+            //Step5:计算M
+            if (1 == glxs || 2 == glxs)
+            {
+                M = M0 * (1 - 0.4 * Xt) * Math.Pow(rv, 1 / 3);
+            }
+            else if (3 == glxs)
+            {
+                M = M0 * (1 + R / F1) * Math.Pow(rv, 1 / 3);
+            }
+            else
+            {
+                M = ret = -4;
+            }
+            return ret;
         }
         #endregion
 
@@ -149,21 +214,95 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <summary>
         /// 固体燃料辐射减弱系数K计算
         /// </summary>
-        /// <param name="dRn">三原子气体的总容积份额Rn=Rh2o+Rro2</param>
-        /// <param name="dRh2o">烟气中水蒸气容积份额Rh2o</param>
-        /// <param name="dP">炉膛内压力P(MPa)</param>
-        /// <param name="dTtn">炉膛出口烟气温度Ttn(K)</param>
-        /// <param name="dMui3n">烟气飞灰浓度Mui3n</param>
-        /// <param name="ds">有效辐射层厚度s</param>
-        /// <param name="dglxs">锅炉形式glxs</param>
-        /// <param name="dpzfs">排渣方式pzfs</param>
-        /// <param name="drmzl">燃煤种类rmzl</param>
-        /// <param name="dK">辐射减弱系数K</param>
+        /// <param name="rn">三原子气体的总容积份额rn=rh2o+rro2</param>
+        /// <param name="rh2o">烟气中水蒸气容积份额rh2o</param>
+        /// <param name="p">炉膛内压力p(MPa)</param>
+        /// <param name="Ttn">炉膛出口烟气温度Ttn(K)</param>
+        /// <param name="Mui3n">烟气飞灰浓度Mui3n</param>
+        /// <param name="s">有效辐射层厚度s</param>
+        /// <param name="glxs">锅炉形式glxs</param>
+        /// <param name="pzfs">排渣方式pzfs</param>
+        /// <param name="rmzl">燃煤种类rmzl</param>
+        /// <param name="K">辐射减弱系数K</param>
         /// <returns>是否计算成功（0表示成功）</returns>
-        private static int CalculateSolidFuelWeakenCoefficent(double dRn, double dRh2o, double dP, double dTtn, double dMui3n, double ds, double dglxs, double dpzfs, double drmzl, out double dK)
+        private static int CalculateSolidFuelWeakenCoefficent(double rn, double rh2o, double p, double Ttn, double Mui3n, double s, double glxs, double pzfs, double rmzl, out double K)
         {
-            dK = 0;
-            return 0;
+            int ret = 0;
+            //Step1:燃烧产物气相的辐射减弱系数kr
+            double kr = ((7.8 + 16 * rh2o) / Math.Sqrt(10 * p * rn * s) - 1) * (1 - 0.37 * Ttn * Math.Pow(10, -3));
+            //Step2:计算A3n
+            double A3n = 0;
+            if (0 == pzfs)
+            {
+                if (1 == rmzl)
+                {
+                    A3n = 1.0;
+                }
+                else if (2 == rmzl || 3 == rmzl)
+                {
+                    A3n = 0.8;
+                }
+                else if (4 == rmzl || 5 == rmzl)
+                {
+                    A3n = 0.75;
+                }
+                else if (6 == rmzl)
+                {
+                    A3n = 0.6;
+                }
+                else
+                {
+                    ret = -1;
+                }
+            }
+            else if (1 == pzfs)
+            {
+                if (1 == rmzl)
+                {
+                    A3n = 1.1;
+                }
+                else if (2 == rmzl || 3 == rmzl)
+                {
+                    A3n = 0.9;
+                }
+                else if (4 == rmzl || 5 == rmzl)
+                {
+                    A3n = 0.85;
+                }
+                else if (6 == rmzl)
+                {
+                    A3n = 0.7;
+                }
+                else
+                {
+                    ret = -2;
+                }
+            }
+            //Step3:计算灰粒子辐射减弱系数k3nMui3n
+            double k3nMui3n = (Math.Pow(10, 4) * A3n / Math.Pow((Math.Pow(Ttn, 2)), 1 / 3)) * (Mui3n / (1 + 1.2 * Math.Pow(Mui3n, s)));
+            //Step3:计算kjtMuijt
+            double kjtMuijt = 0;
+            if (1 == glxs || 2 == glxs)
+            {
+                if (1 == rmzl || 3 == rmzl)
+                {
+                    kjtMuijt = 0.25;
+                }
+                else if (2 == rmzl)
+                {
+                    kjtMuijt = 0.1;
+                }
+                else
+                {
+                    ret = -3;
+                }
+            }
+            else
+            {
+                kjtMuijt = 0;
+            }
+            K = kr + k3nMui3n + kjtMuijt;
+            return ret;
         }
         #endregion
 
