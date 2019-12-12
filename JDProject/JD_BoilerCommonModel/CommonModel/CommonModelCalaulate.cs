@@ -324,8 +324,44 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <returns>是否计算成功（0表示成功）</returns>
         private static int CalculateGasOrLiquidFuelWeakenCoefficent(double rn, double rh2o, double p, double Ttn, double s, double Alphat, double CH, double glxs, double pzfs, double qyrl, out double K)
         {
-            K = 0;
-            return 0;
+            int ret = 0;
+            //Step1:燃烧产物气相的辐射减弱系数kr
+            double kr = ((7.8 + 16 * rh2o) / Math.Sqrt(10 * p * rn * s) - 1) * (1 - 0.37 * Math.Pow(10, -3) * Ttn);
+            //Step2:计算炭黑粒子的辐射减弱系数
+            double kc = 0;
+            if (2 >= Alphat)
+            {
+                kc = 1.2 / (1 + Math.Pow(Alphat, 2)) * Math.Pow(CH, 0.4) * (1.6 * Math.Pow(10, -3) * Ttn - 0.5);
+            }
+            else
+            {
+                kc = 0;
+            }
+            //Step3:计算m
+            double m = 0;
+            if (1 == qyrl)
+            {
+                m = 0.6;
+            }
+            else if (2 == qyrl)
+            {
+                m = 0.3;
+            }
+            else if (3 == qyrl)
+            {
+                m = 0.1;
+            }
+            else if (4 == qyrl)
+            {
+                m = 0;
+            }
+            else
+            {
+                ret = -1;
+            }
+            //Step4:计算k
+            K = kr + m * kc;
+            return ret;
         }
         #endregion
 
@@ -343,8 +379,56 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <returns>是否计算成功（0表示成功）</returns>
         private static int CalculatePollutionCoefficient(double gzlx, double pzfs, double FT, double glxs, double rlxs, double srfs, out double ZeTa)
         {
-            ZeTa = 0;
-            return 0;
+            int ret = 0;
+            //Step1:计算Zetasl
+            double Zetasl = 0;
+            if (4 == gzlx)
+            {
+                Zetasl = 0.1;
+            }
+            else if (3 == gzlx)
+            {
+                if (1 == pzfs)
+                {
+                    Zetasl = 0.2;
+                }
+                else
+                {
+                    Zetasl = 0.53 - 00.00025 * (FT - 50);
+                }
+            }
+            else if ((1 == gzlx || 2 == gzlx) && 3 == glxs)
+            {
+                Zetasl = 0.6;
+            }
+            else if ((1 == gzlx || 2 == gzlx) && (1 == glxs || 2 == glxs) && 3 == rlxs)
+            {
+                Zetasl = 0.65;
+            }
+            else if ((1 == gzlx || 2 == gzlx) && (1 == glxs || 2 == glxs) && 2 == rlxs)
+            {
+                Zetasl = 0.55;
+            }
+            else
+            {
+                Zetasl = 0.45;
+            }
+
+            //Step2:计算ZeTa
+            if (2 == srfs && 1 == gzlx)
+            {
+                ZeTa = Zetasl - 0.1;
+            }
+            else if (2 == srfs && 2 == gzlx)
+            {
+                ZeTa = Zetasl - 0.05;
+            }
+            else
+            {
+                ret = -1;
+                ZeTa = 0;
+            }
+            return ret;
         }
         #endregion
 
@@ -360,10 +444,44 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <param name="e">几何参数e</param>
         /// <param name="x">水冷壁有效角系数x</param>
         /// <returns>是否计算成功（0表示成功）</returns>
-        private static int CalculateWaterCooledWallEffiectiveCoefficient(double gzlx, double srfs, double , double s, double n, double e, out double x)
+        private static int CalculateWaterCooledWallEffiectiveCoefficient(double gzlx, double srfs, double d, double s, double n, double e, out double x)
         {
-            x = 0;
-            return 0;
+            int ret = 0;
+            //Step:
+            if (1 == gzlx && 1 == srfs)
+            {
+                if (e > 1.4 * d)
+                {
+                    x = 0.93286 + 0.20596 * s / d - 0.16542 * Math.Pow(s / d, 2) + 0.02977 * Math.Pow(s / d, 3) - 0.0017 * Math.Pow(s / d, 4);
+                }
+                else if (e == 0.8 * d)
+                {
+                    x = 1.05071 + 0.03159 * s / d - 0.09962 * Math.Pow(s / d, 2) + 0.01976 * Math.Pow(s / d, 3) - 0.0017 * Math.Pow(s / d, 4);
+                }
+                else if (e == 0.5 * d)
+                {
+                    x = 1.13143 + 0.08224 * s / d - 0.0625 * Math.Pow(s / d, 2) + 0.01455 * Math.Pow(s / d, 3) - 0.000909091 * Math.Pow(s / d, 4);
+                }
+                else if (0 == e)
+                {
+                    x = 1.36242 + 0.35628 * s / d - 0.01903 * Math.Pow(s / d, 2) + 0.01806 * Math.Pow(s / d, 3) - 0.0017 * Math.Pow(s / d, 4);
+                }
+                else
+                {
+                    ret = -1;
+                    x = 0;
+                }
+
+            }
+            else if (1 == gzlx && 2 == srfs)
+            {
+                x = 1 - Math.Sqrt(1 - Math.Pow(d / s, 2)) + d / s * Math.Atan(Math.Sqrt(Math.Pow(s / d, 2) - 1));
+            }
+            else
+            {
+                x = 1;
+            }
+            return ret;
         }
         #endregion
 
@@ -384,12 +502,104 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <param name="Fjmp">屏区与自由空间界面面积Fjmp</param>
         /// <param name="Fsbp">屏区水冷壁与过热管总面积Fsbp</param>
         /// <returns></returns>
-        private static int CalculateScreenAreaVolumnAndArea(double W, double , double pwz, double n, double s1, double s2, double N, double A, double Adx, out double Vp, out double Fjmp, out double Fsbp)
+        private static int CalculateScreenAreaVolumnAndArea(double W, double D, double pwz, double n, double s1, double s2, double N, double A, double Adx, ref double Vp, ref double Fjmp, ref double Fsbp, ref string sTipInfo)
         {
-            Vp = 0;
-            Fjmp = 0;
-            Fsbp = 0;
-            return 0;
+            int ret = 0;
+            //Step1:计算管屏宽度b
+            double b = (n - 1) * s2;
+            //Step2:
+            if ((4 == pwz || 6 == pwz || 7 == pwz) && 0.457 > s1)
+            {
+                //
+                sTipInfo = "换热器参数或选型有误，请增大s1或更换为半辐射换热器";
+            }
+            //Step3:计算S
+            double S = 0;
+            if (1 == pwz || 4 == pwz || 5 == pwz || 6 == pwz)
+            {
+                S = D;
+            }
+            else if (7 == pwz)
+            {
+                S = W;
+            }
+            else if (2 == pwz || 3 == pwz)
+            {
+                if (0 == N)
+                {
+                    sTipInfo = "需要输入管屏片数";
+                }
+                else
+                {
+                    S = N * s1;
+                }
+            }
+            //Step4:计算Vp
+            Vp = A * b * S;
+            //Step5:计算NN
+            double NN = 0;
+            if (0 == N)
+            {
+                NN = int * (S / s1) - 1;
+            }
+            else
+            {
+                NN = N;
+            }
+            //Step6:计算Fp
+            double Fp = 2 * b * Adx * NN;
+            //Step7:计算Fsbp   Fjmp
+            if (1 == pwz)
+            {
+                Fjmp = (A + b) * S;
+                Fsbp = A * S + 2 * A * b + b * S;
+            }
+            else if (2 == pwz)
+            {
+                if (b < (W - s1))
+                {
+                    Fjmp = (A + S) * b + A * S;
+                    Fsbp = A * S + A * b + b * S;
+                }
+                else
+                {
+                    Fjmp = (A + S) * W + A * S;
+                    Fsbp = A * W + A * S + W * S;
+                }
+            }
+            else if (3 == pwz)
+            {
+                if (b < (W - s1))
+                {
+                    Fjmp = 2 * (A + 0.5 * S) * b + A * S;
+                    Fsbp = A * S + 2 * A * b + b * S;
+                }
+                else
+                {
+                    Fjmp = 2 * (A + 0.5 * S) * W + A * S;
+                    Fsbp = 2 * A * W + A * S + W * S;
+                }
+            }
+            else if (4 == pwz)
+            {
+                Fjmp = (A + b) * S;
+                Fsbp = 2 * A * b + b * S;
+            }
+            else if (5 == pwz)
+            {
+                Fjmp = A * S;
+                Fsbp = 2 * A * b + 2 * b * S + A * S;
+            }
+            else if (6 == pwz || 7 == pwz)
+            {
+                Fjmp = A * S;
+                Fsbp = 2 * A * b + 2 * b * S;
+            }
+            else
+            {
+                ret = -1;
+            }
+            return ret;
         }
         #endregion
 
@@ -405,11 +615,26 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <param name="Xp">屏式换热器角系数Xp</param>
         /// <param name="SigMaXp">SigMaXp</param>
         /// <returns></returns>
-        private static int CalculateScreenAreaHeatTransferCoefficient(double pwz, double , double n, double s1, double s2, out double Xp, out double SigMaXp)
+        private static int CalculateScreenAreaHeatTransferCoefficient(double pwz, double d, double n, double s1, double s2, ref double xp, ref double SigMaxp)
         {
-            Xp = 0;
-            SigMaXp = 0;
-            return 0;
+            int ret = 0;
+            //Step:
+            if (1 == pwz || 2 == pwz || 3 == pwz || 5 == pwz)
+            {
+                xp = 1 - Math.Sqrt(1 - Math.Pow(d / s2, 2)) + d / s2 * Math.Atan(Math.Sqrt(Math.Pow(s2 / d, 2) - 1));
+            }
+            else if (4 == pwz || 6 == pwz || 7 == pwz)
+            {
+                if (s1 >= 0.457)
+                {
+                    xp = 1 - Math.Sqrt(1 - Math.Pow(d / s2, 2)) + d / s2 * Math.Atan(Math.Sqrt(Math.Pow(s2 / d, 2) - 1));
+                }
+                else
+                {
+                    double SigMa1 = s1 / d;
+                }
+            }
+            return ret;
         }
         #endregion
 
