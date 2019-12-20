@@ -819,7 +819,7 @@ namespace JD_BoilerCommonModel.CommonModel
             double Alpha2 = 0;
             if (i1 < ils1)
             {
-                1/Alpha2 = 0;
+                1 / Alpha2 = 0;
             }
             else if (i1 >= ils1)
             {
@@ -855,10 +855,37 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <param name="dcsfs"></param>
         /// <param name="dKeSai"></param>
         /// <returns></returns>
-        public static int CalaulateHeatSurfaceUtilizationCoeddicient(double hrqxs, double pwz, double csfs, out double KeSai)
+        public static int CalaulateHeatSurfaceUtilizationCoeddicient(double hrqxs, double pwz, double csfs, ref double KeSai)
         {
-            dKeSai = 0;
-            return 0;
+            int ret = 0;
+            if (1 == hrqxs)
+            {
+                if (1 == pwz || 2 == pwz || 3 == pwz)
+                {
+                    KeSai = 0.6;
+                }
+                else if (4 == pwz)
+                {
+                    KeSai = 0.8;
+                }
+                else if (5 == pwz)
+                {
+                    KeSai = 0.7;
+                }
+                else
+                {
+                    KeSai = 1.0;
+                }
+            }
+            else if ((2 == hrqxs || 3 == hrqxs) && 3 == csfs)
+            {
+                KeSai = 0.95;
+            }
+            else
+            {
+                KeSai = 1.0;
+            }
+            return ret;
         }
         #endregion
 
@@ -874,10 +901,57 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <param name="dSRFS"></param>
         /// <param name="dEpsaiLen"></param>
         /// <returns></returns>
-        public static int CalculateHeatingSurfacePollutionCoefficient(double hrqxs, double rlxs, double CaO, double chzz, double Alphat, double SRFS, out double EpsaiLen)
+        public static int CalculateHeatingSurfacePollutionCoefficient(double hrqxs, double rlxs, double CaO, double chzz, double Alphat, double SRFS, ref double EpsaiLen)
         {
-            EpsaiLen = 0;
-            return 0;
+            int ret = 0;
+            if (1 == hrqxs)
+            {
+                if (1 == rlxs)
+                {
+                    if (0.13 > CaO)
+                    {
+                        //按曲线1计算 拟合公式未知
+                        EpsaiLen = sad;
+                    }
+                    else if (0.13 <= CaO && 0 == chzz)
+                    {
+                        //按曲线2计算
+                        EpsaiLen = sad;
+                    }
+                    else if (0.13 <= CaO && 1 == chzz)
+                    {
+                        //按曲线3计算
+                        EpsaiLen = sad;
+                    }
+                }
+                else if (2 == rlxs)
+                {
+                    if (1.03 > Alphat)
+                    {
+                        EpsaiLen = 0.0025;
+                    }
+                    else
+                    {
+                        EpsaiLen = 0.005;
+                    }
+                }
+                else if (3 == rlxs)
+                {
+                    EpsaiLen = 0.0015;
+                }
+            }
+            else if (2 == hrqxs || 3 == hrqxs)
+            {
+                if (1 == SRFS && 1 == rlxs)
+                {
+                    EpsaiLen = 0.005;
+                }
+                else if (1 == SRFS && 2 == rlxs)
+                {
+                    EpsaiLen = 0.003;
+                }
+            }
+            return ret;
         }
         #endregion
 
@@ -893,10 +967,67 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <param name="gttjj"></param>
         /// <param name="PSai"></param>
         /// <returns></returns>
-        public static int CalculateHeatCoefficient(double hrqxs, double rlxs, double gzlx, double CaO, double chzz, double gttjj, out double PSai)
+        public static int CalculateHeatCoefficient(double hrqxs, double rlxs, double gzlx, double CaO, double chzz, double gttjj, ref double PeSai)
         {
-            PSai = 0;
-            return 0;
+            int ret = 0;
+            if (1 == rlxs)
+            {
+                if (1 == gzlx || 2 == gzlx || 5 == gzlx || 6 == gzlx || 7 == gzlx)
+                {
+                    if (0.13 > CaO || 1 == chzz)
+                    {
+                        //按曲线1计算
+                        PeSai = ddddd;
+                    }
+                    else if (0.13 <= CaO && 0 == chzz)
+                    {
+                        //按曲线2计算
+                        PeSai = ddddd;
+                    }
+                }
+                else if (3 == gzlx || 4 == gzlx)
+                {
+                    //按曲线1计算
+                    PeSai = ddddd;
+                }
+            }
+            else if (2 == rlxs)
+            {
+                if ((0 == gttjj && 1.03 > Alphat) || (1 == gttjj && 1 == chzz))
+                {
+                    if (2 == hrqxs)
+                    {
+                        PeSai = 0.65;
+                    }
+                    else if (3 == hrqxs)
+                    {
+                        PeSai = 0.6;
+                    }
+                }
+                else if ((0 == gttjj && 1.03 < Alphat) || (1 == gttjj && 0 == chzz))
+                {
+                    if (2 == hrqxs)
+                    {
+                        PeSai = 0.6;
+                    }
+                    else if (3 == hrqxs)
+                    {
+                        PeSai = 0.55;
+                    }
+                }
+            }
+            else if (3 == rlxs)
+            {
+                if (1 == hrqxs)
+                {
+                    PeSai = 0.75;
+                }
+                else
+                {
+                    PeSai = 0.8;
+                }
+            }
+            return ret;
         }
         #endregion
 
@@ -918,10 +1049,44 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <param name="D"></param>
         /// <param name="Fr"></param>
         /// <returns></returns>
-        public static int CalculateFlueGasFlowArea(double gzlx, double csfs, double hrqxs, double d, double l, double z1, double z2, double SigMa1, double SigMa22, double Sp, double Hp, double D, out double Fr)
+        public static int CalculateFlueGasFlowArea(double gzlx, double csfs, double hrqxs, double d, double l, double z1, double z2, double SigMa1, double SigMa2, double sp, double hp, double D, ref double Fr)
         {
-            Fr = 0;
-            return 0;
+            int ret = 0;
+            if ((1 == gzlx || 2 == gzlx) && 1 == csfs)
+            {
+                if (2 == hrqxs)
+                {
+                    Fr = (z1 + 1) * s1 * (l + s1) - z1 * l * d;
+                }
+                else if (3 == hrqxs && 1.7 < ((SigMa1 - 1) / (SigMa2 - 1)))
+                {
+                    Fr = 2 * ((Math.Sqrt(Math.Pow(0.5 * SigMa1, 2) + Math.Pow(SigMa2, 2)) - 1) / (SigMa1 - 1)) * ((z1 + 1) * s1 * (l + s1) - z1 * l * d);
+                }
+            }
+            else if ((3 == gzlx || 4 == gzlx) && 1 == csfs)
+            {
+                if (2 == hrqxs)
+                {
+                    Fr = (1 - 1 / SigMa1 * (1 + 2 * (D / sp) * (DelTap / d))) * (z1 + 1) * s1 * (l + s1);
+                }
+                else if (3 == hrqxs && 1.7 < ((SigMa1 - 1) / (SigMa2 - 1)))
+                {
+                    Fr = 2 * ((Math.Sqrt(Math.Pow(0.5 * SigMa1, 2) + Math.Pow(SigMa2, 2)) - 1) / (SigMa1 - 1)) * (1 - 1 / SigMa1 * (1 + 2 * (D / sp) * (DelTap / d))) * (z1 + 1) * s1 * (l + s1);
+                }
+            }
+            else if (1 == gzlx && 2 == csfs)
+            {
+                Fr = (z1 + 1) * (z2 + 1) * s1 * s2 - z1 * z2 * (Math.PI * Math.Pow(d, 2) / 4);
+            }
+            else if (2 == gzlx || 2 == csfs)
+            {
+                Fr = (z1 + 1) * (z2 + 1) * s1 * s2 - z1 * z2 * ((Math.PI * Math.Pow(d, 2) / 4) + (s2 - d) * DelTap);
+            }
+            else if (5 == gzlx || 2 == csfs)
+            {
+                Fr= (z1 + 1) * (z2 + 1) * s1 * s2 - z1 * z2 * ((Math.PI * Math.Pow(d, 2) / 4) + 2*hp * DelTap);
+            }
+            return ret;
         }
         #endregion
 
@@ -951,10 +1116,11 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <param name="Null"></param>
         /// <param name="Alphak"></param>
         /// <returns></returns>
-        public static int CalculateFlueGasFlowHeatCoeffiient(double gzlx, double xsfs, double hrqxs, double d, double l, double Lb, double Z1, double S1, double S2, double DelTap, double DelTab, double Hp, double D, double Dp, double Sb, double T3, double T4, double Fr, double Qr, double Null, out double Alphak)
+        public static int CalculateFlueGasFlowHeatCoeffiient(double gzlx, double xsfs, double hrqxs, double d, double l, double Lb, double Z1, double S1, double S2, double DelTap, double DelTab, double Hp, double D, double Dp, double Sb, double T3, double T4, double Fr, double Qr, double Null, ref double Alphak)
         {
-            Alphak = 0;
-            return 0;
+            int ret = 0;
+            
+            return ret;
         }
         #endregion
 
