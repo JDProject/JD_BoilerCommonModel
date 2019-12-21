@@ -1084,7 +1084,7 @@ namespace JD_BoilerCommonModel.CommonModel
             }
             else if (5 == gzlx || 2 == csfs)
             {
-                Fr= (z1 + 1) * (z2 + 1) * s1 * s2 - z1 * z2 * ((Math.PI * Math.Pow(d, 2) / 4) + 2*hp * DelTap);
+                Fr = (z1 + 1) * (z2 + 1) * s1 * s2 - z1 * z2 * ((Math.PI * Math.Pow(d, 2) / 4) + 2 * hp * DelTap);
             }
             return ret;
         }
@@ -1116,10 +1116,199 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <param name="Null"></param>
         /// <param name="Alphak"></param>
         /// <returns></returns>
-        public static int CalculateFlueGasFlowHeatCoeffiient(double gzlx, double xsfs, double hrqxs, double d, double l, double Lb, double Z1, double S1, double S2, double DelTap, double DelTab, double Hp, double D, double Dp, double Sb, double T3, double T4, double Fr, double Qr, double Null, ref double Alphak)
+        public static int CalculateFlueGasFlowHeatCoeffiient(double gzlx, double csfs, double hrqxs, double d, double l, double lb, double z1, double z2, double s1, double s2, double DelTap, double DelTab, double hp, double D, double Sp, double Sb, double T3, double T4, double Fr, double Qr, double Null, ref double Alphak,ref string sInfo)
         {
             int ret = 0;
-            
+            //平均温度
+            double T_1 = (T3 + T4) / 2;
+            double v = 0, Rou = 0, Lamda = 0, cp = 0;//由T_1确定，
+            //平均温度下烟气的普朗特数
+            double Pr = v * Rou * cp / Lamda;
+            //烟气的计算速度
+            double w = Qr / (Rou * Fr);
+            double SigMa1 = s1 / d;
+            double SigMa2 = s2 / d;
+            double Cs = 0;
+            double Cz = 0;
+            double Phi = 0;
+            double Psip = 0;
+            double Hrp = 0;//输入？？
+            double x = 0;
+            double n = 0;
+            //横向冲刷顺列光管管束和屏
+            if (1 == gzlx && 1 == csfs && (1 == hrqxs || 2 == hrqxs))
+            {
+                if (2 <= SigMa2 && 1.5 >= SigMa1)
+                {
+                    Cs = 1;
+                }
+                else if (2 > SigMa1 && 3 < SigMa2)
+                {
+                    SigMa1 = 3;
+                    Cs = Math.Pow(1 + (2 * SigMa1 - 3) * Math.Pow(1 - 0.5 * SigMa2, 3), -2);
+                }
+                if (10 > z2)
+                {
+                    Cz = 0.91 + 0.125 * (z2 - 2);
+                }
+                else if (10 <= z2)
+                {
+                    Cz = 1;
+                }
+                Alphak = 0.2 * Cs * Cz * (Lamda / d) * Math.Pow(w * d / v, 0.65) * Math.Pow(Pr, 0.33);
+            }
+            //横向冲刷错列光管管束   和上一个条件一样？？？？？
+            else if (1 == gzlx && 1 == csfs && (1 == hrqxs || 2 == hrqxs))
+            {
+                Phi = (SigMa1 - 1) / (Math.Sqrt(Math.Pow(0.5 * SigMa1, 2) + Math.Pow(SigMa2, 2) - 1));
+                if (0.1 <= Phi && 1.7 >= Phi)
+                {
+                    Cs = 0.95 * Math.Pow(Phi, 0.1);
+                }
+                else if (1.7 < Phi && 4.5 >= Phi && 3 > SigMa1)
+                {
+                    Cs = 0.77 * Math.Pow(Phi, 0.5);
+                }
+                else if (1.7 < Phi && 4.5 >= Phi && 3 <= SigMa1)
+                {
+                    Cs = 0.95 * Math.Pow(Phi, 0.1);
+                }
+                else if (0.1 > Phi || 4.5 < Phi)
+                {
+                    sInfo = "管束不合理";
+                    return -1;
+                }
+                if (10 > z2 && 3 > SigMa1)
+                {
+                    Cz = 3.12 * Math.Pow(z2, 0.05) - 2.5;
+                }
+                else if (10 > z2 && 3 <= SigMa1)
+                {
+                    Cz = 4.0 * Math.Pow(z2, 0.02) - 3.2;
+                }
+                else if (10 <= z2)
+                {
+                    Cz = 1;
+                }
+                Alphak = 0.36 * Cs * Cz * (Lamda / d) * Math.Pow(w * d / v, 0.6) * Math.Pow(Pr, 0.330);
+            }
+            //横向冲刷膜式和鳍片式顺列管束和屏
+            else if ((2 == gzlx || 5 == gzlx) && 1 == csfs && (1 == hrqxs || 2 == hrqxs))
+            {
+                if (1.45 <= SigMa2 && 3.5 >= SigMa2 && 3.0 >= SigMa1)
+                {
+                    Cs = 0.64;
+                }
+                else if (1.45 <= SigMa2 && 3.5 >= SigMa2 && 3.0 < SigMa1 && 5.0 >= SigMa1)
+                {
+                    Cs = 0.64 - 0.035 * (SigMa1 - 3.0);
+                }
+                else if (1.45 <= SigMa2 && 3.5 >= SigMa2 && 5.0 < SigMa1)
+                {
+                    Cs = 0.57;
+                }
+                else if (1.45 > SigMa2 || 3.5 < SigMa2)
+                {
+                    sInfo = "管束不合理";
+                    return -1;
+                }
+                if (8 > z2)
+                {
+                    Cz = 1.0 + 0.017 * (8 - z2);
+                }
+                else if (8 <= z2)
+                {
+                    Cz = 1;
+                }
+                Alphak = 0.1 * Cs * Cz * (Lamda / d) * Math.Pow(w * d / v, 0.75) * Math.Pow(Pr, 0.33);
+            }
+            //横向冲刷膜式和鳍片式错列管束
+            else if ((2 == gzlx || 5 == gzlx) && 1 == csfs && 3 == hrqxs)
+            {
+                Cs = 0.78 * (Math.Pow(SigMa1, -1.2) * ((SigMa1 - 1) / (Math.Sqrt(Math.Pow(SigMa1, 2) + 4 * Math.Pow(SigMa2, 2) - 2)) + 1));
+                if (6 > z2 && 3 > SigMa1)
+                {
+                    Cz = 1.0 - 0.017 * (8 - z2);
+                }
+                else if (8 > z2 && 3 <= SigMa1)
+                {
+                    Cz = 1.0 - 0.0083 * (8 - z2);
+                }
+                else if (8 <= z2)
+                {
+                    Cz = 1;
+                }
+                Alphak = 0.14 * Cs * Cz * (Lamda / d) * Math.Pow(w * d / v, 0.75) * Math.Pow(Pr, 0.33);
+            }
+            //横向冲刷错列和顺列布置的、带有圆形（包括螺旋-带状肋片）和正方型横肋管束
+            else if ((3 == gzlx || 4 == gzlx) && 1 == csfs && (2 == hrqxs || 3 == hrqxs))
+            {
+                if (3 == gzlx)
+                {
+                    Psip = 2 * (Math.Pow(D, 2) - 0.785 * Math.Pow(d, 2) + 2 * D * DelTap) / (Math.PI * d * Sp) + 1 - DelTap / Sp;
+                }
+                else if (4 == gzlx)
+                {
+                    Psip = (1 / 2 * d * Sp) * (Math.Pow(D, 2) - Math.Pow(d, 2) + 2 * D * DelTap) + 1 - DelTap / Sp;
+                }
+                if (2 == hrqxs)
+                {
+                    x = 4 * (Psip / 7 + 2 - SigMa2);
+                }
+                else if (3 == hrqxs)
+                {
+                    x = SigMa1 / SigMa2 - 1.26 / Psip - 2;
+                }
+                Phi = th * x;
+                Cs = (1.36 - Phi) * (11 / (Psip + 8) - 0.14);
+                n = 0.7 + 0.08 * Phi * 0.005 * Psip;
+                if (8 > z2 && 2 > SigMa1 / SigMa2)
+                {
+                    Cz = 3.15 * Math.Pow(z2, 0.05) - 2.5;
+                }
+                else if (8 > z2 && 2 <= SigMa1 / SigMa2)
+                {
+                    Cz = 3.5 * Math.Pow(z2, 0.03) - 2.72;
+                }
+                else if (8 <= z2)
+                {
+                    Cz = 1;
+                }
+                Alphak = 0.113 * Cs * Cz * (Lamda / d) * Math.Pow(w * d / v, n) * Math.Pow(Pr, 0.33);
+            }
+            //横向冲刷瓣形肋片错列管束
+            else if (6 == gzlx && 1 == csfs && 3 == hrqxs)
+            {
+                Phi = 2 * Math.Acos(Sb / d);
+                double lpDelTa = 0;
+               double HpDelta = 2 * (l / Sp) * z1 * z2 * (lpDelTa * hp - (Phi / 360) * (Math.PI * Math.Pow(d, 2) / 2) + (Math.Pow(d, 2) / 4) * Math.Sin(Phi) + (lpDelTa + hp + d * Math.Sin(Phi / 2) * DelTap));
+                double Htaop = Math.PI * d * l * z1 * z2 * (1 - (DelTap / Sp) * (Phi / 180));
+                Psip = (HpDelta + Hrp) / Math.PI * d * l * z1 * z2;
+                x = SigMa1 / SigMa2 - 1.26 / Psip - 2;
+                double Phi_1 = th * x;
+                Cs = (1.36 - Phi_1) * (11 / (Psip + 8) - 0.14);
+                n = 0.7 + 0.08 * Phi_1 + 0.005 * Psip;
+                if (8 > z2 && 2 > SigMa1 / SigMa2)
+                {
+                    Cz = 3.15 * Math.Pow(z2, 0.05) - 2.5;
+                }
+                else if (8 > z2 && 2 <= SigMa1 / SigMa2)
+                {
+                    Cz = 3.5 * Math.Pow(z2, 0.03) - 2.72;
+                }
+                else if (8 <= z2)
+                {
+                    Cz = 1;
+                }
+                Alphak = 0.113 * Cs * Cz * (Lamda / d) * Math.Pow(w * d / v, n) * Math.Pow(Pr, 0.33);
+            }
+            //横向冲刷瓣式与膜-瓣式肋化错列管束
+
+            //横向冲刷带金属螺旋线肋片错列管束
+
+            //纵向冲刷管束
+
+            //
             return ret;
         }
         #endregion
