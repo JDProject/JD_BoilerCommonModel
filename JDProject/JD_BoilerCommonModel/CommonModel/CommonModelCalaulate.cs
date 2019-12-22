@@ -10,39 +10,7 @@ namespace JD_BoilerCommonModel.CommonModel
     public class CCommonModelCalaulate
     {
         #region 1.有效辐射面积计算
-        /// <summary>
-        /// 有效辐射面积计算
-        /// </summary>
-        /// <param name="p">压力p</param>
-        /// <param name="Vf">炉膛自由容积Vf</param>
-        /// <param name="Vp">屏区面积Vp</param>
-        /// <param name="Fslf">自由容积水冷壁面积Fslf</param>
-        /// <param name="Fbgf">自由容积过热管面积Fbgf</param>
-        /// <param name="Fjmp">屏区与自由空间界面面积Fjmp</param>
-        /// <param name="Fbgp">屏区过热管面积Fbgp</param>
-        /// <param name="Fslp">屏区水冷壁面积Fslp</param>
-        /// <param name="Fp">屏面积Fp</param>
-        /// <param name="s1">屏参数：节距s1</param>
-        /// <param name="A">屏参数：高度A</param>
-        /// <param name="b">屏参数：宽度b</param>
-        /// <param name="xsl">角系数：Xsl</param>
-        /// <param name="xbg">角系数：Xbg</param>
-        /// <param name="xp">角系数：Xp</param>
-        /// <param name="ZeTasl">热有效系数：ZETAsl</param>
-        /// <param name="ZeTabg">热有效系数：ZETAbg</param>
-        /// <param name="ZeTap">热有效系数：ZETAp</param>
-        /// <param name="ycjg">烟窗结构ycjg</param>
-        /// <param name="rlxs">燃料型式rlxs</param>
-        /// <param name="Fyc">烟窗，后续添加的参数</param>
-        /// <param name="Hslf">结果参数:Hslf</param>
-        /// <param name="Hsl">结果参数:Hsl</param>
-        /// <param name="Hp">结果参数:Hp</param>
-        /// <param name="Hbg">结果参数:Hbg</param>
-        /// <param name="Ht">结果参数:Ht</param>
-        /// <param name="Bu">结果参数:Bu</param>
-        /// <param name="PeSaicp">结果参数:PeSaicp</param>
-        /// <returns>是否计算成功（0表示成功）</returns>
-        public static int CalculateEffectiveRadioArea(double p, double Vf, double Vp, double Fslf, double Fbgf, double Fjmp, double Fbgp, double Fslp, double Fp, double s1, double A, double b, double xsl, double xbg, double xp, double ZeTasl, double ZeTabg, double ZeTap, double ycjg, double rlxs, double Fyc, double rn, double rh2o, double Ttn, double Mui3n, double s, double glxs, double pzfs, double rmzl, ref double Hslf, ref double Hsl, ref double Hp, ref double Hbg, ref double Ht, ref double Bu, ref double PeSaicp)
+        public static int CalculateEffectiveRadioArea(double p, double Vf, double Vp, double Fslf, double Fbgf, double Fjmp, double Fbgp, double Fslp, double Fp, double s1, double A, double b, double xsl, double xbg, double xp, double ZeTasl, double ZeTabg, double ZeTap, double ycjg, double rlxs, double Fyc, double rn, double rh2o, double Ttn, double Mui3n, double s, double glxs, double pzfs, double rmzl,double V1,double F1,double PeSaip, ref double Hslf, ref double Hsl, ref double Hp, ref double Hbg, ref double Ht, ref double Bu, ref double PeSaicp)
         {
             int ret = 0;
             //Step1:计算炉膛自由容积的有效辐射层厚度Sf
@@ -122,7 +90,7 @@ namespace JD_BoilerCommonModel.CommonModel
             //Step22:计算烟窗热有效系数PeSaiyc
             double PeSaiyc = xyc * Zetayc;
             //Step23:计算平均热有效系数PeSaicp
-            PeSaicp = (PeSaisl * Fsl + PeSaibg * Fbg + PeSaip * Fp + dPeSaiyc * Fyc) / F1;
+            PeSaicp = (PeSaisl * Fsl + PeSaibg * Fbg + PeSaip * Fp + PeSaiyc * Fyc) / F1;
             //Step7:计算总的有效辐射面积Ht
             Ht = Hsl + Hp + Hbg + Hyc;
             return ret;
@@ -130,27 +98,11 @@ namespace JD_BoilerCommonModel.CommonModel
         #endregion
 
         #region 2.炉膛参数M计算
-        /// <summary>
-        /// 炉膛参数M计算
-        /// </summary>
-        /// <param name="Num">燃烧器布局参数：数量</param>
-        /// <param name="Q">燃烧器布局参数：燃料量</param>
-        /// <param name="Q2">燃烧器布局参数：热量</param>
-        /// <param name="H">燃烧器布局参数：高度</param>
-        /// <param name="glxs">锅炉形式glxs</param>
-        /// <param name="VrH">炉膛出口烟气容积VrH</param>
-        /// <param name="Vn2H">Vn2H</param>
-        /// <param name="Vro2H">Vro2H</param>
-        /// <param name="r">烟气再循环系数r</param>
-        /// <param name="pzfs">排渣方式pzfs</param>
-        /// <param name="rsqbz">燃烧器布置形式rsqbz</param>
-        /// <param name="M">炉膛参数M</param>
-        /// <returns>是否计算成功（0表示成功）</returns>
-        public static int CalculateParameterM(double n, double hi, double Bi, double glxs, double VrH, double Vn2H, double Vro2H, double r, int pzfs, int rsqbz, double Ht, double R, out double M)
+        public static int CalculateParameterM(double n, double hi, double Bi, double glxs, double VrH, double Vn2H, double Vro2H, double r, int pzfs, int rsqbz, double Htao, double R,double F1, ref double M)
         {
             int ret = 0;
             //Step1:燃烧器平均布置标高
-            double ht = 0;//?
+            double htao = 0;//?
             //Step2:计算燃烧器相对标高Xt
             double Xt = 0;
             if (3 == glxs)
@@ -159,7 +111,7 @@ namespace JD_BoilerCommonModel.CommonModel
             }
             else
             {
-                Xt = ht / Ht;
+                Xt = htao / Htao;
             }
             //Step3:炉内烟气惰性成分参数Rv
             double rv = (VrH * (1 + r)) / (Vn2H + Vro2H);
@@ -687,13 +639,136 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <param name="Alpha1"></param>
         /// <param name="Psip"></param>
         /// <returns></returns>
-        private static int CalculateHeatReleaseCoefficient(double T1, double T2, double Alphan, double Alphak, double hrqxs, double gzlx, double csfs, double rlxs, double p, double s, double Tcp, double Null, double , double l, double lb, double z1, double z2, double s2, double elTap, double elTab, double SigMa1, double SigMa2, double hp, double dyanqi, double sp, double sb, ref double H, ref double Alpha1, ref double Psip)
+        private static int CalculateHeatReleaseCoefficient(double T1, double T2, double Alphan, double Alphak, double hrqxs, double gzlx, double csfs, double rlxs, double p, double s, double Tcp, double d, double l, double lb, double z1, double z2, double s2, double delTap, double delTab, double SigMa1, double SigMa2, double hp, double D, double sp, double sb,double th, ref double H, ref double Alpha1, ref double Psip)
         {
             int ret = 0;
+            double Htaop = 0;
+            double HpDelta = 0;
+            double PhiTaop = 0;
+            double m = 0;
+            double E = 0;
+            double Phi = 0;
+            double PhipDelta = 0;
+            double hp_1 = 0;
+            double D_1;
+            double Hrp = 0;//??
+            double tpdelta = (T1 + T2) / 2 + 100;
+            //由tpdelta确定肋片等的导热系数LamdapDelta
+            double LamdapDelta = 0;
+            //假定
+            double Twb = tpdelta;
+            bool bneedContinue = true;
+            do
+            {
+                //调用辐射放热系数模块计算Alphan
+                Alphan = 0;
+                //调用对流换热系数模块计算Alphak
+                Alphak = 0;
 
-            H = 0;
-            Alpha1 = 0;
-            Psip = 0;
+                if (1 == gzlx)
+                {
+                    H = Math.PI * d * l * z1 * z2;
+                    Psip = 1;
+                    //调用受热面利用系数计算模块，得到Zeta
+                    double Zeta = 0;
+
+                    Alpha1 = Zeta * (Alphak + Alphan);
+                }
+                else if (2 == gzlx || 5 == gzlx)
+                {
+                    if (2 == gzlx)
+                    {
+                        hp = (s2 - d) / 2;
+                    }
+                    Htaop = 2 * d * l * Math.Acos(delTap / (2 * d)) * z1 * z2;
+                    HpDelta = (2 * delTap * l + 4 * hp * l) * z1 * z2;
+                    H = Htaop + HpDelta;
+                    Psip = H / (Math.PI * d * l * z1 * z2);
+                    if (1 == csfs)
+                    {
+                        PhiTaop = 1.08;
+                        if (2 == hrqxs)
+                        {
+                            PhipDelta = 1 - 0.12 / (SigMa2 - 1);
+                        }
+                        else if (3 == hrqxs && 5.0 >= SigMa1 && 0.75 <= SigMa2)
+                        {
+                            PhipDelta = 1 - (0.05 * Math.Pow(SigMa1 * Math.Pow(SigMa2, 0.5), 0.8) - 0.03) / (2 * SigMa1 - 1);
+                        }
+                        else if (3 == hrqxs && 5.0 < SigMa1)
+                        {
+                            double SigMa2_1 = 2 * SigMa2;
+                            PhipDelta = 1 - 0.12 / (SigMa2_1 - 1);
+                        }
+                    }
+                    else if (2 == csfs)
+                    {
+                        PhiTaop = 1.0;
+                        PhipDelta = 1.0;
+                    }
+                    m = Math.Sqrt((2 * (PhipDelta * Alphak + Alphan)) / (delTap * LamdapDelta));
+
+                    E = th * (m * hp) / (m * hp);
+                    Alpha1 = (Htaop / H) * (PhiTaop * Alphak + Alphan) + (HpDelta * E / H) * (PhipDelta * Alphak + Alphan);
+                }
+                else if (3 == gzlx || 4 == gzlx)
+                {
+                    if (3 == gzlx)
+                    {
+                        Psip = 2 * (Math.Pow(D, 2) - 0.785 * Math.Pow(d, 2) + 2 * D * delTap) / (Math.PI * d * sp) + 1 - delTap / sp;
+                        hp_1 = 0.5 * (1.13 * D - d);
+                        D_1 = 1.13D;
+
+                        //???????????????????????
+
+                        H = Psip * Math.PI * d * l * z1 * z2;
+                    }
+                    m = Math.Sqrt(2 * Alphak / (delTap * LamdapDelta));
+                    double PhiE = 1 - 0.058 * m * hp;
+                    //
+                    E = 323;//根据D_1/D、m*hp_1，按线算图6确定肋片有效系数E
+                    Alpha1 = (Htaop / H + HpDelta / H * E * PhiE) * Alphak;
+                }
+                else if (6 == gzlx || 7 == gzlx)
+                {
+                    Phi = 2 * Math.Acos(sb / (2 * d));
+                    double hb = 0;
+                    double Rc = Math.Sqrt((360 / (Phi * Math.PI)) * ((lb / 2) * hb + (Math.Pow(d, 2) / 8) * Math.Sin(Phi)));
+                    D_1 = 2 * Rc;
+                    hb_1 = Rc - 0.5 * d;
+                    HpDelta = 2 * (l / sp) * z1 * z2 * (lb * hb - (Phi / 360) * (Math.PI * Math.Pow(d, 2) / 2) + (Math.Pow(d, 2) / 4) * Math.Sin(Phi) + (lb + hb - d * Math.Sin(Phi / 2)) * delTab);
+                    Htaop = Math.PI * d * l * z1 * z2 * (1 - (delTab / sp) * (Phi / 180));
+                    Psip = (HpDelta + Hrp) / (Math.PI * d * l * z1 * z2);
+                    m = Math.Sqrt((2 * Alphak) / (delTap * LamdapDelta));
+                    //根据D_1/d、m*hb_1，按线算图6确定肋片有效系数E
+                    E = 0;
+                    //根据lb/d、hb_1/d、sp/d，按表7 - 3确定系数PhiE
+                    double PhiE = 0;
+                    if (6 == gzlx)
+                    {
+                        Alpha1 = (Htaop / H + HpDelta / H * E * PhiE) * Alphak;
+                    }
+                    else if (7 == gzlx)
+                    {
+                        double m_1 = Math.Sqrt((2 * Alphak) / (delTap * LamdapDelta));
+                        E = th * (m_1 * hp) / (m_1 * hp);
+                        double Hnn = 4 * hp * l * z1 * z2;
+                        double Htaop_1 = Htaop - 2 * delTap * l * z1 * z2;
+                        double H_1 = HpDelta + Hnn + Htaop_1;
+                        Alpha1 = (Htaop / H + (Hnn / H) * Enn + (HpDelta / H) * E * PhiE) * Alphak;
+                    }
+                }
+                //由Alpha1、H调用管外壁温度计算模块得到Twb_1
+                double Twb_1 = 0;
+                if (0.001 < Math.Abs((Twb - Twb_1) / Twb_1))
+                {
+                    Twb = Twb_1;
+                }
+                else
+                {
+                    bneedContinue = false;
+                }
+            } while (bneedContinue);
             return ret;
         }
         #endregion
@@ -741,7 +816,7 @@ namespace JD_BoilerCommonModel.CommonModel
                 n = 3.6;
             }
             //Step6:计算Alphan1
-            double Alphan1 = 5.67 * Math.Pow(10, -8) * (a3 + 1) / 2 * a * Math.Pow(T, 3) * ((1 - Math.Pow(Twb / T, n) / (1 - Twb / T));
+            double Alphan1 = 5.67 * Math.Pow(10, -8) * (a3 + 1) / 2 * a * Math.Pow(T, 3) * ((1 - Math.Pow(Twb / T, n) / (1 - Twb / T)));
             //Step7:计算koDelta
             double soDelta = 0;
             if (1 == hrqxs)
@@ -1116,7 +1191,7 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <param name="Null"></param>
         /// <param name="Alphak"></param>
         /// <returns></returns>
-        public static int CalculateFlueGasFlowHeatCoeffiient(double gzlx, double csfs, double hrqxs, double d, double l, double lb, double z1, double z2, double s1, double s2, double DelTap, double DelTab, double hp, double D, double Sp, double Sb, double T3, double T4, double Fr, double Qr, double Null, ref double Alphak,ref string sInfo)
+        public static int CalculateFlueGasFlowHeatCoeffiient(double gzlx, double csfs, double hrqxs, double d, double l, double lb, double z1, double z2, double s1, double s2, double DelTap, double DelTab, double hp, double D, double Sp, double Sb, double T3, double T4, double Fr, double Qr, double th,double hb,double z, ref double Alphak, ref string sInfo)
         {
             int ret = 0;
             //平均温度
@@ -1131,10 +1206,14 @@ namespace JD_BoilerCommonModel.CommonModel
             double Cs = 0;
             double Cz = 0;
             double Phi = 0;
+            double Phi_1 = 0;
             double Psip = 0;
             double Hrp = 0;//输入？？
             double x = 0;
             double n = 0;
+            double lpDelTa = 0;
+            double HpDelta = 0;
+            double Htaop = 0;
             //横向冲刷顺列光管管束和屏
             if (1 == gzlx && 1 == csfs && (1 == hrqxs || 2 == hrqxs))
             {
@@ -1280,12 +1359,11 @@ namespace JD_BoilerCommonModel.CommonModel
             else if (6 == gzlx && 1 == csfs && 3 == hrqxs)
             {
                 Phi = 2 * Math.Acos(Sb / d);
-                double lpDelTa = 0;
-               double HpDelta = 2 * (l / Sp) * z1 * z2 * (lpDelTa * hp - (Phi / 360) * (Math.PI * Math.Pow(d, 2) / 2) + (Math.Pow(d, 2) / 4) * Math.Sin(Phi) + (lpDelTa + hp + d * Math.Sin(Phi / 2) * DelTap));
-                double Htaop = Math.PI * d * l * z1 * z2 * (1 - (DelTap / Sp) * (Phi / 180));
+                HpDelta = 2 * (l / Sp) * z1 * z2 * (lpDelTa * hp - (Phi / 360) * (Math.PI * Math.Pow(d, 2) / 2) + (Math.Pow(d, 2) / 4) * Math.Sin(Phi) + (lpDelTa + hp + d * Math.Sin(Phi / 2) * DelTap));
+                Htaop = Math.PI * d * l * z1 * z2 * (1 - (DelTap / Sp) * (Phi / 180));
                 Psip = (HpDelta + Hrp) / Math.PI * d * l * z1 * z2;
                 x = SigMa1 / SigMa2 - 1.26 / Psip - 2;
-                double Phi_1 = th * x;
+                Phi_1 = th * x;
                 Cs = (1.36 - Phi_1) * (11 / (Psip + 8) - 0.14);
                 n = 0.7 + 0.08 * Phi_1 + 0.005 * Psip;
                 if (8 > z2 && 2 > SigMa1 / SigMa2)
@@ -1303,12 +1381,65 @@ namespace JD_BoilerCommonModel.CommonModel
                 Alphak = 0.113 * Cs * Cz * (Lamda / d) * Math.Pow(w * d / v, n) * Math.Pow(Pr, 0.33);
             }
             //横向冲刷瓣式与膜-瓣式肋化错列管束
-
+            else if ((6 == gzlx || 7 == gzlx) && 1 == csfs && 3 == hrqxs)
+            {
+                Phi = 2 * Math.Acos(Sb / d);
+                HpDelta = 2 * (l / Sp) * z1 * z2 * (lb * hb - (Phi / 360) * (Math.PI * Math.Pow(d, 2) / 2) + (Math.Pow(d, 2) / 4) * Math.Sin(Phi) + (lb + hb - d * Math.Sin(Phi / 2) * DelTab));
+                if (6 == gzlx)
+                {
+                    Htaop = Math.PI * d * l * z1 * z2 * (1 - (DelTab / Sp) * (Phi / 180));
+                    Psip = (HpDelta + Hrp) / (Math.PI * d * l * z1 * z2);
+                }
+                else if (7 == gzlx)
+                {
+                    Hrp = Math.PI * d * l * z1 * z2 * (1 - (DelTab / Sp) * (Phi / 180)) - 2 * DelTap * l * z1 * z2;
+                    Psip = (HpDelta + 4 * hp * l * z1 * z2 + Hrp) / (Math.PI * d * l * z1 * z2);
+                }
+                x = SigMa1 / SigMa2 - 1.26 / Psip - 2;
+                Phi_1 = th * x;
+                Cs = (1.36 - Phi_1) * (11 / (Psip + 8) - 0.14);
+                n = 0.7 + 0.08 * Phi_1 * 0.005 * Psip;
+                if (8 > z2 && 2 > SigMa1 / SigMa2)
+                {
+                    Cz = 3.15 * Math.Pow(z2, 0.05) - 2.5;
+                }
+                else if (8 > z2 && 2 <= SigMa1 / SigMa2)
+                {
+                    Cz = 3.5 * Math.Pow(z2, 0.03) - 2.72;
+                }
+                else if (8 < z2)
+                {
+                    Cz = 1;
+                }
+                if (6 == gzlx)
+                {
+                    Alphak = 0.113 * Cs * Cz * (Lamda / d) * Math.Pow(w * d / v, n) * Math.Pow(Pr, 0.33);
+                }
+                else if (7 == gzlx)
+                {
+                    Alphak = 0.09 * Cs * Cz * (Lamda / d) * Math.Pow(w * d / v, n) * Math.Pow(Pr, 0.33);
+                }
+            }
             //横向冲刷带金属螺旋线肋片错列管束
-
+            else if (8 == gzlx && 1 == csfs && 1 == hrqxs)
+            {
+                Alphak = 2.55 * (Lamda / Sp) * Math.Pow(SigMa1, 0.2) * Math.Pow(SigMa2, -0.1) * Math.Pow(Math.PI * d / (z * hp), 0.36) * Math.Pow(d / Sp, -0.6) * Math.Pow(w * Sp / v, 0.46) * Math.Pow(Pr, 0.33);
+            }
             //纵向冲刷管束
-
-            //
+            else if (2 == csfs)
+            {
+                double dEpsilon = (4 * (s1 * z1 * s2 * z2 - z1 * z2 * (Math.PI * Math.Pow(d, 2) / 4))) / (2 * (s1 * z1 + s2 * z2) + z1 * z2 * Math.PI * d);
+                double C1 = 0;
+                if (1 == hrqxs && 50 <= l / d)
+                {
+                    C1 = 1.0;
+                }
+                else
+                {
+                    C1 =12;//图11计算
+                }
+                Alphak = 0.023 * (Lamda / d) * Math.Pow(w * dEpsilon / v, 0.8) * Math.Pow(Pr, 0.4) * C1;
+            }
             return ret;
         }
         #endregion
@@ -1326,10 +1457,89 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <param name="G">工质流量G</param>
         /// <param name="Alpha2">管壁向水和蒸汽的放热系数Alpha2</param>
         /// <returns></returns>
-        public static int CalculateWaterAngGasHeatCoefficient(double P1, double P2, double i1, double i2, double d, double SigMa, double G, out double Alpha2)
+        public static int CalculateWaterAngGasHeatCoefficient(double P1, double P2, double i1, double i2, double d, double SigMa, double G,double l,double z1,double z2,double gzyh, ref double Alpha2)
         {
-            Alpha2 = 0;
-            return 0;
+            int ret = 0;
+            double di = d - 2 * SigMa;
+            double P = (P1 + P2) / 2;
+            double i = (i1 + i2) / 2;
+            //由P i 确定工质的平均导热系数Lambda 运动粘度v 密度Rou  比热容Cp 干度x
+            double Lamda = 0;
+            double v = 0;
+            double Rou = 0;
+            double Cp = 0;
+            double x = 0;
+
+            //对于压力P的饱和蒸汽焓is_2、蒸汽密度Rou_2与饱和水焓is_1、水密度Rou_1
+            double is_2 = 0;
+            double Rou_2 = 0;
+            double is_1 = 0;
+            double Rou_1 = 0;
+
+            double w = 4 * G / (Rou * Math.PI * Math.Pow(di, 2));
+            double Re = w * d / v;
+            double Pr = v * Rou * Cp / Lamda;
+            double qi = (G * (i2 - i1)) / (Math.PI * di * l * z1 * z2);
+            if ((22 >= P && i <= is_1) || (22 >= P && i > is_2) || (22 < P && 2800 < i) || (22 < P && 840 > i))
+            {
+                if (Math.Pow(10, 6) < Re)
+                {
+                    Alpha2 = 0.023 * (Lamda / d) * Math.Pow(Re, 0.8) * Math.Pow(Pr, 0.4);
+                }
+                else
+                {
+                    Alpha2 = 0.0133 * (Lamda / d) * Math.Pow(Re, 0.81) * Math.Pow(Pr, 1 / 3);
+                }
+            }
+            else if (22 >= P && (i > is_1 && i < is_2))
+            {
+                double wo_1 = (w * Rou * (1 - x)) / Rou_1;
+                double wo_2 = w * Rou * x / Rou_2;
+                double Wcm = wo_1 + wo_2;
+                //按照P对应的饱和水参数，计算
+                w = 4 * G / (Rou * Math.PI * Math.Pow(di, 2));
+                double Res = w * d / v;
+                double Prs = v * Rou * Cp / Lamda;
+                double Alphak = 0.023 * (Lamda / d) * Math.Pow(Res, 0.8) * Math.Pow(Prs, 0.4);
+                double Alpha0 = 4.34 * Math.Pow(qi, 0.7) * (Math.Pow(P, 0.14) + 1.37 * Math.Pow(10, -2) * Math.Pow(P, 2));
+                double r = is_2 - is_1;
+                double Alphaq = Math.Sqrt(Math.Pow(Alphak, 2) + 0.5 * Math.Pow(Alpha0, 2) * (1 + 7 * Math.Pow(10, -9) * Math.Pow(r * Wcm * Rou_1 / qi, 1.5)));
+                if (1 == gzyh)
+                {
+                    Alpha2 = 1 / ((0.46 / Alphaq) + 0.43 * Math.Pow(10, -4));
+                }
+                else if (0 == gzyh)
+                {
+                    Alpha2 = Alphaq;
+                }
+            }
+            else if (22 < P && (840 < i && 2800 > i) && 0.39 >= (qi * Math.Pow(10, -3)) / (w * Rou))
+            {
+                //调用壁温计算模块得到Tib以及对应的Pr1
+                double Tib = 0;
+                double Pr1 = 0;
+                double Prmin = 0;
+                if (Pr1 > Pr)
+                {
+                    Prmin = Pr;
+                }
+                else
+                {
+                    Prmin = Pr1;
+                }
+                Alpha2 = 0.023 * (Lamda / di) * Math.Pow(Re, 0.8) * Math.Pow(Pr, 0.8);
+            }
+            else if (22 < P && (840 < i && 2800 > i) && 0.39 < (qi * Math.Pow(10, -3)) / (w * Rou))
+            {
+                //由P、i=840计算物性参数，得到对应的Pr840和Re840
+                double Pr840 = 0;
+                double Re840 = 0;
+                double Lamda840 = 0;
+                double Alpha840 = 0.023 * (Lamda840 / di) * Math.Pow(Re840, 0.8) * Math.Pow(Pr840, 0.4);
+                double A = 2;//由线算图确定
+                Alpha2 = Alpha840;
+            }
+            return ret;
         }
         #endregion
 
@@ -1349,9 +1559,211 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <param name="dlzjg"></param>
         /// <param name="DelTat"></param>
         /// <returns></returns>
-        public static int CalculateTemperaturePressureConvertCoefficient(double T1, double T2, double T3, double T4, double gsbz, double ns, double nn, double nx, double ljxs, double dlzjg, out double DelTat)
+        public static int CalculateTemperaturePressureConvertCoefficient(double T1, double T2, double T3, double T4, double gsbz, double ns, double nn, double nx, double ljxs, double dlzjg, ref double DelTat, ref string sInfo)
         {
-            DelTat = 0;
+            double A = 0;
+            double B = 0;
+            double P = 0;
+            double R = 0;
+            double Psi = 0;
+
+            double tao1 = 0;
+            double tao2 = 0;
+            double taoDelta = 0;
+            double taoM = 0;
+            double Hs = 0;//??
+            double H = 0;//??
+            //纯顺流温压计算
+            if (1 == gsbz)
+            {
+                if ((T3 - T1) > (T4 - T2))
+                {
+                    DelTat = ((T3 - T1) - (T4 - T2)) / Math.Log((T3 - T1) / (T4 - T2));
+                }
+                else
+                {
+                    DelTat = ((T4 - T2) - (T3 - T1)) / Math.Log((T4 - T2) / (T3 - T1));
+                }
+            }
+            //纯逆流换算系数计算
+            else if (2 == gsbz)
+            {
+                Psi = 1.0;
+            }
+            //串联混合流换算系数计算
+            else if (3 == gsbz || 4 == gsbz)
+            {
+                A = Hs / H;
+                if (3 == gsbz)
+                {
+                    tao1 = T3 - T4;
+                    tao2 = T2 - T1;
+                }
+                else if (4 == gsbz)
+                {
+                    tao1 = T2 - T1;
+                    tao2 = T3 - T4;
+                }
+                P = tao2 / (T3 - T1);
+                R = tao1 / tao2;
+                //由A、P和R，根据线算图19可以确定修正系数Psi
+                Psi = 12;//????
+            }
+            //平行混合流换算系数计算
+            else if (5 == gsbz)
+            {
+                tao1 = T3 - T4;
+                tao2 = T2 - T1;
+                if (tao1 > tao2)
+                {
+                    taoDelta = tao1;
+                    taoM = tao2;
+                }
+                else
+                {
+                    taoDelta = tao2;
+                    taoM = tao1;
+                }
+                B = (H - Hs) / Hs;
+                P = taoM / (T3 - T1);
+                R = taoDelta / taoM;
+                //由B、P、R和nn、ns，根据线算图20可以确定修正系数
+                if (0.7 <= B && 1.5 >= B)
+                {
+                    if (2 == nn && 2 == ns)
+                    {
+                        //Psi线算图20曲线1计算
+                        Psi = Psi1;
+                    }
+                    else if (3 == nn && 2 == ns)
+                    {
+                        //Psi线算图20曲线2计算
+                        Psi = Psi2;
+                    }
+                    else if (2 * ns == nn)
+                    {
+                        //Psi线算图20曲线3计算
+                        Psi = Psi3;
+                    }
+                    else if (3 == nn && 1 == ns)
+                    {
+                        //Psi线算图20曲线4计算
+                        Psi = Psi4;
+                    }
+                    else if (2 == nn && 0 == ns)
+                    {
+                        //Psi线算图20曲线5计算
+                        Psi = Psi5;
+                    }
+                    else if (3 < nn && ns > nn / 2)
+                    {
+                        Psi = 0.5 * Psi2 + 0.5 * Psi3;
+                    }
+                    else if (3 < nn && ns < nn / 2)
+                    {
+                        Psi = 0.5 * Psi3 + 0.5 * Psi4;
+                    }
+                    else if (0.7 > B && 1.5 < B)
+                    {
+                        double Mui = Math.Sqrt(Math.Pow(R, 2) + 1 - 2 * R * (2 * B / (B + 1) - 1));
+                        Psi = Mui * Math.Log10((1 - P) / (1 - P * R)) / ((R - 1) * Math.Log10((2 - P * (R + 1 - Mui)) / (2 - P * (R + 1 + Mui))));
+                    }
+                }
+            }
+            //交叉混合流换算系数计算
+            else if (6 == gsbz || 7 == gsbz)
+            {
+                tao1 = T3 - T4;
+                tao2 = T2 - T1;
+                if (tao1 > tao2)
+                {
+                    taoDelta = tao1;
+                    taoM = tao2;
+                }
+                else
+                {
+                    taoDelta = tao2;
+                    taoM = tao1;
+                }
+                P = taoM / (T3 - T1);
+                R = taoDelta / taoM;
+                //由P、R和nx、ljxs，根据线算图21可以确定修正系数Psi
+                if (7 == gsbz)
+                {
+                    if (1 == nx)
+                    {
+                        //Psi线算图21曲线1计算
+                    }
+                    else if (2 == nx && 1 == ljxs)
+                    {
+                        // Psi线算图21曲线2计算
+                    }
+                    else if (3 == nx && 1 == ljxs)
+                    {
+                        // Psi线算图21曲线3计算
+                    }
+                    else if (4 == nx && 1 == ljxs)
+                    {
+                        // Psi线算图21曲线4计算
+                    }
+                    else if (3 == nx && 2 == ljxs)
+                    {
+                        // Psi线算图21曲线5计算
+                    }
+                    else if (2 == nx && 3 == ljxs && 1 == dlzjg)
+                    {
+                        // Psi线算图21曲线6计算
+                    }
+                    else if (2 == nx && 3 == ljxs && 2 == dlzjg)
+                    {
+                        // Psi线算图21曲线7计算
+                    }
+                    else if (3 == nx && 3 == ljxs && 1 == dlzjg)
+                    {
+                        // Psi线算图21曲线8计算
+                    }
+                    else if (3 == nx && 3 == ljxs && 2 == dlzjg)
+                    {
+                        // Psi线算图21曲线9计算
+                    }
+                    else
+                    {
+                        sInfo = "设置参数有误，二次十字交叉不区分是否混合，三次十字交叉逆流无导流罩影响的数据";
+                    }
+                }
+                else if (6 == gsbz)
+                {
+                    if (2 == nx && 1 == ljxs)
+                    {
+                        //线算图21曲线10计算
+                    }
+                    else if (2 == nx && 3 == ljxs && 2 == dlzjg)
+                    {
+                        //线算图21曲线11计算
+                    }
+                    else if (3 == nx && 1 == ljxs)
+                    {
+                        //线算图21曲线12计算
+                    }
+                    else if (3 == nx && 3 == ljxs && 2 == dlzjg)
+                    {
+                        //线算图21曲线13计算
+                    }
+                    else
+                    {
+                        sInfo = "设置参数有误，三次十字交叉顺流均为三通道，且不区分是否混合";
+                    }
+                }
+
+                if ((T3 - T2) > (T4 - T1))
+                {
+                    DelTat = Psi * (((T3 - T2) - (T4 - T1)) / Math.Log((T3 - T2) / (T4 - T1)));
+                }
+                else
+                {
+                    DelTat = Psi * (((T4 - T1) - (T3 - T2)) / Math.Log((T4 - T1) / (T3 - T2)));
+                }
+            }
             return 0;
         }
         #endregion
