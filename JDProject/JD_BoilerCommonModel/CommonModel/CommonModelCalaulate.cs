@@ -10,14 +10,13 @@ namespace JD_BoilerCommonModel.CommonModel
     public class CCommonModelCalaulate
     {
         #region 1.有效辐射面积计算
-        public static int CalculateEffectiveRadioArea(double p, double Vf, double Vp, double Fslf, double Fbgf, double Fjmp, double Fbgp, double Fslp, double Fp, double s1, double A, double b, double xsl, double xbg, double xp, double ZeTasl, double ZeTabg, double ZeTap, double ycjg, double rlxs, double Fyc, double rn, double rh2o, double Ttn, double Mui3n, double s, double glxs, double pzfs, double rmzl,double V1,double F1,double PeSaip, ref double Hslf, ref double Hsl, ref double Hp, ref double Hbg, ref double Ht, ref double Bu, ref double PeSaicp)
+        public static int CalculateEffectiveRadioArea(double p, double Vf, double Vp, double Fslf, double Fbgf, double Fjmp, double Fbgp, double Fslp, double Fp, double s1, double A, double b, double xsl, double xbg, double xp, double ZeTasl, double ZeTabg, double ZeTap, double ycjg, double rlxs, double Fyc, double rn, double rh2o, double Ttn, double Mui3n, double s, double glxs, double pzfs, double rmzl, double V1, double F1, double PeSaip, ref double Hslf, ref double Hsl, ref double Hp, ref double Hbg, ref double Ht, ref double Bu, ref double PeSaicp)
         {
-            int ret = 0;
             //Step1:计算炉膛自由容积的有效辐射层厚度Sf
             double sf = (3.6 * Vf) / (Fslf + Fbgf + Fjmp);
             //Step2:由p和Sf调用固体燃料辐射减弱系数计算模块(CalculateSolidFuelWeakenCoefficent)得到Kf
             double kf = 0;
-            ret = CalculateSolidFuelWeakenCoefficent(rn, rh2o, p, Ttn, Mui3n, s, glxs, pzfs, rmzl, ref kf);
+            int ret = CalculateSolidFuelWeakenCoefficent(rn, rh2o, p, Ttn, Mui3n, s, glxs, pzfs, rmzl, ref kf);
             if (0 != ret)
                 return ret;
             //Step3:CalculateSolidFuelWeakenCoefficent炉膛自由容积黑度Af
@@ -59,7 +58,7 @@ namespace JD_BoilerCommonModel.CommonModel
             //Step18:计算屏的热有效系数PeSaip
             PeSaicp = xp * zp * ZeTap;
             //Step19:计算根据烟窗后的设备得到BaiTa
-            double Zetayc = -1;
+            double Zetayc = 0;
             if (0 == ycjg)
             {
                 Zetayc = 0.5;
@@ -74,6 +73,10 @@ namespace JD_BoilerCommonModel.CommonModel
                 {
                     Zetayc = 0.8 * ZeTasl;
                 }
+                else
+                {
+                    return -1;
+                }
             }
             else if (2 == ycjg)
             {
@@ -82,6 +85,10 @@ namespace JD_BoilerCommonModel.CommonModel
             else if (3 == ycjg)
             {
                 Zetayc = ZeTasl;
+            }
+            else
+            {
+                return -2;
             }
             //Step20:参照锅炉热力计算标准6-06（p34）
             double xyc = 1;
@@ -93,14 +100,13 @@ namespace JD_BoilerCommonModel.CommonModel
             PeSaicp = (PeSaisl * Fsl + PeSaibg * Fbg + PeSaip * Fp + PeSaiyc * Fyc) / F1;
             //Step7:计算总的有效辐射面积Ht
             Ht = Hsl + Hp + Hbg + Hyc;
-            return ret;
+            return 0;
         }
         #endregion
 
         #region 2.炉膛参数M计算
-        public static int CalculateParameterM(double n, double hi, double Bi, double glxs, double VrH, double Vn2H, double Vro2H, double r, int pzfs, int rsqbz, double Htao, double R,double F1, ref double M)
+        public static int CalculateParameterM(double n, double hi, double Bi, double glxs, double VrH, double Vn2H, double Vro2H, double r, int pzfs, int rsqbz, double Htao, double R, double F1, ref double M)
         {
-            int ret = 0;
             //Step1:燃烧器平均布置标高
             double htao = 0;//?
             //Step2:计算燃烧器相对标高Xt
@@ -129,7 +135,7 @@ namespace JD_BoilerCommonModel.CommonModel
                 }
                 else
                 {
-                    ret = -2;
+                    return -2;
                 }
             }
             else if (1 == pzfs && 1 == glxs)
@@ -150,7 +156,7 @@ namespace JD_BoilerCommonModel.CommonModel
             }
             else
             {
-                ret = -3;
+                return -3;
             }
 
             //Step5:计算M
@@ -164,9 +170,9 @@ namespace JD_BoilerCommonModel.CommonModel
             }
             else
             {
-                M = ret = -4;
+                return -4;
             }
-            return ret;
+            return 0;
         }
         #endregion
 
@@ -187,7 +193,6 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <returns>是否计算成功（0表示成功）</returns>
         private static int CalculateSolidFuelWeakenCoefficent(double rn, double rh2o, double p, double Ttn, double Mui3n, double s, double glxs, double pzfs, double rmzl, ref double K)
         {
-            int ret = 0;
             //Step1:燃烧产物气相的辐射减弱系数kr
             double kr = ((7.8 + 16 * rh2o) / Math.Sqrt(10 * p * rn * s) - 1) * (1 - 0.37 * Ttn * Math.Pow(10, -3));
             //Step2:计算A3n
@@ -212,7 +217,7 @@ namespace JD_BoilerCommonModel.CommonModel
                 }
                 else
                 {
-                    ret = -1;
+                    return -1;
                 }
             }
             else if (1 == pzfs)
@@ -235,8 +240,12 @@ namespace JD_BoilerCommonModel.CommonModel
                 }
                 else
                 {
-                    ret = -2;
+                    return -2;
                 }
+            }
+            else
+            {
+                return -3;
             }
             //Step3:计算灰粒子辐射减弱系数k3nMui3n
             double k3nMui3n = (Math.Pow(10, 4) * A3n / Math.Pow((Math.Pow(Ttn, 2)), 1 / 3)) * (Mui3n / (1 + 1.2 * Math.Pow(Mui3n, s)));
@@ -254,7 +263,7 @@ namespace JD_BoilerCommonModel.CommonModel
                 }
                 else
                 {
-                    ret = -3;
+                    return -4;
                 }
             }
             else
@@ -262,7 +271,7 @@ namespace JD_BoilerCommonModel.CommonModel
                 kjtMuijt = 0;
             }
             K = kr + k3nMui3n + kjtMuijt;
-            return ret;
+            return 0;
         }
         #endregion
 
@@ -282,9 +291,8 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <param name="qyrl">气液燃料种类qyrl</param>
         /// <param name="K">辐射减弱系数K</param>
         /// <returns>是否计算成功（0表示成功）</returns>
-        private static int CalculateGasOrLiquidFuelWeakenCoefficent(double rn, double rh2o, double p, double Ttn, double s, double Alphat, double CH, double glxs, double pzfs, double qyrl, out double K)
+        private static int CalculateGasOrLiquidFuelWeakenCoefficent(double rn, double rh2o, double p, double Ttn, double s, double Alphat, double CH, double glxs, double pzfs, double qyrl, ref double K)
         {
-            int ret = 0;
             //Step1:燃烧产物气相的辐射减弱系数kr
             double kr = ((7.8 + 16 * rh2o) / Math.Sqrt(10 * p * rn * s) - 1) * (1 - 0.37 * Math.Pow(10, -3) * Ttn);
             //Step2:计算炭黑粒子的辐射减弱系数
@@ -317,11 +325,11 @@ namespace JD_BoilerCommonModel.CommonModel
             }
             else
             {
-                ret = -1;
+                return -1;
             }
             //Step4:计算k
             K = kr + m * kc;
-            return ret;
+            return 0;
         }
         #endregion
 
@@ -337,9 +345,8 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <param name="srfs">受热方式srfs</param>
         /// <param name="ZeTa">炉膛污染系数ZeTa</param>
         /// <returns>是否计算成功（0表示成功）</returns>
-        private static int CalculatePollutionCoefficient(double gzlx, double pzfs, double FT, double glxs, double rlxs, double srfs, out double ZeTa)
+        private static int CalculatePollutionCoefficient(double gzlx, double pzfs, double FT, double glxs, double rlxs, double srfs, ref double ZeTa)
         {
-            int ret = 0;
             //Step1:计算Zetasl
             double Zetasl = 0;
             if (4 == gzlx)
@@ -385,10 +392,9 @@ namespace JD_BoilerCommonModel.CommonModel
             }
             else
             {
-                ret = -1;
-                ZeTa = 0;
+                return -1;
             }
-            return ret;
+            return 0;
         }
         #endregion
 
@@ -404,10 +410,8 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <param name="e">几何参数e</param>
         /// <param name="x">水冷壁有效角系数x</param>
         /// <returns>是否计算成功（0表示成功）</returns>
-        private static int CalculateWaterCooledWallEffiectiveCoefficient(double gzlx, double srfs, double d, double s, double n, double e, out double x)
+        private static int CalculateWaterCooledWallEffiectiveCoefficient(double gzlx, double srfs, double d, double s, double n, double e, ref double x)
         {
-            int ret = 0;
-            //Step:
             if (1 == gzlx && 1 == srfs)
             {
                 if (e > 1.4 * d)
@@ -428,8 +432,7 @@ namespace JD_BoilerCommonModel.CommonModel
                 }
                 else
                 {
-                    ret = -1;
-                    x = 0;
+                    return -1;
                 }
 
             }
@@ -441,7 +444,7 @@ namespace JD_BoilerCommonModel.CommonModel
             {
                 x = 1;
             }
-            return ret;
+            return 0;
         }
         #endregion
 
@@ -464,14 +467,13 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <returns></returns>
         private static int CalculateScreenAreaVolumnAndArea(double W, double D, double pwz, double n, double s1, double s2, double N, double A, double Adx, ref double Vp, ref double Fjmp, ref double Fsbp, ref string sTipInfo)
         {
-            int ret = 0;
             //Step1:计算管屏宽度b
             double b = (n - 1) * s2;
             //Step2:
             if ((4 == pwz || 6 == pwz || 7 == pwz) && 0.457 > s1)
             {
-                ret = 1;
                 sTipInfo = "换热器参数或选型有误，请增大s1或更换为半辐射换热器";
+                return -1;
             }
             //Step3:计算S
             double S = 0;
@@ -487,13 +489,17 @@ namespace JD_BoilerCommonModel.CommonModel
             {
                 if (0 == N)
                 {
-                    ret = 1;
                     sTipInfo = "需要输入管屏片数";
+                    return -2;
                 }
                 else
                 {
                     S = N * s1;
                 }
+            }
+            else
+            {
+                return -3;
             }
             //Step4:计算Vp
             Vp = A * b * S;
@@ -558,9 +564,9 @@ namespace JD_BoilerCommonModel.CommonModel
             }
             else
             {
-                ret = -1;
+                return -4;
             }
-            return ret;
+            return 0;
         }
         #endregion
 
@@ -578,7 +584,6 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <returns></returns>
         private static int CalculateScreenAreaHeatTransferCoefficient(double pwz, double d, double n, double s1, double s2, ref double xp, ref double SigMaxp)
         {
-            int ret = 0;
             //Step:
             if (1 == pwz || 2 == pwz || 3 == pwz || 5 == pwz)
             {
@@ -597,10 +602,18 @@ namespace JD_BoilerCommonModel.CommonModel
                     //由排管数n和SigMa1查表获得SigMaxp
                     double SigMa1 = s1 / d;
                     CTableScreenAreaHeatTransferHelper tableHelper = new CTableScreenAreaHeatTransferHelper();
-                    ret = tableHelper.GetSigMaxp(n, SigMa1, ref xp, ref SigMaxp);
+                    int ret = tableHelper.GetSigMaxp(n, SigMa1, ref xp, ref SigMaxp);
+                    if (0 != ret)
+                    {
+                        return -1;
+                    }
                 }
             }
-            return ret;
+            else
+            {
+                return -2;
+            }
+            return 0;
         }
 
         #endregion
@@ -639,25 +652,25 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <param name="Alpha1"></param>
         /// <param name="Psip"></param>
         /// <returns></returns>
-        private static int CalculateHeatReleaseCoefficient(double T1, double T2, double Alphan, double Alphak, double hrqxs, double gzlx, double csfs, double rlxs, double p, double s, double Tcp, double d, double l, double lb, double z1, double z2, double s2, double delTap, double delTab, double SigMa1, double SigMa2, double hp, double D, double sp, double sb,double th, ref double H, ref double Alpha1, ref double Psip)
+        private static int CalculateHeatReleaseCoefficient(double T1, double T2, double Alphan, double Alphak, double hrqxs, double gzlx, double csfs, double rlxs, double p, double s, double Tcp, double d, double l, double lb, double z1, double z2, double s2, double delTap, double delTab, double SigMa1, double SigMa2, double hp, double D, double sp, double sb, double th, ref double H, ref double Alpha1, ref double Psip)
         {
-            int ret = 0;
-            double Htaop = 0;
-            double HpDelta = 0;
-            double PhiTaop = 0;
-            double m = 0;
-            double E = 0;
-            double Phi = 0;
-            double PhipDelta = 0;
-            double hp_1 = 0;
-            double D_1;
-            double Hrp = 0;//??
+            //double Htaop = 0;
+            //double HpDelta = 0;
+            //double PhiTaop = 0;
+            //double m = 0;
+            //double E = 0;
+            //double Phi = 0;
+            //double PhipDelta = 0;
+            //double hp_1 = 0;
+            //double D_1;
+            //double Hrp = 0;//??
             double tpdelta = (T1 + T2) / 2 + 100;
             //由tpdelta确定肋片等的导热系数LamdapDelta
             double LamdapDelta = 0;
             //假定
             double Twb = tpdelta;
-            bool bneedContinue = true;
+            bool bneedContinue = true;//是否继续循环
+            bool bError = false;//计算过程是否由错误出现
             do
             {
                 //调用辐射放热系数模块计算Alphan
@@ -680,13 +693,18 @@ namespace JD_BoilerCommonModel.CommonModel
                     {
                         hp = (s2 - d) / 2;
                     }
-                    Htaop = 2 * d * l * Math.Acos(delTap / (2 * d)) * z1 * z2;
-                    HpDelta = (2 * delTap * l + 4 * hp * l) * z1 * z2;
+                    double Htaop = 2 * d * l * Math.Acos(delTap / (2 * d)) * z1 * z2;
+                    double HpDelta = (2 * delTap * l + 4 * hp * l) * z1 * z2;
                     H = Htaop + HpDelta;
                     Psip = H / (Math.PI * d * l * z1 * z2);
+                    double PhiTaop = 0;
+                    double PhipDelta = 0;
+                    double m = 0;
+                    double E = 0;
                     if (1 == csfs)
                     {
                         PhiTaop = 1.08;
+                        PhipDelta = 0;
                         if (2 == hrqxs)
                         {
                             PhipDelta = 1 - 0.12 / (SigMa2 - 1);
@@ -700,11 +718,19 @@ namespace JD_BoilerCommonModel.CommonModel
                             double SigMa2_1 = 2 * SigMa2;
                             PhipDelta = 1 - 0.12 / (SigMa2_1 - 1);
                         }
+                        else
+                        {
+                            bError = true;
+                        }
                     }
                     else if (2 == csfs)
                     {
                         PhiTaop = 1.0;
                         PhipDelta = 1.0;
+                    }
+                    else
+                    {
+                        bError = true;
                     }
                     m = Math.Sqrt((2 * (PhipDelta * Alphak + Alphan)) / (delTap * LamdapDelta));
 
@@ -713,6 +739,10 @@ namespace JD_BoilerCommonModel.CommonModel
                 }
                 else if (3 == gzlx || 4 == gzlx)
                 {
+                    double hp_1 = 0;
+                    double D_1 = 0;
+                    double m = 0;
+                    double E = 0;
                     if (3 == gzlx)
                     {
                         Psip = 2 * (Math.Pow(D, 2) - 0.785 * Math.Pow(d, 2) + 2 * D * delTap) / (Math.PI * d * sp) + 1 - delTap / sp;
@@ -731,17 +761,18 @@ namespace JD_BoilerCommonModel.CommonModel
                 }
                 else if (6 == gzlx || 7 == gzlx)
                 {
-                    Phi = 2 * Math.Acos(sb / (2 * d));
+
+                    double Phi = 2 * Math.Acos(sb / (2 * d));
                     double hb = 0;
                     double Rc = Math.Sqrt((360 / (Phi * Math.PI)) * ((lb / 2) * hb + (Math.Pow(d, 2) / 8) * Math.Sin(Phi)));
-                    D_1 = 2 * Rc;
-                    hb_1 = Rc - 0.5 * d;
-                    HpDelta = 2 * (l / sp) * z1 * z2 * (lb * hb - (Phi / 360) * (Math.PI * Math.Pow(d, 2) / 2) + (Math.Pow(d, 2) / 4) * Math.Sin(Phi) + (lb + hb - d * Math.Sin(Phi / 2)) * delTab);
-                    Htaop = Math.PI * d * l * z1 * z2 * (1 - (delTab / sp) * (Phi / 180));
+                    double D_1 = 2 * Rc;
+                    double hb_1 = Rc - 0.5 * d;
+                    double HpDelta = 2 * (l / sp) * z1 * z2 * (lb * hb - (Phi / 360) * (Math.PI * Math.Pow(d, 2) / 2) + (Math.Pow(d, 2) / 4) * Math.Sin(Phi) + (lb + hb - d * Math.Sin(Phi / 2)) * delTab);
+                    double Htaop = Math.PI * d * l * z1 * z2 * (1 - (delTab / sp) * (Phi / 180));
                     Psip = (HpDelta + Hrp) / (Math.PI * d * l * z1 * z2);
-                    m = Math.Sqrt((2 * Alphak) / (delTap * LamdapDelta));
+                    double m = Math.Sqrt((2 * Alphak) / (delTap * LamdapDelta));
                     //根据D_1/d、m*hb_1，按线算图6确定肋片有效系数E
-                    E = 0;
+                    double E = 0;
                     //根据lb/d、hb_1/d、sp/d，按表7 - 3确定系数PhiE
                     double PhiE = 0;
                     if (6 == gzlx)
@@ -768,8 +799,8 @@ namespace JD_BoilerCommonModel.CommonModel
                 {
                     bneedContinue = false;
                 }
-            } while (bneedContinue);
-            return ret;
+            } while (bneedContinue && !bError);
+            return 0;
         }
         #endregion
 
@@ -791,9 +822,8 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <param name="ln">烟气空间后管束深度ln</param>
         /// <param name="Qn"></param>
         /// <param name="dAlphan"></param>
-        private static int CalculateRadiateHeaReleaseCoefficient(double rlxs, double rmzl, double Twb, double p, double s, double T3, double T4, double NUll, double lodelta, double Todelta, double hrqxs, double SigMaXp, double s1, double ln, out double Qn, ref double Alphan)
+        private static int CalculateRadiateHeaReleaseCoefficient(double rlxs, double rmzl, double Twb, double p, double s, double T3, double T4, double NUll, double lodelta, double Todelta, double hrqxs, double SigMaXp, double s1, double ln, double rn, double rh2o,  double Ttn, double Mui3n,  double glxs, double pzfs,double  Alphat,double CH,double qyrl ,double T,double Hn,double Bp, ref double Qn, ref double Alphan)
         {
-            int ret = 0;
             Qn = 0;
             Alphan = 0;
             //Step1:计算Tcp
@@ -826,7 +856,7 @@ namespace JD_BoilerCommonModel.CommonModel
                 if (1 == rlxs)
                 {
                     //由ToDelta调用固体燃料辐射减弱系数计算模块，得到koDelta
-                    ret = CalculateSolidFuelWeakenCoefficent(rn, rh2o, p, Ttn, Mui3n, s, glxs, pzfs, rmzl, ref koDelta);
+                    int ret = CalculateSolidFuelWeakenCoefficent(rn, rh2o, p, Ttn, Mui3n, s, glxs, pzfs, rmzl, ref koDelta);
                     if (0 != ret)
                     {
                         return ret;
@@ -835,7 +865,7 @@ namespace JD_BoilerCommonModel.CommonModel
                 else
                 {
                     //由ToDelta调用气体或液体燃料辐射减弱系数计算模块，得到koDelta
-                    ret = CalculateGasOrLiquidFuelWeakenCoefficent(rn, rh2o, p, Ttn, s, Alphat, CH, glxs, pzfs, qyrl, ref koDelta);
+                    int ret = CalculateGasOrLiquidFuelWeakenCoefficent(rn, rh2o, p, Ttn, s, Alphat, CH, glxs, pzfs, qyrl, ref koDelta);
                     if (0 != ret)
                     {
                         return ret;
@@ -864,7 +894,7 @@ namespace JD_BoilerCommonModel.CommonModel
                 Alphan = Alphan1 * (1 + A * Math.Pow(Todelta / 1000, 0.25) * Math.Pow(lodelta / ln, 0.07));
             }
             Qn = Alphan * ((Tcp - Twb) * Hn / Bp) * Math.Pow(10, 3);
-            return ret;
+            return 0;
         }
         #endregion
 
@@ -885,9 +915,8 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <param name="H"></param>
         /// <param name="Twb"></param>
         /// <returns></returns>
-        public static int CalculateOuterWallTemperature(double hrqxs, double SRFS, double d, double DelTad, double l, double z1, double z2, double i1, double T1, double Alpha1, double H, ref double Twb)
+        public static int CalculateOuterWallTemperature(double hrqxs, double SRFS, double d, double DelTad, double l, double z1, double z2, double i1, double T1, double Alpha1, double H,double Qn,double Bp,double Q,double t,  ref double Twb)
         {
-            int ret = 0;
             double HBH = Math.PI * (d - 2 * DelTad) * l * z1 * z2;
             //由T1确认ils1????
             double ils1 = 0;
@@ -915,9 +944,9 @@ namespace JD_BoilerCommonModel.CommonModel
             }
             else
             {
-                ret = -1;
+                return -1;
             }
-            return ret;
+            return 0;
         }
         #endregion
 
@@ -932,7 +961,6 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <returns></returns>
         public static int CalaulateHeatSurfaceUtilizationCoeddicient(double hrqxs, double pwz, double csfs, ref double KeSai)
         {
-            int ret = 0;
             if (1 == hrqxs)
             {
                 if (1 == pwz || 2 == pwz || 3 == pwz)
@@ -960,7 +988,7 @@ namespace JD_BoilerCommonModel.CommonModel
             {
                 KeSai = 1.0;
             }
-            return ret;
+            return 0;
         }
         #endregion
 
@@ -978,7 +1006,6 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <returns></returns>
         public static int CalculateHeatingSurfacePollutionCoefficient(double hrqxs, double rlxs, double CaO, double chzz, double Alphat, double SRFS, ref double EpsaiLen)
         {
-            int ret = 0;
             if (1 == hrqxs)
             {
                 if (1 == rlxs)
@@ -1026,7 +1053,7 @@ namespace JD_BoilerCommonModel.CommonModel
                     EpsaiLen = 0.003;
                 }
             }
-            return ret;
+            return 0;
         }
         #endregion
 
@@ -1042,9 +1069,8 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <param name="gttjj"></param>
         /// <param name="PSai"></param>
         /// <returns></returns>
-        public static int CalculateHeatCoefficient(double hrqxs, double rlxs, double gzlx, double CaO, double chzz, double gttjj, ref double PeSai)
+        public static int CalculateHeatCoefficient(double hrqxs, double rlxs, double gzlx, double CaO, double chzz, double gttjj,double Alphat, ref double PeSai)
         {
-            int ret = 0;
             if (1 == rlxs)
             {
                 if (1 == gzlx || 2 == gzlx || 5 == gzlx || 6 == gzlx || 7 == gzlx)
@@ -1102,7 +1128,11 @@ namespace JD_BoilerCommonModel.CommonModel
                     PeSai = 0.8;
                 }
             }
-            return ret;
+            else
+            {
+                return -1;
+            }
+            return 0;
         }
         #endregion
 
@@ -1124,7 +1154,7 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <param name="D"></param>
         /// <param name="Fr"></param>
         /// <returns></returns>
-        public static int CalculateFlueGasFlowArea(double gzlx, double csfs, double hrqxs, double d, double l, double z1, double z2, double SigMa1, double SigMa2, double sp, double hp, double D, ref double Fr)
+        public static int CalculateFlueGasFlowArea(double gzlx, double csfs, double hrqxs, double d, double l, double z1, double z2, double SigMa1, double SigMa2, double sp, double hp, double D,double s1,double s2,double DelTap, ref double Fr)
         {
             int ret = 0;
             if ((1 == gzlx || 2 == gzlx) && 1 == csfs)
@@ -1191,9 +1221,8 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <param name="Null"></param>
         /// <param name="Alphak"></param>
         /// <returns></returns>
-        public static int CalculateFlueGasFlowHeatCoeffiient(double gzlx, double csfs, double hrqxs, double d, double l, double lb, double z1, double z2, double s1, double s2, double DelTap, double DelTab, double hp, double D, double Sp, double Sb, double T3, double T4, double Fr, double Qr, double th,double hb,double z, ref double Alphak, ref string sInfo)
+        public static int CalculateFlueGasFlowHeatCoeffiient(double gzlx, double csfs, double hrqxs, double d, double l, double lb, double z1, double z2, double s1, double s2, double DelTap, double DelTab, double hp, double D, double Sp, double Sb, double T3, double T4, double Fr, double Qr, double th, double hb, double z, ref double Alphak, ref string sInfo)
         {
-            int ret = 0;
             //平均温度
             double T_1 = (T3 + T4) / 2;
             double v = 0, Rou = 0, Lamda = 0, cp = 0;//由T_1确定，
@@ -1203,20 +1232,22 @@ namespace JD_BoilerCommonModel.CommonModel
             double w = Qr / (Rou * Fr);
             double SigMa1 = s1 / d;
             double SigMa2 = s2 / d;
-            double Cs = 0;
-            double Cz = 0;
-            double Phi = 0;
-            double Phi_1 = 0;
-            double Psip = 0;
-            double Hrp = 0;//输入？？
-            double x = 0;
-            double n = 0;
-            double lpDelTa = 0;
-            double HpDelta = 0;
-            double Htaop = 0;
+            //double Cs = 0;
+            //double Cz = 0;
+            //double Phi = 0;
+            //double Phi_1 = 0;
+            //double Psip = 0;
+            //double Hrp = 0;//输入？？
+            //double x = 0;
+            //double n = 0;
+            //double lpDelTa = 0;
+            //double HpDelta = 0;
+            //double Htaop = 0;
             //横向冲刷顺列光管管束和屏
             if (1 == gzlx && 1 == csfs && (1 == hrqxs || 2 == hrqxs))
             {
+                double Cs = 0;
+                double Cz = 0;
                 if (2 <= SigMa2 && 1.5 >= SigMa1)
                 {
                     Cs = 1;
@@ -1239,7 +1270,9 @@ namespace JD_BoilerCommonModel.CommonModel
             //横向冲刷错列光管管束   和上一个条件一样？？？？？
             else if (1 == gzlx && 1 == csfs && (1 == hrqxs || 2 == hrqxs))
             {
-                Phi = (SigMa1 - 1) / (Math.Sqrt(Math.Pow(0.5 * SigMa1, 2) + Math.Pow(SigMa2, 2) - 1));
+                double Cs = 0;
+                double Cz = 0;
+                double Phi = (SigMa1 - 1) / (Math.Sqrt(Math.Pow(0.5 * SigMa1, 2) + Math.Pow(SigMa2, 2) - 1));
                 if (0.1 <= Phi && 1.7 >= Phi)
                 {
                     Cs = 0.95 * Math.Pow(Phi, 0.1);
@@ -1274,6 +1307,8 @@ namespace JD_BoilerCommonModel.CommonModel
             //横向冲刷膜式和鳍片式顺列管束和屏
             else if ((2 == gzlx || 5 == gzlx) && 1 == csfs && (1 == hrqxs || 2 == hrqxs))
             {
+                double Cs = 0;
+                double Cz = 0;
                 if (1.45 <= SigMa2 && 3.5 >= SigMa2 && 3.0 >= SigMa1)
                 {
                     Cs = 0.64;
@@ -1304,6 +1339,8 @@ namespace JD_BoilerCommonModel.CommonModel
             //横向冲刷膜式和鳍片式错列管束
             else if ((2 == gzlx || 5 == gzlx) && 1 == csfs && 3 == hrqxs)
             {
+                double Cs = 0;
+                double Cz = 0;
                 Cs = 0.78 * (Math.Pow(SigMa1, -1.2) * ((SigMa1 - 1) / (Math.Sqrt(Math.Pow(SigMa1, 2) + 4 * Math.Pow(SigMa2, 2) - 2)) + 1));
                 if (6 > z2 && 3 > SigMa1)
                 {
@@ -1322,6 +1359,12 @@ namespace JD_BoilerCommonModel.CommonModel
             //横向冲刷错列和顺列布置的、带有圆形（包括螺旋-带状肋片）和正方型横肋管束
             else if ((3 == gzlx || 4 == gzlx) && 1 == csfs && (2 == hrqxs || 3 == hrqxs))
             {
+                double Cs = 0;
+                double Cz = 0;
+                double Psip = 0;
+                double x = 0;
+                double Phi = 0;
+                double n = 0;
                 if (3 == gzlx)
                 {
                     Psip = 2 * (Math.Pow(D, 2) - 0.785 * Math.Pow(d, 2) + 2 * D * DelTap) / (Math.PI * d * Sp) + 1 - DelTap / Sp;
@@ -1358,14 +1401,16 @@ namespace JD_BoilerCommonModel.CommonModel
             //横向冲刷瓣形肋片错列管束
             else if (6 == gzlx && 1 == csfs && 3 == hrqxs)
             {
-                Phi = 2 * Math.Acos(Sb / d);
-                HpDelta = 2 * (l / Sp) * z1 * z2 * (lpDelTa * hp - (Phi / 360) * (Math.PI * Math.Pow(d, 2) / 2) + (Math.Pow(d, 2) / 4) * Math.Sin(Phi) + (lpDelTa + hp + d * Math.Sin(Phi / 2) * DelTap));
-                Htaop = Math.PI * d * l * z1 * z2 * (1 - (DelTap / Sp) * (Phi / 180));
-                Psip = (HpDelta + Hrp) / Math.PI * d * l * z1 * z2;
-                x = SigMa1 / SigMa2 - 1.26 / Psip - 2;
-                Phi_1 = th * x;
+                double Cs = 0;
+                double Cz = 0;
+                double Phi = 2 * Math.Acos(Sb / d);
+                double HpDelta = 2 * (l / Sp) * z1 * z2 * (lpDelTa * hp - (Phi / 360) * (Math.PI * Math.Pow(d, 2) / 2) + (Math.Pow(d, 2) / 4) * Math.Sin(Phi) + (lpDelTa + hp + d * Math.Sin(Phi / 2) * DelTap));
+                double Htaop = Math.PI * d * l * z1 * z2 * (1 - (DelTap / Sp) * (Phi / 180));
+                double Psip = (HpDelta + Hrp) / Math.PI * d * l * z1 * z2;
+                double x = SigMa1 / SigMa2 - 1.26 / Psip - 2;
+                double Phi_1 = th * x;
                 Cs = (1.36 - Phi_1) * (11 / (Psip + 8) - 0.14);
-                n = 0.7 + 0.08 * Phi_1 + 0.005 * Psip;
+                double n = 0.7 + 0.08 * Phi_1 + 0.005 * Psip;
                 if (8 > z2 && 2 > SigMa1 / SigMa2)
                 {
                     Cz = 3.15 * Math.Pow(z2, 0.05) - 2.5;
@@ -1383,8 +1428,13 @@ namespace JD_BoilerCommonModel.CommonModel
             //横向冲刷瓣式与膜-瓣式肋化错列管束
             else if ((6 == gzlx || 7 == gzlx) && 1 == csfs && 3 == hrqxs)
             {
-                Phi = 2 * Math.Acos(Sb / d);
-                HpDelta = 2 * (l / Sp) * z1 * z2 * (lb * hb - (Phi / 360) * (Math.PI * Math.Pow(d, 2) / 2) + (Math.Pow(d, 2) / 4) * Math.Sin(Phi) + (lb + hb - d * Math.Sin(Phi / 2) * DelTab));
+                double Cs = 0;
+                double Cz = 0;
+                double Htaop = 0;
+                double Psip = 0;
+                double Phi = 2 * Math.Acos(Sb / d);
+                double HpDelta = 2 * (l / Sp) * z1 * z2 * (lb * hb - (Phi / 360) * (Math.PI * Math.Pow(d, 2) / 2) + (Math.Pow(d, 2) / 4) * Math.Sin(Phi) + (lb + hb - d * Math.Sin(Phi / 2) * DelTab));
+                
                 if (6 == gzlx)
                 {
                     Htaop = Math.PI * d * l * z1 * z2 * (1 - (DelTab / Sp) * (Phi / 180));
@@ -1395,10 +1445,10 @@ namespace JD_BoilerCommonModel.CommonModel
                     Hrp = Math.PI * d * l * z1 * z2 * (1 - (DelTab / Sp) * (Phi / 180)) - 2 * DelTap * l * z1 * z2;
                     Psip = (HpDelta + 4 * hp * l * z1 * z2 + Hrp) / (Math.PI * d * l * z1 * z2);
                 }
-                x = SigMa1 / SigMa2 - 1.26 / Psip - 2;
-                Phi_1 = th * x;
-                Cs = (1.36 - Phi_1) * (11 / (Psip + 8) - 0.14);
-                n = 0.7 + 0.08 * Phi_1 * 0.005 * Psip;
+                double x = SigMa1 / SigMa2 - 1.26 / Psip - 2;
+                double Phi_1 = th * x;
+                 Cs = (1.36 - Phi_1) * (11 / (Psip + 8) - 0.14);
+               double n = 0.7 + 0.08 * Phi_1 * 0.005 * Psip;
                 if (8 > z2 && 2 > SigMa1 / SigMa2)
                 {
                     Cz = 3.15 * Math.Pow(z2, 0.05) - 2.5;
@@ -1436,11 +1486,11 @@ namespace JD_BoilerCommonModel.CommonModel
                 }
                 else
                 {
-                    C1 =12;//图11计算
+                    C1 = 12;//图11计算
                 }
                 Alphak = 0.023 * (Lamda / d) * Math.Pow(w * dEpsilon / v, 0.8) * Math.Pow(Pr, 0.4) * C1;
             }
-            return ret;
+            return 0;
         }
         #endregion
 
@@ -1457,9 +1507,8 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <param name="G">工质流量G</param>
         /// <param name="Alpha2">管壁向水和蒸汽的放热系数Alpha2</param>
         /// <returns></returns>
-        public static int CalculateWaterAngGasHeatCoefficient(double P1, double P2, double i1, double i2, double d, double SigMa, double G,double l,double z1,double z2,double gzyh, ref double Alpha2)
+        public static int CalculateWaterAngGasHeatCoefficient(double P1, double P2, double i1, double i2, double d, double SigMa, double G, double l, double z1, double z2, double gzyh, ref double Alpha2)
         {
-            int ret = 0;
             double di = d - 2 * SigMa;
             double P = (P1 + P2) / 2;
             double i = (i1 + i2) / 2;
@@ -1539,7 +1588,7 @@ namespace JD_BoilerCommonModel.CommonModel
                 double A = 2;//由线算图确定
                 Alpha2 = Alpha840;
             }
-            return ret;
+            return 0;
         }
         #endregion
 
@@ -1559,20 +1608,8 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <param name="dlzjg"></param>
         /// <param name="DelTat"></param>
         /// <returns></returns>
-        public static int CalculateTemperaturePressureConvertCoefficient(double T1, double T2, double T3, double T4, double gsbz, double ns, double nn, double nx, double ljxs, double dlzjg, ref double DelTat, ref string sInfo)
+        public static int CalculateTemperaturePressureConvertCoefficient(double T1, double T2, double T3, double T4, double gsbz, double ns, double nn, double nx, double ljxs, double dlzjg, ref double DelTat,ref double Psi, ref string sInfo)
         {
-            double A = 0;
-            double B = 0;
-            double P = 0;
-            double R = 0;
-            double Psi = 0;
-
-            double tao1 = 0;
-            double tao2 = 0;
-            double taoDelta = 0;
-            double taoM = 0;
-            double Hs = 0;//??
-            double H = 0;//??
             //纯顺流温压计算
             if (1 == gsbz)
             {
@@ -1593,7 +1630,8 @@ namespace JD_BoilerCommonModel.CommonModel
             //串联混合流换算系数计算
             else if (3 == gsbz || 4 == gsbz)
             {
-                A = Hs / H;
+               double A = Hs / H;
+                double tao1 = 0, tao2 = 0;
                 if (3 == gsbz)
                 {
                     tao1 = T3 - T4;
@@ -1604,16 +1642,18 @@ namespace JD_BoilerCommonModel.CommonModel
                     tao1 = T2 - T1;
                     tao2 = T3 - T4;
                 }
-                P = tao2 / (T3 - T1);
-                R = tao1 / tao2;
+                double P = tao2 / (T3 - T1);
+                double R = tao1 / tao2;
                 //由A、P和R，根据线算图19可以确定修正系数Psi
                 Psi = 12;//????
             }
             //平行混合流换算系数计算
             else if (5 == gsbz)
             {
-                tao1 = T3 - T4;
-                tao2 = T2 - T1;
+                double tao1 = T3 - T4;
+                double tao2 = T2 - T1;
+                double taoDelta;
+                double taoM;
                 if (tao1 > tao2)
                 {
                     taoDelta = tao1;
@@ -1624,9 +1664,9 @@ namespace JD_BoilerCommonModel.CommonModel
                     taoDelta = tao2;
                     taoM = tao1;
                 }
-                B = (H - Hs) / Hs;
-                P = taoM / (T3 - T1);
-                R = taoDelta / taoM;
+                double B = (H - Hs) / Hs;
+                double P = taoM / (T3 - T1);
+                double R = taoDelta / taoM;
                 //由B、P、R和nn、ns，根据线算图20可以确定修正系数
                 if (0.7 <= B && 1.5 >= B)
                 {
@@ -1673,8 +1713,10 @@ namespace JD_BoilerCommonModel.CommonModel
             //交叉混合流换算系数计算
             else if (6 == gsbz || 7 == gsbz)
             {
-                tao1 = T3 - T4;
-                tao2 = T2 - T1;
+                double tao1 = T3 - T4;
+                double tao2 = T2 - T1;
+                double taoDelta = 0;
+                double taoM =;
                 if (tao1 > tao2)
                 {
                     taoDelta = tao1;
@@ -1685,8 +1727,8 @@ namespace JD_BoilerCommonModel.CommonModel
                     taoDelta = tao2;
                     taoM = tao1;
                 }
-                P = taoM / (T3 - T1);
-                R = taoDelta / taoM;
+                double P = taoM / (T3 - T1);
+                double R = taoDelta / taoM;
                 //由P、R和nx、ljxs，根据线算图21可以确定修正系数Psi
                 if (7 == gsbz)
                 {
