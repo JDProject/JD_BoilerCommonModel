@@ -170,7 +170,7 @@ namespace JD_BoilerCommonModel.CommonModel
         public static int CalculateParameterM(double n, double hi, double Bi, double glxs, double VrH, double Vn2H, double Vro2H, double r, int pzfs, int rsqbz, double Htao, double R, double F1,double Qir, ref double M)
         {
             //Step1:燃烧器平均布置标高
-            double htao = 0;//?
+            double htao = 0;//?？
             //Step2:计算燃烧器相对标高Xt
             double Xt = 0;
             if (3 == glxs)
