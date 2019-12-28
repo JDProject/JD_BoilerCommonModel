@@ -5,7 +5,7 @@ using System.Text;
 namespace JD_BoilerCommonModel.CommonModel
 {
     /// <summary>
-    /// 锅炉热力计算通用模型ttttttDeepin
+    /// 锅炉热力计算通用模ddd型
     /// </summary>
     public class CCommonModelCalaulate
     {
