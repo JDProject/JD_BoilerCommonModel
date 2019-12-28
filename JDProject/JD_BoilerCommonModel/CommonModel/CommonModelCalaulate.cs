@@ -32,18 +32,17 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <param name="ZeTabg">过热管热有效系数</param>
         /// <param name="ZeTap">热有效系数</param>
         /// <param name="ycjg">烟窗结构</param>
-        /// <param name="rlxs">燃料型式</param>
-        /// <param name="Fyc"></param>
+        /// <param name="rlxs">燃料型式(1:煤,2:重油)</param>
+        /// <param name="Fyc">出口烟窗面积</param>
         /// <param name="rn">调用固体燃料辐射减弱系数计算模块:三原子气体的总容积份额</param>
         /// <param name="rh2o">调用固体燃料辐射减弱系数计算模块:烟气中水蒸气容积份额</param>
         /// <param name="Ttn">调用固体燃料辐射减弱系数计算模块:炉膛出口烟气温度</param>
         /// <param name="Mui3n">调用固体燃料辐射减弱系数计算模块:烟气飞灰浓度</param>
         /// <param name="s">调用固体燃料辐射减弱系数计算模块:效辐射层厚度</param>
-        /// <param name="glxs">调用固体燃料辐射减弱系数计算模块:锅炉形式</param>
-        /// <param name="pzfs">调用固体燃料辐射减弱系数计算模块:排渣方式</param>
-        /// <param name="rmzl">调用固体燃料辐射减弱系数计算模块:燃煤种类</param>
-        /// <param name="V1"></param>
-        /// <param name="F1"></param>
+        /// <param name="glxs">调用固体燃料辐射减弱系数计算模块:锅炉形式（1:煤粉炉,2:循环流化床,3:链条炉,4:油气炉）</param>
+        /// <param name="pzfs">调用固体燃料辐射减弱系数计算模块:排渣方式（1:固体排渣,2:液体排渣）</param>
+        /// <param name="rmzl">调用固体燃料辐射减弱系数计算模块:燃煤种类（1:无烟煤屑,2:烟煤,3:贫煤,4:褐煤,5:页岩,6:泥煤）</param>
+        /// <param name="V1">炉膛自由容积</param>
         /// <param name="PeSaip"></param>
         /// <param name="Hslf">返回值:炉膛自由容积有效辐射面积</param>
         /// <param name="Hsl">返回值:水冷壁有效辐射面积</param>
@@ -53,7 +52,7 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <param name="Bu">返回值:平均热有效系数</param>
         /// <param name="PeSaicp">返回值:屏的热有效系数</param>
         /// <returns>是否计算成功（0表示成功）</returns>
-        public static int CalculateEffectiveRadioArea(double p, double Vf, double Vp, double Fslf, double Fbgf, double Fjmp, double Fbgp, double Fslp, double Fp, double s1, double A, double b, double xsl, double xbg, double xp, double ZeTasl, double ZeTabg, double ZeTap, double ycjg, double rlxs, double Fyc, double rn, double rh2o, double Ttn, double Mui3n, double s, double glxs, double pzfs, double rmzl, double V1, double F1, double PeSaip, ref double Hslf, ref double Hsl, ref double Hp, ref double Hbg, ref double Ht, ref double Bu, ref double PeSaicp)
+        public static int CalculateEffectiveRadioArea(double p, double Vf, double Vp, double Fslf, double Fbgf, double Fjmp, double Fbgp, double Fslp, double Fp, double s1, double A, double b, double xsl, double xbg, double xp, double ZeTasl, double ZeTabg, double ZeTap, double ycjg, double rlxs, double Fyc, double rn, double rh2o, double Ttn, double Mui3n, double s, double glxs, double pzfs, double rmzl, double V1, double PeSaip, ref double Hslf, ref double Hsl, ref double Hp, ref double Hbg, ref double Ht, ref double Bu, ref double PeSaicp)
         {
             //Step1:计算炉膛自由容积的有效辐射层厚度Sf
             double sf = (3.6 * Vf) / (Fslf + Fbgf + Fjmp);
@@ -140,6 +139,7 @@ namespace JD_BoilerCommonModel.CommonModel
             //Step22:计算烟窗热有效系数PeSaiyc
             double PeSaiyc = xyc * Zetayc;
             //Step23:计算平均热有效系数PeSaicp
+           double F1 = Fsl + Fbg + Fp + Fyc;//炉墙总面积
             PeSaicp = (PeSaisl * Fsl + PeSaibg * Fbg + PeSaip * Fp + PeSaiyc * Fyc) / F1;
             //Step7:计算总的有效辐射面积Ht
             Ht = Hsl + Hp + Hbg + Hyc;
@@ -154,16 +154,16 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <param name="n">燃烧器布局参数_数量</param>
         /// <param name="hi">燃烧器布局参数_标高</param>
         /// <param name="Bi">燃烧器布局参数_燃料量</param>
-        /// <param name="glxs">锅炉形式</param>
+        /// <param name="glxs">锅炉形式（1:煤粉炉,2:循环流化床,3:链条炉,4:油气炉）</param>
         /// <param name="VrH">炉膛出口烟气容积</param>
         /// <param name="Vn2H">炉膛出口烟气N2容积</param>
         /// <param name="Vro2H">炉膛出口烟气RO2容积</param>
         /// <param name="r">烟气再循环系数</param>
-        /// <param name="pzfs">排渣方式</param>
+        /// <param name="pzfs">排渣方式（1:固体排渣,2:液体排渣）</param>
         /// <param name="rsqbz">燃烧器布置形式</param>
         /// <param name="Htao"></param>
         /// <param name="R"></param>
-        /// <param name="F1"></param>
+        /// <param name="F1">炉墙总面积</param>
         /// <param name="Qir">低位发热量</param>
         /// <param name="M">返回值:炉膛参数</param>
         /// <returns></returns>
@@ -243,15 +243,15 @@ namespace JD_BoilerCommonModel.CommonModel
         /// 3.固体燃料辐射减弱系数K计算
         /// </summary>
         /// <param name="rn">三原子气体的总容积份额rn=rh2o+rro2</param>
-        /// <param name="rh2o">烟气中水蒸气容积份额rh2o</param>
-        /// <param name="p">炉膛内压力p(MPa)</param>
-        /// <param name="Ttn">炉膛出口烟气温度Ttn(K)</param>
-        /// <param name="Mui3n">烟气飞灰浓度Mui3n</param>
-        /// <param name="s">有效辐射层厚度s</param>
-        /// <param name="glxs">锅炉形式glxs</param>
-        /// <param name="pzfs">排渣方式pzfs</param>
-        /// <param name="rmzl">燃煤种类rmzl</param>
-        /// <param name="K">辐射减弱系数K</param>
+        /// <param name="rh2o">烟气中水蒸气容积份额</param>
+        /// <param name="p">炉膛内压力</param>
+        /// <param name="Ttn">炉膛出口烟气温度</param>
+        /// <param name="Mui3n">烟气飞灰浓度</param>
+        /// <param name="s">有效辐射层厚度</param>
+        /// <param name="glxs">锅炉形式（1:煤粉炉,2:循环流化床,3:链条炉,4:油气炉）</param>
+        /// <param name="pzfs">排渣方式（1:固体排渣,2:液体排渣）</param>
+        /// <param name="rmzl">燃煤种类（1:无烟煤屑,2:烟煤,3:贫煤,4:褐煤,5:页岩,6:泥煤）</param>
+        /// <param name="K">辐射减弱系数</param>
         /// <returns>是否计算成功（0表示成功）</returns>
         private static int CalculateSolidFuelWeakenCoefficent(double rn, double rh2o, double p, double Ttn, double Mui3n, double s, double glxs, double pzfs, double rmzl, ref double K)
         {
@@ -348,9 +348,9 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <param name="s">有效辐射层厚度s</param>
         /// <param name="Alphat">炉膛出口过量空气系数Alphat</param>
         /// <param name="CH">燃料应用基碳氢比</param>
-        /// <param name="glxs">锅炉形式glxs</param>
-        /// <param name="pzfs">排渣方式pzfs</param>
-        /// <param name="qyrl">气液燃料种类qyrl</param>
+        /// <param name="glxs">锅炉形式（1:煤粉炉,2:循环流化床,3:链条炉,4:油气炉）</param>
+        /// <param name="pzfs">排渣方式（1:固体排渣,2:液体排渣）</param>
+        /// <param name="qyrl">气液燃料种类（1:重油,2:轻质油）</param>
         /// <param name="K">返回值:辐射减弱系数K</param>
         /// <returns>是否计算成功（0表示成功）</returns>
         private static int CalculateGasOrLiquidFuelWeakenCoefficent(double rn, double rh2o, double p, double Ttn, double s, double Alphat, double CH, double glxs, double pzfs, double qyrl, ref double K)
@@ -399,15 +399,15 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <summary>
         /// 5.炉膛污染系数zeta计算
         /// </summary>
-        /// <param name="gzlx">管子类型gzlx</param>
-        /// <param name="pzfs">排渣方式pzfs</param>
-        /// <param name="FT">灰熔点温度FT</param>
-        /// <param name="glxs">锅炉型式glxs</param>
-        /// <param name="rlxs">燃料型式rlxs</param>
-        /// <param name="srfs">受热方式srfs</param>
+        /// <param name="gzlx">管子类型（1:光管式,2:膜式）</param>
+        /// <param name="pzfs">排渣方式（1:固体排渣,2:液体排渣）</param>
+        /// <param name="FT">灰熔点温度</param>
+        /// <param name="glxs">锅炉形式（1:煤粉炉,2:循环流化床,3:链条炉,4:油气炉）</param>
+        /// <param name="rlxs">燃料型式(1:煤,2:重油)</param>
+        /// <param name="SRFS">受热方式（1:单面,2:双面）</param>
         /// <param name="ZeTa">返回值:炉膛污染系数ZeTa</param>
         /// <returns>是否计算成功（0表示成功）</returns>
-        private static int CalculatePollutionCoefficient(double gzlx, double pzfs, double FT, double glxs, double rlxs, double srfs, ref double ZeTa)
+        private static int CalculatePollutionCoefficient(double gzlx, double pzfs, double FT, double glxs, double rlxs, double SRFS, ref double ZeTa)
         {
             //Step1:计算Zetasl
             double Zetasl = 0;
@@ -444,11 +444,11 @@ namespace JD_BoilerCommonModel.CommonModel
             }
 
             //Step2:计算ZeTa
-            if (2 == srfs && 1 == gzlx)
+            if (2 == SRFS && 1 == gzlx)
             {
                 ZeTa = Zetasl - 0.1;
             }
-            else if (2 == srfs && 2 == gzlx)
+            else if (2 == SRFS && 2 == gzlx)
             {
                 ZeTa = Zetasl - 0.05;
             }
@@ -464,17 +464,17 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <summary>
         /// 6.水冷壁有效角系数计算
         /// </summary>
-        /// <param name="gzlx">管子类型gzlx</param>
-        /// <param name="srfs">受热方式srfs</param>
+        /// <param name="gzlx">管子类型（1:光管式,2:膜式）</param>
+        /// <param name="SRFS">受热方式（1:单面,2:双面）</param>
         /// <param name="d">几何参数d</param>
         /// <param name="s">几何参数s</param>
         /// <param name="n">几何参数n</param>
         /// <param name="e">几何参数e</param>
         /// <param name="x">返回值:水冷壁有效角系数x</param>
         /// <returns>是否计算成功（0表示成功）</returns>
-        private static int CalculateWaterCooledWallEffiectiveCoefficient(double gzlx, double srfs, double d, double s, double n, double e, ref double x)
+        private static int CalculateWaterCooledWallEffiectiveCoefficient(double gzlx, double SRFS, double d, double s, double n, double e, ref double x)
         {
-            if (1 == gzlx && 1 == srfs)
+            if (1 == gzlx && 1 == SRFS)
             {
                 if (e > 1.4 * d)
                 {
@@ -498,7 +498,7 @@ namespace JD_BoilerCommonModel.CommonModel
                 }
 
             }
-            else if (1 == gzlx && 2 == srfs)
+            else if (1 == gzlx && 2 == SRFS)
             {
                 x = 1 - Math.Sqrt(1 - Math.Pow(d / s, 2)) + d / s * Math.Atan(Math.Sqrt(Math.Pow(s / d, 2) - 1));
             }
@@ -516,7 +516,7 @@ namespace JD_BoilerCommonModel.CommonModel
         /// </summary>
         /// <param name="W">炉膛宽度W</param>
         /// <param name="D">炉膛深度D</param>
-        /// <param name="pwz">屏的位置pwz</param>
+        /// <param name="pwz">屏的位置屏的位置（1:前屏,2:侧面屏,3:双侧面屏,4:后屏,5:大屏,6:水平横屏,7:水平纵屏）</param>
         /// <param name="n">n</param>
         /// <param name="s1">s1</param>
         /// <param name="s2">s2</param>
@@ -637,13 +637,13 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <summary>
         /// 8.屏式换热器角系数计算
         /// </summary>
-        /// <param name="pwz">屏的位置pwz</param>
+        /// <param name="pwz">屏的位置屏的位置（1:前屏,2:侧面屏,3:双侧面屏,4:后屏,5:大屏,6:水平横屏,7:水平纵屏）</param>
         /// <param name="d">d</param>
         /// <param name="n">n</param>
         /// <param name="s1">s1</param>
         /// <param name="s2">s2</param>
-        /// <param name="Xp">返回值:屏式换热器角系数Xp</param>
-        /// <param name="SigMaXp">返回值:SigMaXp</param>
+        /// <param name="xp">返回值:屏式换热器角系数Xp</param>
+        /// <param name="SigMaxp">返回值:SigMaXp</param>
         /// <returns>是否计算成功（0表示成功）</returns>
         private static int CalculateScreenAreaHeatTransferCoefficient(double pwz, double d, double n, double s1, double s2, ref double xp, ref double SigMaxp)
         {
@@ -682,7 +682,70 @@ namespace JD_BoilerCommonModel.CommonModel
         #endregion
 
         #region 9.放热系数折算  
-        private static int CalculateHeatReleaseCoefficient(double T1, double T2, double Alphan, double Alphak, double hrqxs, double gzlx, double csfs, double rlxs, double p, double s, double Tcp, double d, double l, double lb, double z1, double z2, double s2, double delTap, double delTab, double SigMa1, double SigMa2, double hp, double D, double sp, double sb, double th, ref double H, ref double Alpha1, ref double Psip)
+        /// <summary>
+        ///  9.放热系数折算 
+        /// </summary>
+        /// <param name="T1"></param>
+        /// <param name="T2"></param>
+        /// <param name="Alphan">燃烧产物辐射放热系数</param>
+        /// <param name="Alphak"></param>
+        /// <param name="hrqxs">换热器型式（1:屏式,2:顺列管束,3:错列管束）</param>
+        /// <param name="gzlx">管子类型（1:光管式,2:膜式）</param>
+        /// <param name="csfs">烟气冲刷方式（1:横向,2:纵向,3:混合）</param>
+        /// <param name="rlxs">燃料型式(1:煤,2:重油)</param>
+        /// <param name="p"></param>
+        /// <param name="s"></param>
+        /// <param name="Tcp"></param>
+        /// <param name="d"></param>
+        /// <param name="l"></param>
+        /// <param name="lb"></param>
+        /// <param name="z1"></param>
+        /// <param name="z2"></param>
+        /// <param name="s2"></param>
+        /// <param name="delTap"></param>
+        /// <param name="delTab"></param>
+        /// <param name="SigMa1"></param>
+        /// <param name="SigMa2"></param>
+        /// <param name="hp"></param>
+        /// <param name="D"></param>
+        /// <param name="sp"></param>
+        /// <param name="sb"></param>
+        /// <param name="th"></param>
+        /// <param name="Enn"></param>
+        /// <param name="rmzl">燃煤种类（1:无烟煤屑,2:烟煤,3:贫煤,4:褐煤,5:页岩,6:泥煤）</param>
+        /// <param name="T3"></param>
+        /// <param name="T4"></param>
+        /// <param name="lodelta"></param>
+        /// <param name="Todelta"></param>
+        /// <param name="SigMaXp"></param>
+        /// <param name="s1"></param>
+        /// <param name="ln"></param>
+        /// <param name="rn"></param>
+        /// <param name="rh2o"></param>
+        /// <param name="Ttn"></param>
+        /// <param name="Mui3n"></param>
+        /// <param name="glxs">锅炉形式（1:煤粉炉,2:循环流化床,3:链条炉,4:油气炉）</param>
+        /// <param name="pzfs">排渣方式（1:固体排渣,2:液体排渣）</param>
+        /// <param name="Alphat"></param>
+        /// <param name="CH"></param>
+        /// <param name="qyrl">气液燃料种类（1:重油,2:轻质油）</param>
+        /// <param name="T"></param>
+        /// <param name="Hn"></param>
+        /// <param name="Bp"></param>
+        /// <param name="Fr"></param>
+        /// <param name="Qr"></param>
+        /// <param name="hb"></param>
+        /// <param name="z"></param>
+        /// <param name="pwz">屏的位置屏的位置（1:前屏,2:侧面屏,3:双侧面屏,4:后屏,5:大屏,6:水平横屏,7:水平纵屏）</param>
+        /// <param name="SRFS">受热方式（1:单面,2:双面）</param>
+        /// <param name="i1"></param>
+        /// <param name="Q"></param>
+        /// <param name="t"></param>
+        /// <param name="H"></param>
+        /// <param name="Alpha1">返回值:</param>
+        /// <param name="Psip">返回值:</param>
+        /// <returns>是否计算成功（0表示成功）</returns>
+        private static int CalculateHeatReleaseCoefficient(double T1, double T2, double Alphan, double Alphak, double hrqxs, double gzlx, double csfs, double rlxs, double p, double s, double Tcp, double d, double l, double lb, double z1, double z2, double s2, double delTap, double delTab, double SigMa1, double SigMa2, double hp, double D, double sp, double sb, double th,double Enn,/*Add_调用辐射放热系数模块计算Alphan*/ double rmzl, double T3, double T4,double lodelta,double Todelta,double SigMaXp,double s1, double ln,double rn,double rh2o,double Ttn,double Mui3n,double glxs,double pzfs, double Alphat, double CH, double qyrl, double T, double Hn, double Bp,/*Add调用对流换热系数模块16计算Alphak*/ double Fr,double Qr,double hb,double z,/*Add 调用受热面利用系数计算模块*/double pwz, /*Add H调用管外壁温度计算模块得到Twb_1*/double SRFS,double i1,double Q,double t,ref double H, ref double Alpha1, ref double Psip)
         {
             double tpdelta = (T1 + T2) / 2 + 100;
             //由tpdelta确定肋片等的导热系数LamdapDelta
@@ -695,14 +758,16 @@ namespace JD_BoilerCommonModel.CommonModel
             {
                 //调用辐射放热系数模块计算Alphan
                 Alphan = 0;
-                int ret = CalculateRadiateHeaReleaseCoefficient(rlxs, rmzl, Twb, p, s, T3, T4,, lodelta, Todelta, hrqxs, SigMaXp, s1, ln, rn, rh2o, Ttn, Mui3n, glxs, pzfs, Alphat, CH, qyrl, T, Hn, Bp, Qn, ref Alphan);
+                double Qn = 0;
+                int ret = CalculateRadiateHeaReleaseCoefficient(rlxs, rmzl, Twb, p, s, T3, T4, lodelta, Todelta, hrqxs, SigMaXp, s1, ln, rn, rh2o, Ttn, Mui3n, glxs, pzfs, Alphat, CH, qyrl, T, Hn, Bp,ref Qn, ref Alphan);
                 if (0 != ret)
                 {
                     return ret;
                 }
                 //调用对流换热系数模块16计算Alphak
                 Alphak = 0;
-                ret = CalculateFlueGasFlowHeatCoeffiient(gzlx, csfs, hrqxs, d, l, lb, z1, z2, s1, s2, delTab, delTab, hp, D, sp, sb, T3, T4, Fr, Qr, th, hb, z, ref Alphak, ref sinfo);
+                string sInfo = "";
+                ret = CalculateFlueGasFlowHeatCoeffiient(gzlx, csfs, hrqxs, d, l, lb, z1, z2, s1, s2, delTab, delTab, hp, D, sp, sb, T3, T4, Fr, Qr, th, hb, z, ref Alphak, ref sInfo);
                 if (0 != ret)
                 {
                     return ret;
@@ -797,7 +862,7 @@ namespace JD_BoilerCommonModel.CommonModel
                 {
 
                     double Phi = 2 * Math.Acos(sb / (2 * d));
-                    double hb = 0;
+                   // double hb = 0;
                     double Rc = Math.Sqrt((360 / (Phi * Math.PI)) * ((lb / 2) * hb + (Math.Pow(d, 2) / 8) * Math.Sin(Phi)));
                     double D_1 = 2 * Rc;
                     double hb_1 = Rc - 0.5 * d;
@@ -843,12 +908,12 @@ namespace JD_BoilerCommonModel.CommonModel
         }
         #endregion
 
-        #region  10.燃烧产物辐射放热系数Alphan
+        #region  10.燃烧产物辐射放热系数Alphan 参数注释不全
         /// <summary>
         /// 10.燃烧产物辐射放热系数Alphan
         /// </summary>
-        /// <param name="rlxs">燃料型式</param>
-        /// <param name="rmzl">燃煤种类</param>
+        /// <param name="rlxs">燃料型式(1:煤,2:重油)</param>
+        /// <param name="rmzl">燃煤种类（1:无烟煤屑,2:烟煤,3:贫煤,4:褐煤,5:页岩,6:泥煤）</param>
         /// <param name="Twb">外壁温</param>
         /// <param name="p">压力</param>
         /// <param name="s"></param>
@@ -856,7 +921,7 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <param name="T4"></param>
         /// <param name="lodelta">烟气空间的深度</param>
         /// <param name="Todelta">烟气温度</param>
-        /// <param name="hrqxs">换热器型式</param>
+        /// <param name="hrqxs">换热器型式（1:屏式,2:顺列管束,3:错列管束）</param>
         /// <param name="SigMaXp"></param>
         /// <param name="s1"></param>
         /// <param name="ln">调用气体燃料辐射减弱系数模块:烟气空间后管束深度</param>
@@ -864,21 +929,19 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <param name="rh2o">调用气体燃料辐射减弱系数模块:烟气中水蒸气容积份额</param>
         /// <param name="Ttn">调用气体燃料辐射减弱系数模块:炉膛出口烟气温度</param>
         /// <param name="Mui3n"></param>
-        /// <param name="glxs">锅炉形式</param>
-        /// <param name="pzfs">排渣方式</param>
+        /// <param name="glxs">锅炉形式（1:煤粉炉,2:循环流化床,3:链条炉,4:油气炉）</param>
+        /// <param name="pzfs">排渣方式（1:固体排渣,2:液体排渣）</param>
         /// <param name="Alphat"></param>
         /// <param name="CH"></param>
-        /// <param name="qyrl"></param>
+        /// <param name="qyrl">气液燃料种类（1:重油,2:轻质油）</param>
         /// <param name="T"></param>
         /// <param name="Hn"></param>
         /// <param name="Bp"></param>
         /// <param name="Qn"></param>
         /// <param name="Alphan">燃烧产物辐射放热系数</param>
-        /// <returns></returns>
+        /// <returns>是否计算成功（0表示成功）</returns>
         private static int CalculateRadiateHeaReleaseCoefficient(double rlxs, double rmzl, double Twb, double p, double s, double T3, double T4, double lodelta, double Todelta, double hrqxs, double SigMaXp, double s1, double ln, double rn, double rh2o, double Ttn, double Mui3n, double glxs, double pzfs, double Alphat, double CH, double qyrl, double T, double Hn, double Bp, ref double Qn, ref double Alphan)
         {
-            Qn = 0;
-            Alphan = 0;
             //Step1:计算Tcp
             double Tcp = (T3 + T4) / 2;
             //Step2:由Tcp p s 烟气参数调用燃料辐射减弱系数模块得到kcp：气体
@@ -955,23 +1018,23 @@ namespace JD_BoilerCommonModel.CommonModel
         }
         #endregion
 
-        #region 11.管外壁温度Twb
+        #region 11.管外壁温度Twb 参数注释不全+一公式
         /// <summary>
         /// 11.管外壁温度Twb
         /// </summary>
-        /// <param name="hrqxs">换热器型式hrqxs</param>
-        /// <param name="SRFS">受热方式SRFS</param>
+        /// <param name="hrqxs">换热器型式（1:屏式,2:顺列管束,3:错列管束）</param>
+        /// <param name="SRFS">受热方式（1:单面,2:双面）</param>
         /// <param name="d"></param>
         /// <param name="DelTad"></param>
         /// <param name="l"></param>
         /// <param name="z1"></param>
         /// <param name="z2"></param>
         /// <param name="i1"></param>
-        /// <param name="dT1"></param>
+        /// <param name="T1"></param>
         /// <param name="Alpha1"></param>
         /// <param name="H"></param>
         /// <param name="Twb"></param>
-        /// <returns></returns>
+        /// <returns>是否计算成功（0表示成功）</returns>
         public static int CalculateOuterWallTemperature(double hrqxs, double SRFS, double d, double DelTad, double l, double z1, double z2, double i1, double T1, double Alpha1, double H, double Qn, double Bp, double Q, double t, ref double Twb)
         {
             double HBH = Math.PI * (d - 2 * DelTad) * l * z1 * z2;
@@ -1017,14 +1080,14 @@ namespace JD_BoilerCommonModel.CommonModel
         }
         #endregion
 
-        #region 12.受热面利用系数KeSai计算 参数注释不全
+        #region 12.受热面利用系数KeSai计算 OK
         /// <summary>
         /// 12.受热面利用系数KeSai计算
         /// </summary>
-        /// <param name="dhrqxs">换热器型式hrqxs</param>
-        /// <param name="dpwz"></param>
-        /// <param name="dcsfs"></param>
-        /// <param name="dKeSai"></param>
+        /// <param name="hrqxs">换热器型式（1:屏式,2:顺列管束,3:错列管束）</param>
+        /// <param name="pwz">屏的位置（1:前屏,2:侧面屏,3:双侧面屏,4:后屏,5:大屏,6:水平横屏,7:水平纵屏）</param>
+        /// <param name="csfs">烟气冲刷方式（1:横向,2:纵向,3:混合）</param>
+        /// <param name="KeSai">受热面利用系数</param>
         /// <returns>是否计算成功（0表示成功）</returns>
         public static int CalaulateHeatSurfaceUtilizationCoeddicient(double hrqxs, double pwz, double csfs, ref double KeSai)
         {
@@ -1063,14 +1126,14 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <summary>
         /// 13.对流受热面污染系数EpsaiLen计算
         /// </summary>
-        /// <param name="dhrqxs">换热器型式hrqxs</param>
-        /// <param name="drlxs"></param>
-        /// <param name="dCaO"></param>
-        /// <param name="dchzz"></param>
-        /// <param name="dAlphat"></param>
-        /// <param name="dSRFS"></param>
-        /// <param name="dEpsaiLen"></param>
-        /// <returns></returns>
+        /// <param name="hrqxs">换热器型式（1:屏式,2:顺列管束,3:错列管束）</param>
+        /// <param name="rlxs">燃料型式(1:煤,2:重油)</param>
+        /// <param name="CaO">氧化钙</param>
+        /// <param name="chzz">吹灰装置（1:有,2:无）</param>
+        /// <param name="Alphat"></param>
+        /// <param name="SRFS">受热方式（1:单面,2:双面）</param>
+        /// <param name="EpsaiLen">返回值:对流受热面污染系数</param>
+        /// <returns>是否计算成功（0表示成功）</returns>
         public static int CalculateHeatingSurfacePollutionCoefficient(double hrqxs, double rlxs, double CaO, double chzz, double Alphat, double SRFS, ref double EpsaiLen)
         {
             if (1 == hrqxs)
@@ -1128,14 +1191,14 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <summary>
         /// 14.热利用系数计算
         /// </summary>
-        /// <param name="hrqxs"></param>
-        /// <param name="rlxs"></param>
-        /// <param name="gzlx"></param>
-        /// <param name="CaO"></param>
-        /// <param name="chzz"></param>
-        /// <param name="gttjj"></param>
-        /// <param name="PSai"></param>
-        /// <returns></returns>
+        /// <param name="hrqxs">换热器型式（1:屏式,2:顺列管束,3:错列管束）</param>
+        /// <param name="rlxs">燃料型式(1:煤,2:重油)</param>
+        /// <param name="gzlx">管子类型（1:光管式,2:膜式）</param>
+        /// <param name="CaO">氧化钙</param>
+        /// <param name="chzz">吹灰装置（0:无,1:有）</param>
+        /// <param name="gttjj">添加固体添加剂（0:无,1:有）</param>
+        /// <param name="PeSai">返回值:热利用系数计算</param>
+        /// <returns>是否计算成功（0表示成功）</returns>
         public static int CalculateHeatCoefficient(double hrqxs, double rlxs, double gzlx, double CaO, double chzz, double gttjj, double Alphat, ref double PeSai)
         {
             if (1 == rlxs)
@@ -1207,9 +1270,9 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <summary>
         /// 15.烟气流通截面积Fr
         /// </summary>
-        /// <param name="gzlx"></param>
-        /// <param name="csfs"></param>
-        /// <param name="hrqxs"></param>
+        /// <param name="gzlx">管子类型（1:光管式,2:膜式）</param>
+        /// <param name="csfs">烟气冲刷方式（1:横向,2:纵向,3:混合）</param>
+        /// <param name="hrqxs">换热器型式（1:屏式,2:顺列管束,3:错列管束）</param>
         /// <param name="d"></param>
         /// <param name="l"></param>
         /// <param name="z1"></param>
@@ -1222,7 +1285,7 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <param name="s1"></param>
         /// <param name="s2"></param>
         /// <param name="DelTap"></param>
-        /// <param name="Fr"></param>
+        /// <param name="Fr">返回值:烟气流通截面积</param>
         /// <returns>是否计算成功（0表示成功）</returns>
         public static int CalculateFlueGasFlowArea(double gzlx, double csfs, double hrqxs, double d, double l, double z1, double z2, double SigMa1, double SigMa2, double sp, double hp, double D, double s1, double s2, double DelTap, ref double Fr)
         {
@@ -1269,28 +1332,32 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <summary>
         /// 16.烟气的对流放热系数计算
         /// </summary>
-        /// <param name="dgzlx">管子类型</param>
-        /// <param name="xsfs"></param>
-        /// <param name="hrqxs">换热器型式</param>
+        /// <param name="gzlx">管子类型（1:光管式,2:膜式）</param>
+        /// <param name="csfs">烟气冲刷方式（1:横向,2:纵向,3:混合）</param>
+        /// <param name="hrqxs">换热器型式（1:屏式,2:顺列管束,3:错列管束）</param>
         /// <param name="d"></param>
         /// <param name="l"></param>
-        /// <param name="Lb"></param>
-        /// <param name="Z1"></param>
-        /// <param name="S1"></param>
-        /// <param name="S2"></param>
+        /// <param name="lb"></param>
+        /// <param name="z1"></param>
+        /// <param name="z2"></param>
+        /// <param name="s1"></param>
+        /// <param name="s2"></param>
         /// <param name="DelTap"></param>
         /// <param name="DelTab"></param>
-        /// <param name="Hp"></param>
+        /// <param name="hp"></param>
         /// <param name="D"></param>
-        /// <param name="Dp"></param>
+        /// <param name="Sp"></param>
         /// <param name="Sb"></param>
         /// <param name="T3"></param>
         /// <param name="T4"></param>
         /// <param name="Fr"></param>
         /// <param name="Qr"></param>
-        /// <param name="Null"></param>
-        /// <param name="Alphak"></param>
-        /// <returns></returns>
+        /// <param name="th"></param>
+        /// <param name="hb"></param>
+        /// <param name="z"></param>
+        /// <param name="Alphak">返回值:烟气的对流放热系数计算</param>
+        /// <param name="sInfo">错误信息</param>
+        /// <returns>是否计算成功（0表示成功）</returns>
         public static int CalculateFlueGasFlowHeatCoeffiient(double gzlx, double csfs, double hrqxs, double d, double l, double lb, double z1, double z2, double s1, double s2, double DelTap, double DelTab, double hp, double D, double Sp, double Sb, double T3, double T4, double Fr, double Qr, double th, double hb, double z, ref double Alphak, ref string sInfo)
         {
             //平均温度
@@ -1568,7 +1635,7 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <summary>
         /// 17.管壁向水和蒸汽的放热系数Alpha2
         /// </summary>
-        /// <param name="dP1"></param>
+        /// <param name="P1"></param>
         /// <param name="P2"></param>
         /// <param name="i1"></param>
         /// <param name="i2"></param>
@@ -1576,7 +1643,7 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <param name="SigMa">管子壁厚SigMa</param>
         /// <param name="G">工质流量G</param>
         /// <param name="Alpha2">管壁向水和蒸汽的放热系数Alpha2</param>
-        /// <returns></returns>
+        /// <returns>是否计算成功（0表示成功）</returns>
         public static int CalculateWaterAngGasHeatCoefficient(double P1, double P2, double i1, double i2, double d, double SigMa, double G, double l, double z1, double z2, double gzyh, ref double Alpha2)
         {
             double di = d - 2 * SigMa;
@@ -1671,18 +1738,20 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <summary>
         /// 18.温压换算系数DelTaT计算
         /// </summary>
-        /// <param name="dT1"></param>
+        /// <param name="T1"></param>
         /// <param name="T2"></param>
         /// <param name="T3"></param>
         /// <param name="T4"></param>
-        /// <param name="gsbz"></param>
+        /// <param name="gsbz">管束布置（1:顺流,2:逆流,3:串联中出中进布置,4:串联进中出中布置,5:平行混流布置,6:十字交叉顺流布置,7:十字交叉逆流布置）</param>
         /// <param name="ns"></param>
         /// <param name="nn"></param>
         /// <param name="nx"></param>
-        /// <param name="ljxs"></param>
-        /// <param name="dlzjg"></param>
-        /// <param name="DelTat"></param>
-        /// <returns></returns>
+        /// <param name="ljxs">十字交叉管束联接型式（1:C型,2:CZ或ZC型）</param>
+        /// <param name="dlzjg">十字叫擦汗管束导流罩型式（1:双通道导流罩,2:三通道导流罩）</param>
+        /// <param name="DelTat">返回值:</param>
+        /// <param name="Psi">返回值:</param>
+        /// <param name="sInfo">错误信息</param>
+        /// <returns>是否计算成功（0表示成功）</returns>
         public static int CalculateTemperaturePressureConvertCoefficient(double T1, double T2, double T3, double T4, double gsbz, double ns, double nn, double nx, double ljxs, double dlzjg, ref double DelTat, ref double Psi, ref string sInfo)
         {
             //纯顺流温压计算
