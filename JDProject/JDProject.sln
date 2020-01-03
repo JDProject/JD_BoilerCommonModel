@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29519.87
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JD_BoilerCommonModel", "JD_BoilerCommonModel\JD_BoilerCommonModel.csproj", "{97FE5EDF-4BC2-4CC8-95D3-57CFBBF1E830}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JD_BoilerCommonModel", "JD_BoilerCommonModel\JD_BoilerCommonModel.csproj", "{97FE5EDF-4BC2-4CC8-95D3-57CFBBF1E830}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoilerThermalCalculation", "BoilerThermalCalculation\BoilerThermalCalculation.csproj", "{B5376CA5-8F10-4BAB-A9D3-842255BBC09E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{97FE5EDF-4BC2-4CC8-95D3-57CFBBF1E830}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{97FE5EDF-4BC2-4CC8-95D3-57CFBBF1E830}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{97FE5EDF-4BC2-4CC8-95D3-57CFBBF1E830}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B5376CA5-8F10-4BAB-A9D3-842255BBC09E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B5376CA5-8F10-4BAB-A9D3-842255BBC09E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B5376CA5-8F10-4BAB-A9D3-842255BBC09E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B5376CA5-8F10-4BAB-A9D3-842255BBC09E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

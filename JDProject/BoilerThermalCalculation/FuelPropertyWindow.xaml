@@ -1,0 +1,93 @@
+﻿<Window x:Name="FuelProperty" x:Class="BoilerThermalCalculation.FuelPropertyWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:BoilerThermalCalculation"
+        mc:Ignorable="d"
+        Title="燃料特性" Height="516.165" Width="288.412" WindowStartupLocation="CenterScreen" Topmost="True">
+    <Grid x:Name="CtrlGrid_FuelProperty" RenderTransformOrigin="0.687,0.492">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="0*"/>
+        </Grid.ColumnDefinitions>
+
+        <Label x:Name="CtrlLab_SelectMode" Content="模式选择" HorizontalAlignment="Left" Margin="10,6,0,0" VerticalAlignment="Top" FontSize="14" Height="28" Width="66"/>
+        <ComboBox x:Name="CtrComB_SelectMode" HorizontalAlignment="Left" Margin="81,10,0,0" VerticalAlignment="Top" Width="120" Height="22" SelectedIndex="0">
+            <Button Content="全部"/>
+        </ComboBox>
+        <GroupBox x:Name="CtrlGB_Property" Header="属性" HorizontalAlignment="Left" Height="447" Margin="0,39,0,0" VerticalAlignment="Top" Width="280">
+            <Grid>
+                <GroupBox x:Name="CtrlGB_Pr_Basic" Header="基本" HorizontalAlignment="Left" Height="116" VerticalAlignment="Top" Width="267">
+                    <Grid x:Name="CtrlGrid_Ba_Basic">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="13*"/>
+                            <ColumnDefinition Width="4*"/>
+                        </Grid.ColumnDefinitions>
+                        <Label x:Name="CtrlLab_Ba_Property" Content="属性" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="14" Margin="16,0,0,0"/>
+                        <Label x:Name="CtrlLab_Ba_ElementName" Content="元件名称" HorizontalAlignment="Left" Margin="0,28,0,0" VerticalAlignment="Top" FontSize="14"/>
+                        <Label x:Name="CtrlLab_Ba_FuelQuantity" Content="燃料量" HorizontalAlignment="Left" Margin="0,56,0,0" VerticalAlignment="Top" FontSize="14"/>
+                        <Label x:Name="CtrlLab_Ba_Value" Content="值" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="14" Margin="145,0,0,0"/>
+                        <TextBox x:Name="CtrlTB_Ba_ElementNameValue" HorizontalAlignment="Left" Height="23" Margin="94,31,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="81"/>
+                        <TextBox x:Name="CtrlTB_Ba_FuelQuantityValue" HorizontalAlignment="Left" Height="23" Margin="94,61,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="81"/>
+                        <ComboBox x:Name="CtrlComB_Ba_FuelQuantityUnit" HorizontalAlignment="Left" Margin="187,61,0,0" VerticalAlignment="Top" Width="65" SelectedIndex="0" Grid.ColumnSpan="2">
+                            <Button Content="t/h"/>
+                        </ComboBox>
+                    </Grid>
+                </GroupBox>
+                <GroupBox x:Name="CtrlGB_Pr_FuelNature" Header="燃料性质" HorizontalAlignment="Left" Height="304" Margin="0,122,0,0" VerticalAlignment="Top" Width="267">
+                    <Grid x:Name="CtrlCrid_FN_FuelProperty">
+                        <Label x:Name="CtrlLab_FN_Property" Content="属性" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="14" Margin="16,0,0,0"/>
+                        <Label x:Name="CtrlLab_FN_C" Content="C" HorizontalAlignment="Left" Margin="0,28,0,0" VerticalAlignment="Top" FontSize="14"/>
+                        <Label x:Name="CtrlLab_FN_H" Content="H" HorizontalAlignment="Left" Margin="0,56,0,0" VerticalAlignment="Top" FontSize="14"/>
+                        <Label x:Name="CtrlLab_FN_O" Content="O" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="14" Margin="0,84,0,0"/>
+                        <Label x:Name="CtrlLab_FN_O1" Content="N" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="14" Margin="0,111,0,0"/>
+                        <Label x:Name="CtrlLab_FN_S" Content="S" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="14" Margin="0,139,0,0"/>
+                        <Label x:Name="CtrlLab_FN_A" Content="A" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="14" Margin="0,167,0,0"/>
+                        <Label x:Name="CtrlLab_FN_M" Content="M" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="14" Margin="0,195,0,0"/>
+                        <Label x:Name="CtrlLab_FN_V" Content="V" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="14" Margin="0,223,0,0"/>
+                        <Label x:Name="CtrlLab_FN_CaO" Content="CaO" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="14" Margin="0,251,0,0"/>
+                        <Label x:Name="CtrlLab_FN_Value" Content="值" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="14" Margin="145,0,0,0"/>
+                        <TextBox x:Name="CtrlTB_FN_CValue" HorizontalAlignment="Left" Height="23" Margin="94,31,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="81"/>
+                        <TextBox x:Name="CtrlTB_FN_HValue" HorizontalAlignment="Left" Height="23" Margin="94,59,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="81"/>
+                        <TextBox x:Name="CtrlTB_FN_OValue" HorizontalAlignment="Left" Height="23" Margin="94,89,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="81"/>
+                        <TextBox x:Name="CtrlTB_FN_NValue" HorizontalAlignment="Left" Height="23" Margin="94,117,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="81"/>
+                        <TextBox x:Name="CtrlTB_FN_SValue" HorizontalAlignment="Left" Height="23" Margin="94,145,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="81"/>
+                        <TextBox x:Name="CtrlTB_FN_AValue" HorizontalAlignment="Left" Height="23" Margin="94,172,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="81"/>
+                        <TextBox x:Name="CtrlTB_FN_MValue" HorizontalAlignment="Left" Height="23" Margin="94,200,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="81"/>
+                        <TextBox x:Name="CtrlTB_FN_VValue" HorizontalAlignment="Left" Height="23" Margin="94,228,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="81"/>
+                        <TextBox x:Name="CtrlTB_FN_CaOValue" HorizontalAlignment="Left" Height="23" Margin="94,256,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="81"/>
+                        <ComboBox x:Name="CtrlComB_FN_CUnit" HorizontalAlignment="Left" Margin="187,31,0,0" VerticalAlignment="Top" Width="65" SelectedIndex="0">
+                            <Button Content="%"/>
+                        </ComboBox>
+                        <ComboBox x:Name="CtrlComB_FN_HUnit" HorizontalAlignment="Left" Margin="187,59,0,0" VerticalAlignment="Top" Width="65" SelectedIndex="0">
+                            <Button Content="%"/>
+                        </ComboBox>
+                        <ComboBox x:Name="CtrlComB_FN_OUnit" HorizontalAlignment="Left" Margin="187,89,0,0" VerticalAlignment="Top" Width="65" SelectedIndex="0">
+                            <Button Content="%"/>
+                        </ComboBox>
+                        <ComboBox x:Name="CtrlComB_FN_NUnit" HorizontalAlignment="Left" Margin="187,117,0,0" VerticalAlignment="Top" Width="65" SelectedIndex="0">
+                            <Button Content="%"/>
+                        </ComboBox>
+                        <ComboBox x:Name="CtrlComB_FN_SUnit" HorizontalAlignment="Left" Margin="187,145,0,0" VerticalAlignment="Top" Width="65" SelectedIndex="0">
+                            <Button Content="%"/>
+                        </ComboBox>
+                        <ComboBox x:Name="CtrlComB_FN_AUnit" HorizontalAlignment="Left" Margin="187,172,0,0" VerticalAlignment="Top" Width="65" SelectedIndex="0">
+                            <Button Content="%"/>
+                        </ComboBox>
+                        <ComboBox x:Name="CtrlComB_FN_MUnit" HorizontalAlignment="Left" Margin="187,200,0,0" VerticalAlignment="Top" Width="65" SelectedIndex="0">
+                            <Button Content="%"/>
+                        </ComboBox>
+                        <ComboBox x:Name="CtrlComB_FN_VUnit" HorizontalAlignment="Left" Margin="187,228,0,0" VerticalAlignment="Top" Width="65" SelectedIndex="0">
+                            <Button Content="%"/>
+                        </ComboBox>
+                        <ComboBox x:Name="CtrlComB_FN_CaOUnit" HorizontalAlignment="Left" Margin="187,256,0,0" VerticalAlignment="Top" Width="65" SelectedIndex="0">
+                            <Button Content="%"/>
+                        </ComboBox>
+                    </Grid>
+                </GroupBox>
+            </Grid>
+        </GroupBox>
+
+    </Grid>
+</Window>

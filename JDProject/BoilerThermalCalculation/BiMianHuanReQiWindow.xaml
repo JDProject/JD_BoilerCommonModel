@@ -1,0 +1,79 @@
+﻿<Window x:Name="BiMianHuanReQi" x:Class="BoilerThermalCalculation.BiMianHuanReQiWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:BoilerThermalCalculation"
+        xmlns:c="clr-namespace:BoilerThermalCalculation.viewmodel"
+        xmlns:m="clr-namespace:BoilerThermalCalculation.model"
+        mc:Ignorable="d"
+        Title="壁面换热器设计与校核" Height="282.574" Width="589.723" WindowStartupLocation="CenterScreen" Topmost="True" Loaded="BiMianHuanReQi_Loaded">
+    <Window.Resources>
+        <c:CheckConverter x:Key="CheckConverter"/>
+    </Window.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="244*"/>
+            <ColumnDefinition Width="377*"/>
+        </Grid.ColumnDefinitions>
+        <TabControl x:Name="CtrlTC_BoilerSet" Grid.ColumnSpan="2">
+            <TabItem x:Name="CtrlTI_ReLiCanShu" Header="热力参数">
+                <Grid x:Name="CtrlGrid_BoilerSet" Background="#FFE5E5E5">
+                    <Label x:Name="CtrlLab_gzysxs" Content="工质压损系数" HorizontalAlignment="Left" Margin="10,63,0,0" VerticalAlignment="Top" FontSize="14"/>
+                    <Label x:Name="CtrlLab_gzysxsUnit" Content="%" HorizontalAlignment="Left" Margin="174,64,0,0" VerticalAlignment="Top" FontSize="14"/>
+                    <TextBox x:Name="CtrlTB_gzysxs" Text="{Binding gzysxs}" HorizontalAlignment="Left" Height="23" Margin="104,66,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="66"/>
+                    <RadioButton x:Name="CtrlRB_FP_ShuiLengBi" GroupName="CoalType" Content="水冷壁" HorizontalAlignment="Left" Margin="24,18,0,0" VerticalAlignment="Top" FontSize="14" IsChecked="True" Checked="CtrlRB_FP_ShuiLengBi_Checked"/>
+                    <RadioButton x:Name="CtrlRB_FP_BiMianGuoReQi" GroupName="CoalType" Content="壁面过热器" HorizontalAlignment="Left" Margin="104,18,0,0" VerticalAlignment="Top" FontSize="14" Checked="CtrlRB_FP_BiMianGuoReQi_Checked"/>
+                    <Label x:Name="CtrlLab_gzys" Content="工质压损" HorizontalAlignment="Left" Margin="200,63,0,0" VerticalAlignment="Top" FontSize="14"/>
+                    <Label x:Name="CtrlLab_gzysUnit" Content="MPa" HorizontalAlignment="Left" Margin="341,64,0,0" VerticalAlignment="Top" FontSize="14"/>
+                    <TextBox x:Name="CtrlTB_gzys" Text="{Binding gzys}" HorizontalAlignment="Left" Height="23" Margin="271,66,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="66"/>
+                    <Label x:Name="CtrlLab_gzls" Content="工质流速" HorizontalAlignment="Left" Margin="388,63,0,0" VerticalAlignment="Top" FontSize="14"/>
+                    <Label x:Name="CtrlLab_gzlsUnit" Content="m/s" HorizontalAlignment="Left" Margin="527,64,0,0" VerticalAlignment="Top" FontSize="14"/>
+                    <TextBox x:Name="CtrlTB_gzls" Text="{Binding gzls}" HorizontalAlignment="Left" Height="23" Margin="457,66,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="66"/>
+                    <Label x:Name="CtrlLab_yqysss" Content="烟气压损系数" HorizontalAlignment="Left" Margin="10,111,0,0" VerticalAlignment="Top" FontSize="14"/>
+                    <Label x:Name="CtrlLab_yqysssUnit" Content="%" HorizontalAlignment="Left" Margin="174,112,0,0" VerticalAlignment="Top" FontSize="14"/>
+                    <TextBox x:Name="CtrlTB_yqysss" Text="{Binding yqysxs}" HorizontalAlignment="Left" Height="23" Margin="104,114,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="66"/>
+                    <Label x:Name="CtrlLab_yqys" Content="烟气压损" HorizontalAlignment="Left" Margin="200,109,0,0" VerticalAlignment="Top" FontSize="14"/>
+                    <Label x:Name="CtrlLab_yqysUnit" Content="kPa" HorizontalAlignment="Left" Margin="341,109,0,0" VerticalAlignment="Top" FontSize="14"/>
+                    <TextBox x:Name="CtrlTB_yqys" Text="{Binding yqys}" HorizontalAlignment="Left" Height="23" Margin="271,111,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="66"/>
+                    <Label x:Name="CtrlLab_gzckwd" Content="工质出口温度" HorizontalAlignment="Left" Margin="10,157,0,0" VerticalAlignment="Top" FontSize="14"/>
+                    <Label x:Name="CtrlLab_gzckwdUnit" Content="℃" HorizontalAlignment="Left" Margin="174,158,0,0" VerticalAlignment="Top" FontSize="14"/>
+                    <TextBox x:Name="CtrlTB_gzckwd" Text="{Binding gzckwd}" HorizontalAlignment="Left" Height="23" Margin="104,160,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="66"/>
+                    <Button Content="创建" HorizontalAlignment="Left" Margin="18,192,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click"/>
+
+                </Grid>
+            </TabItem>
+            <TabItem x:Name="CtrlTI_jhcs" Header="几何参数" HorizontalAlignment="Left" Height="20" VerticalAlignment="Top" Width="61">
+                <Grid x:Name="CtrlGrid_jhcs" Background="#FFE5E5E5">
+                    <ListBox x:Name="CtrlLB_Group" HorizontalAlignment="Left" Height="188" Margin="5,6,0,0" VerticalAlignment="Top" Width="77" SelectionChanged="CtrlLB_Group_SelectionChanged" DisplayMemberPath="name"/>
+                    <Label x:Name="CtrlLab_d" Content="换热管外径" HorizontalAlignment="Left" Margin="92,7,0,0" VerticalAlignment="Top" FontSize="14"/>
+                    <Label x:Name="CtrlLab_dUnit" Content="m" HorizontalAlignment="Left" Margin="242,8,0,0" VerticalAlignment="Top" FontSize="14"/>
+                    <TextBox x:Name="CtrlTB_d" Text="{Binding d}" HorizontalAlignment="Left" Height="23" Margin="175,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="66"/>
+                    <Label x:Name="CtrlLab_l" Content="换热管有效长度" HorizontalAlignment="Left" Margin="290,7,0,0" VerticalAlignment="Top" FontSize="14"/>
+                    <Label x:Name="CtrlLab_lUnit" Content="m" HorizontalAlignment="Left" Margin="479,8,0,0" VerticalAlignment="Top" FontSize="14"/>
+                    <TextBox x:Name="CtrlTB_l" Text="{Binding l}" HorizontalAlignment="Left" Height="23" Margin="412,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="66"/>
+                    <Label x:Name="CtrlLab_s" Content="换热管节距" HorizontalAlignment="Left" Margin="92,38,0,0" VerticalAlignment="Top" FontSize="14"/>
+                    <Label x:Name="CtrlLab_sUnit" Content="m" HorizontalAlignment="Left" Margin="242,39,0,0" VerticalAlignment="Top" FontSize="14"/>
+                    <TextBox x:Name="CtrlTB_s" Text="{Binding s}" HorizontalAlignment="Left" Height="23" Margin="175,41,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="66"/>
+                    <Label x:Name="CtrlLab_e" Content="换热管至墙中心距" HorizontalAlignment="Left" Margin="290,38,0,0" VerticalAlignment="Top" FontSize="14"/>
+                    <Label x:Name="CtrlLab_eUnit" Content="m" HorizontalAlignment="Left" Margin="479,39,0,0" VerticalAlignment="Top" FontSize="14"/>
+                    <TextBox x:Name="CtrlTB_e" Text="{Binding e}" HorizontalAlignment="Left" Height="23" Margin="412,41,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="66"/>
+                    <Label x:Name="CtrlLab_n" Content="换热管数量" HorizontalAlignment="Left" Margin="92,69,0,0" VerticalAlignment="Top" FontSize="14"/>
+                    <Label x:Name="CtrlLab_nUnit" Content="根" HorizontalAlignment="Left" Margin="242,70,0,0" VerticalAlignment="Top" FontSize="14"/>
+                    <TextBox x:Name="CtrlTB_n" Text="{Binding n}" HorizontalAlignment="Left" Height="23" Margin="175,72,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="66"/>
+                    <Label x:Name="CtrlLab_gzlx" Content="换热管类型" HorizontalAlignment="Left" Margin="92,101,0,0" VerticalAlignment="Top" FontSize="14"/>
+                    <RadioButton x:Name="CtrlRB_gzlx_gg" GroupName="HuanReGuanLeiXing" Content="光管" HorizontalAlignment="Left" Margin="109,130,0,0" VerticalAlignment="Top" FontSize="14" IsChecked="{Binding Path=egzlx,Converter={StaticResource CheckConverter},ConverterParameter={x:Static m:gzlx.gg}}"/>
+                    <RadioButton x:Name="CtrlRB_gzlx_ms" GroupName="HuanReGuanLeiXing" Content="膜式" HorizontalAlignment="Left" Margin="165,130,0,0" VerticalAlignment="Top" FontSize="14" IsChecked="{Binding Path=egzlx,Converter={StaticResource CheckConverter},ConverterParameter={x:Static m:gzlx.ms}}"/>
+                    <RadioButton x:Name="CtrlRB_gzlx_fgnhtl" GroupName="HuanReGuanLeiXing" Content="覆盖耐火涂料" HorizontalAlignment="Left" Margin="223,130,0,0" VerticalAlignment="Top" FontSize="14" IsChecked="{Binding Path=egzlx,Converter={StaticResource CheckConverter},ConverterParameter={x:Static m:gzlx.fgnhtl}}"/>
+                    <RadioButton x:Name="CtrlRB_gzlx_fgnhz" GroupName="HuanReGuanLeiXing" Content="覆盖耐火砖" HorizontalAlignment="Left" Margin="334,130,0,0" VerticalAlignment="Top" FontSize="14" IsChecked="{Binding Path=egzlx,Converter={StaticResource CheckConverter},ConverterParameter={x:Static m:gzlx.fgnhz}}"/>
+                    <Label x:Name="CtrlLab_srfs" Content="受热方式" HorizontalAlignment="Left" Margin="92,158,0,0" VerticalAlignment="Top" FontSize="14"/>
+                    <RadioButton x:Name="CtrlRB_srfs_dm" GroupName="ShouReFangShi" Content="单面" HorizontalAlignment="Left" Margin="168,163,0,0" VerticalAlignment="Top" FontSize="14" IsChecked="{Binding Path=esrfs,Converter={StaticResource CheckConverter},ConverterParameter={x:Static m:srfs.dm}}"/>
+                    <RadioButton x:Name="CtrlRB_srfs_sm" GroupName="ShouReFangShi" Content="双面" HorizontalAlignment="Left" Margin="223,163,0,0" VerticalAlignment="Top" FontSize="14" IsChecked="{Binding Path=esrfs,Converter={StaticResource CheckConverter},ConverterParameter={x:Static m:srfs.sm}}"/>
+                    <Button x:Name="Ctrl_tjz" Content="添加组" HorizontalAlignment="Left" Margin="6,197,0,0" VerticalAlignment="Top" Width="61" Height="20" FontSize="10" Click="Ctrl_tjz_Click"/>
+                    <Button x:Name="Ctrl_scz" Content="删除组" HorizontalAlignment="Left" Margin="80,197,0,0" VerticalAlignment="Top" Width="61" Height="20" FontSize="10" Click="Ctrl_scz_Click"/>
+                </Grid>
+            </TabItem>
+        </TabControl>
+
+    </Grid>
+</Window>
