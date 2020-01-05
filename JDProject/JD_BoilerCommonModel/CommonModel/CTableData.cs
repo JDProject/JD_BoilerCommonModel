@@ -462,4 +462,188 @@ namespace JD_BoilerCommonModel.CommonModel
     }
     #endregion
     #endregion
+    #region 肋片有效系数计算
+    /// <summary>
+    /// 肋片有效系数计算帮助类
+    /// </summary>
+    public class CTableEHelper
+    {
+        #region Private  Properties And Methods
+        private List<CTableEData> EDataList = new List<CTableEData>();
+        private int DataInit()
+        {
+            EDataList.Clear();
+            AddData(3.5, 0.75, 0.2, 1.007);
+            AddData(3.5, 0.75, 0.26, 1.011);
+            AddData(3.5, 0.75, 0.34, 1.017);
+            AddData(3.5, 0.75, 0.4, 1.023);
+
+            AddData(3.5, 1.0, 0.2,1.007);
+            AddData(3.5, 1.0, 0.26,1.012);
+            AddData(3.5, 1.0, 0.34,1.021);
+            AddData(3.5, 1.0, 0.4,1.030);
+
+            AddData(3.5, 1.25, 0.2,0.994);
+            AddData(3.5, 1.25, 0.26,1.001);
+            AddData(3.5, 1.25, 0.34,1.013);
+            AddData(3.5, 1.25, 0.4,1.025);
+
+            AddData(3.5, 1.5, 0.2,0.967);
+            AddData(3.5, 1.5, 0.26,0.977);
+            AddData(3.5, 1.5, 0.34,0.993);
+            AddData(3.5, 1.5, 0.4,1.007);
+
+            AddData(5.0, 0.75, 0.2, 0.967);
+            AddData(5.0, 0.75, 0.26, 0.978);
+            AddData(5.0, 0.75, 0.34, 0.993);
+            AddData(5.0, 0.75, 0.4, 1.005);
+
+            AddData(5.0, 1.0, 0.2,1.009);
+            AddData(5.0, 1.0, 0.26,1.018);
+            AddData(5.0, 1.0, 0.34,1.034);
+            AddData(5.0, 1.0, 0.4,1.047);
+
+            AddData(5.0, 1.25, 0.2,1.026);
+            AddData(5.0, 1.25, 0.26,1.036);
+            AddData(5.0, 1.25, 0.34,1.053);
+            AddData(5.0, 1.25, 0.4,1.068);
+
+            AddData(5.0, 1.5, 0.2,1.019);
+            AddData(5.0, 1.5, 0.26,1.031);
+            AddData(5.0, 1.5, 0.34,1.051);
+            AddData(5.0, 1.5, 0.4,1.068);
+
+            AddData(6.5, 0.75, 0.2, 0.924);
+            AddData(6.5, 0.75, 0.26, 0.940);
+            AddData(6.5, 0.75, 0.34, 0.961);
+            AddData(6.5, 0.75, 0.4, 0.978);
+
+            AddData(6.5, 1.0, 0.2,0.996);
+            AddData(6.5, 1.0, 0.26,1.009);
+            AddData(6.5, 1.0, 0.34,1.029);
+            AddData(6.5, 1.0, 0.4,1.046);
+
+            AddData(6.5, 1.25, 0.2,1.035);
+            AddData(6.5, 1.25, 0.26,1.048);
+            AddData(6.5, 1.25, 0.34,1.068);
+            AddData(6.5, 1.25, 0.4,1.086);
+
+            AddData(6.5, 1.5, 0.2,1.042);
+            AddData(6.5, 1.5, 0.26,1.056);
+            AddData(6.5, 1.5, 0.34,1.078);
+            AddData(6.5, 1.5, 0.4,1.097);
+
+            AddData(8.0, 0.75, 0.2, 0.878);
+            AddData(8.0, 0.75, 0.26, 0.896);
+            AddData(8.0, 0.75, 0.34, 0.921);
+            AddData(8.0, 0.75, 0.4, 0.942);
+
+            AddData(8.0, 1.0, 0.2,0.967);
+            AddData(8.0, 1.0, 0.26,0.983);
+            AddData(8.0, 1.0, 0.34,1.008);
+            AddData(8.0, 1.0, 0.4,1.028);
+
+            AddData(8.0, 1.25, 0.2,1.019);
+            AddData(8.0, 1.25, 0.26,1.035);
+            AddData(8.0, 1.25, 0.34,1.059);
+            AddData(8.0, 1.25, 0.4,1.079);
+
+            AddData(8.0, 1.5, 0.2,1.035);
+            AddData(8.0, 1.5, 0.26,1.051);
+            AddData(8.0, 1.5, 0.34,1.075);
+            AddData(8.0, 1.5, 0.4,1.096);
+
+            return 0;
+        }
+        #endregion
+        #region Public Methods
+        /// <summary>
+        /// 获得肋片有效系数E
+        /// </summary>
+        /// <param name="dlb_b">lb_d</param>
+        /// <param name="dhb_d">hb_d</param>
+        /// <param name="dsp_d">sp_d</param>
+        /// <param name="E">E</param>
+        /// <returns>是否查询成功</returns>
+        public int GetE(double dlb_b, double dhb_d, double dsp_d, ref double E)
+        {
+            foreach (CTableEData data in EDataList)
+            {
+                if (dlb_b == data.lb_d && dhb_d == data.hb_d && dsp_d == data.Sp_d)
+                {
+                    E = data.E;
+                    return 0;
+                }
+            }
+            return -1;
+        }
+        /// <summary>
+        /// 添加数据
+        /// </summary>
+        /// <param name="dlb_b">lb_d</param>
+        /// <param name="dhb_d">hb_d</param>
+        /// <param name="dsp_d">sp_d</param>
+        /// <param name="E">E</param>
+        /// <returns>是否添加成功</returns>
+        public int AddData(double dlb_b, double dhb_d, double dsp_d, double dE)
+        {
+            EDataList.Add(new CTableEData(dlb_b, dhb_d, dsp_d, dE));
+            return 0;
+        }
+        /// <summary>
+        /// 构造函数
+        /// </summary>
+        public CTableEHelper()
+        {
+            EDataList.Clear();
+            DataInit();
+        }
+        #endregion
+    }
+    /// <summary>
+    /// 肋片有效系数类
+    /// </summary>
+    public class CTableEData
+    {
+        #region Properties
+        /// <summary>
+        /// lb/d
+        /// </summary>
+        public double lb_d
+        {
+            set; get;
+        }
+        /// <summary>
+        /// hb/d
+        /// </summary>
+        public double hb_d
+        {
+            set; get;
+        }
+        /// <summary>
+        /// sp/d
+        /// </summary>
+        public double Sp_d
+        {
+            set; get;
+        }
+        /// <summary>
+        /// E
+        /// </summary>
+        public double E
+        {
+            set; get;
+        }
+        #endregion
+        #region Public Methods
+        public CTableEData(double dlb_b, double dhb_d, double dsp_d, double dE)
+        {
+            this.lb_d = dlb_b;
+            this.hb_d = dhb_d;
+            this.Sp_d = dsp_d;
+            this.E = dE;
+        }
+        #endregion
+    }
+    #endregion
 }

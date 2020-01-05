@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PhysicalPro;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -908,6 +909,12 @@ namespace JD_BoilerCommonModel.CommonModel
                     //根据D_1/d、m*hb_1，按线算图6确定肋片有效系数E
                     double E = 0;
                     //根据lb/d、hb_1/d、sp/d，按表7 - 3确定系数PhiE
+                    CTableEHelper tableEHelper = new CTableEHelper();
+                    ret=tableEHelper.GetE(lb / d, hb_1 / d, sp / d, ref E);
+                    if (0 != ret)
+                    {
+                        return ret;
+                    }
                     double PhiE = 0;
                     if (6 == gzlx)
                     {
