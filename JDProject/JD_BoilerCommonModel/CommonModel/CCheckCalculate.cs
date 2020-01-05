@@ -213,5 +213,190 @@ namespace JD_BoilerCommonModel.CommonModel
             return 0;
         }
         #endregion
+        #region 锅炉热力设计计算
+        public int BoilerHeatDesignCalculate(double Bp, double Qsl)
+        {
+            double TT_2 = 0;
+            double IT_2 = 0;
+            double Vccp = (QT - IT_2) / (Ta - TT_2);
+            double Phi = 1 - q5 / (etak + q5);
+            ICommonModelCalaulate commonModelCalaulate = new CCommonModelCalaulate();
+            //List < CHeaterArrange > arranges, double glxs, double VrH, double Vn2H, double Vro2H, double r, int pzfs, int rsqbz, double Htao, double R, double F1, double Qir
+            double M = 0;
+            //调用M模块计算M
+            int ret = commonModelCalaulate.CalculateParameterM(arranges, glxs, VrH, Vn2H, Vro2H, r, pzfs, rsqbz, Htao, R, F1, Qir, ref M);
+            if (0 != ret)
+            {
+                return ret;
+            }
+            //调用有效辐射面积计算模块
+            //double p, double Vf, double Vp, double Fslf, double Fbgf, double Fjmp, double Fbgp, double Fslp, double Fp, double s1, double A, double b, double xsl, double xbg, double xp, double ZeTasl, double ZeTabg, double ZeTap, double ycjg, double rlxs, double Fyc, double rn, double rh2o, double Ttn, double Mui3n, double s, double glxs, double pzfs, double rmzl, double V1, double PeSaip, ref double Hslf, ref double Hsl, ref double Hp, ref double Hbg, ref double Ht, ref double Bu, ref double PeSaicp
+            double Hslf = 0, Hsl = 0, Hp = 0, Hbg = 0, HT = 0, Bu = 0, PeSaicp = 0;
+            ret = commonModelCalaulate.CalculateEffectiveRadioArea(p, Vf, Vp, Fslf, Fbgf, Fjmp, Fbgp, Fslp, Fp, s1, A, b, xsl, xbg, xp, ZeTasl, ZeTabg, ZeTap, ycjg, rlxs, Fyc, rn, rh2o, Ttn, Mui3n, s, glxs, pzfs, rmzl, V1, PeSaip, ref Hslf, ref Hsl, ref Hp, ref Hbg, ref HT, ref Bu, ref PeSaicp);
+            if (0 != ret)
+            {
+                return ret;
+            }
+            double yf = (1 - (HT - Hslf) * ypy / HT) * (HT / Hslf);
+            double qn = Phi * (QT - IT_2) / HT;
+            double Qsl_1 = Hslf * yf * qn + (Hsl - Hslf) * ypy * qn;
+            double dTempRestult = Math.Abs((Qsl_1 - Qsl) / Qsl_1);
+            if (0.0001 < dTempRestult)
+            {
+                return -1;//给出dTempResult
+            }
+            double BuAvg = 1.6 * Math.Log((1.4 * Math.Pow(Bu, 2) + Bu + 2) / (1.4 * Math.Pow(Bu, 2) - Bu + 2));
+            double F1_1 = (Phi * Bp * Vccp) / (5.67 * Math.Pow(10, -11) * PeSaicp * Math.Pow(Ta, -3)) * Math.Pow((Ta / TT_1 - 1) / (M * Math.Pow(BuAvg, 0.3)), -0.6);
+            dTempRestult = Math.Abs((F1_1 - F1) / F1_1);
+            if (0.001 < dTempRestult)
+            {
+                return -1;//给出dTempResult
+            }
+            double Qp = Hp * ypy * qn;
+            double Qbg = Hbg * ypy * qn;
+            double Qyc = Hyc * ypy * qn;
+            return 0;
+        }
+        #endregion
+        #region 锅炉热力校验计算
+        public int BoilerHeatCheckCalculate()
+        {
+            double TT_2 = 0;
+            double TT_1 = 0;
+            double IT_2 = 0;
+            bool bContinue = true;
+                double Hslf = 0, Hsl = 0, Hp = 0, Hbg = 0, HT = 0, Bu = 0, PeSaicp = 0;
+            do
+            {
+                double Vccp = (QT - IT_2) / (Ta - TT_2);
+                double Phi = 1 - q5 / (etak + q5);
+                ICommonModelCalaulate commonModelCalaulate = new CCommonModelCalaulate();
+                //List < CHeaterArrange > arranges, double glxs, double VrH, double Vn2H, double Vro2H, double r, int pzfs, int rsqbz, double Htao, double R, double F1, double Qir
+                double M = 0;
+                //调用M模块计算M
+                int ret = commonModelCalaulate.CalculateParameterM(arranges, glxs, VrH, Vn2H, Vro2H, r, pzfs, rsqbz, Htao, R, F1, Qir, ref M);
+                if (0 != ret)
+                {
+                    return ret;
+                }
+                //调用有效辐射面积计算模块
+                //double p, double Vf, double Vp, double Fslf, double Fbgf, double Fjmp, double Fbgp, double Fslp, double Fp, double s1, double A, double b, double xsl, double xbg, double xp, double ZeTasl, double ZeTabg, double ZeTap, double ycjg, double rlxs, double Fyc, double rn, double rh2o, double Ttn, double Mui3n, double s, double glxs, double pzfs, double rmzl, double V1, double PeSaip, ref double Hslf, ref double Hsl, ref double Hp, ref double Hbg, ref double Ht, ref double Bu, ref double PeSaicp
+                ret = commonModelCalaulate.CalculateEffectiveRadioArea(p, Vf, Vp, Fslf, Fbgf, Fjmp, Fbgp, Fslp, Fp, s1, A, b, xsl, xbg, xp, ZeTasl, ZeTabg, ZeTap, ycjg, rlxs, Fyc, rn, rh2o, Ttn, Mui3n, s, glxs, pzfs, rmzl, V1, PeSaip, ref Hslf, ref Hsl, ref Hp, ref Hbg, ref HT, ref Bu, ref PeSaicp);
+                if (0 != ret)
+                {
+                    return ret;
+                }
+                double yf = (1 - (HT - Hslf) * ypy / HT) * (HT / Hslf);
+                double qn = Phi * (QT - IT_2) / HT;
+                double Qsl_1 = Hslf * yf * qn + (Hsl - Hslf) * ypy * qn;
+               double dTempRestult = Math.Abs((Qsl_1 - Qsl) / Qsl_1);
+                if (0.0001 < dTempRestult)
+                {
+                    return -1;//给出dTempResult
+                }
+                double BuAvg = 1.6 * Math.Log((1.4 * Math.Pow(Bu, 2) + Bu + 2) / (1.4 * Math.Pow(Bu, 2) - Bu + 2));
+                 TT_1 = Ta / (1 + M * Math.Pow(BuAvg, 0.3) * Math.Pow((5.67 * Math.Pow(10, -11) * PeSaicp * F1 * Math.Pow(Ta, 3)), 0.6));
+                dTempRestult = Math.Abs(TT_1 - TT_2);
+                if (20 < dTempRestult)
+                {
+                    TT_2 = TT_1;
+                }
+                else
+                {
+                    bContinue = false;
+                }
+            }
+            while (bContinue);
+            double yf = (1 - (HT - Hslf) * ypy / HT) * (HT / Hslf);
+            double qn = Phi * (QT - IT_2) / HT;
+            double Qp = Hp * ypy * qn;
+            double Qbg = Hbg * ypy * qn;
+            double Qyc = Hyc * ypy * qn;
+            return 0;
+        }
+        #endregion
+        #region 壁面换热器参数计算
+        public int WallHeatExchangeParameterCalculate()
+        {
+            //3.2
+            return 0;
+        }
+        #endregion
+
+        #region 屏区参数计算 是否需要
+        //4.3
+        #endregion
+
+        #region 能量分配（公用方法）
+        public int EnergyAssignment()
+        {
+            //5.2
+            return 0;
+        }
+        #endregion
+        #region 传热系数（公用方法）
+        public int HeatTransferCofficientCalculate()
+        {//5.3
+            return 0;
+        }
+        #endregion
+        #region 换热器热力设计计算
+        public int HeatExchangerDesignCalculate()
+        {//5.5
+            return 0;
+        }
+        #endregion
+        #region 换热器热力校核计算
+        public int HeatExchangerCheckCalculate()
+        {//5.6
+            return 0;
+        }
+        #endregion
+        #region 省煤器换热系数计算
+        public int EconomizerHeatExchangeCofficientCalculate()
+        {//6.2
+
+            //Step 1:污染系数计算
+
+            //Step 2:几何参数计算
+
+            //Step 3:换热系数计算
+            return 0;
+        }
+
+        #endregion
+        #region 省煤器设计计算
+        public int EconomizerDesignCalculate()
+        {//6.3
+            return 0;
+        }
+        #endregion
+
+        #region 省煤器校核计算
+        public int EconomizerCheckCalculate()
+        {//6.4
+            return 0;
+        }
+        #endregion
+
+        #region 管式空预热器换热系数计算
+        public int TubularPreheaterCofficientCalaulate()
+        {//7.2
+            return 0;
+        }
+        #endregion
+
+        #region 管式空预器设计计算
+        public int TubularPreheaterDesignCalculate()
+        {//7.3
+            return 0;
+        }
+        #endregion
+        #region 管式空预器校核计算
+        public int TubularPreheaterCheckCalaulate()
+        {
+            return 0;
+        }
+        #endregion
     }
 }
