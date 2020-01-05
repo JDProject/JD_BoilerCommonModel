@@ -71,7 +71,7 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <param name="Qir">低位发热量</param>
         /// <param name="M">返回值:炉膛参数</param>
         /// <returns></returns>
-        int CalculateParameterM(double n, double hi, double Bi, double glxs, double VrH, double Vn2H, double Vro2H, double r, int pzfs, int rsqbz, double Htao, double R, double F1, double Qir, ref double M);
+        int CalculateParameterM(List<CHeaterArrange> arranges, double glxs, double VrH, double Vn2H, double Vro2H, double r, int pzfs, int rsqbz, double Htao, double R, double F1, double Qir, ref double M);
         #endregion
         #region 3.固体燃料辐射减弱系数K计算 OK
         /// <summary>
@@ -244,7 +244,7 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <param name="Alpha1">返回值:</param>
         /// <param name="Psip">返回值:</param>
         /// <returns>是否计算成功（0表示成功）</returns>
-       int CalculateHeatReleaseCoefficient(double T1, double T2, double Alphan, double Alphak, double hrqxs, double gzlx, double csfs, double rlxs, double p, double s, double Tcp, double d, double l, double lb, double z1, double z2, double s2, double delTap, double delTab, double SigMa1, double SigMa2, double hp, double D, double sp, double sb, double th, double Enn,/*Add_调用辐射放热系数模块计算Alphan*/ double rmzl, double T3, double T4, double lodelta, double Todelta, double SigMaXp, double s1, double ln, double rn, double rh2o, double Ttn, double Mui3n, double glxs, double pzfs, double Alphat, double CH, double qyrl, double T, double Hn, double Bp,/*Add调用对流换热系数模块16计算Alphak*/ double Fr, double Qr, double hb, double z,/*Add 调用受热面利用系数计算模块*/double pwz, /*Add H调用管外壁温度计算模块得到Twb_1*/double SRFS, double i1, double Q, double t, ref double H, ref double Alpha1, ref double Psip);
+        int CalculateHeatReleaseCoefficient(EGangZhong gz, double T1, double T2, double Alphan, double Alphak, double hrqxs, double gzlx, double csfs, double rlxs, double p, double s, double Tcp, double d, double l, double lb, double z1, double z2, double s2, double delTap, double delTab, double SigMa1, double SigMa2, double hp, double D, double sp, double sb, double th, double Enn, double Hrp,/*Add_调用辐射放热系数模块计算Alphan*/ double rmzl, double T3, double T4, double lodelta, double Todelta, double SigMaXp, double s1, double ln, double rn, double rh2o, double Ttn, double Mui3n, double glxs, double pzfs, double Alphat, double CH, double qyrl, double T, double Hn, double Bp,/*Add调用对流换热系数模块16计算Alphak*/ double Fr, double Qr, double hb, double z, double lpDelTa,/*Add 调用受热面利用系数计算模块*/double pwz, /*Add H调用管外壁温度计算模块得到Twb_1*/double SRFS, double DelTad, double i1, double Q, double t, bool bIsWet, double P1, double P2, double i2, double SigMa, double G, double gzyh, double CaO, double chzz, double gttjj, ref double H, ref double Alpha1, ref double Psip);
 
         #endregion
 
@@ -301,7 +301,7 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <param name="H"></param>
         /// <param name="Twb"></param>
         /// <returns>是否计算成功（0表示成功）</returns>
-         int CalculateOuterWallTemperature(double hrqxs, double SRFS, double d, double DelTad, double l, double z1, double z2, double i1, double T1, double Alpha1, double H, double Qn, double Bp, double Q, double t, ref double Twb);
+         int CalculateOuterWallTemperature(double hrqxs, double SRFS, double d, double DelTad, double l, double z1, double z2, double i1, double T1, double Alpha1, double H, double Qn, double Bp, double Q, double t, bool bIsWet, double P1, double P2, double i2, double SigMa, double G, double gzyh, double rlxs, double CaO, double chzz, double Alphat, double gzlx, double gttjj, ref double Twb);
 
         #endregion
 
@@ -405,7 +405,7 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <param name="Alphak">返回值:烟气的对流放热系数计算</param>
         /// <param name="sInfo">错误信息</param>
         /// <returns>是否计算成功（0表示成功）</returns>
-        int CalculateFlueGasFlowHeatCoeffiient(double gzlx, double csfs, double hrqxs, double d, double l, double lb, double z1, double z2, double s1, double s2, double DelTap, double DelTab, double hp, double D, double Sp, double Sb, double T3, double T4, double Fr, double Qr, double th, double hb, double z, ref double Alphak, ref string sInfo);
+        int CalculateFlueGasFlowHeatCoeffiient(double gzlx, double csfs, double hrqxs, double d, double l, double lb, double z1, double z2, double s1, double s2, double DelTap, double DelTab, double hp, double D, double Sp, double Sb, double T3, double T4, double Fr, double Qr, double th, double hb, double z, double lpDelTa, double Hrp, ref double Alphak, ref string sInfo);
 
         #endregion
 
@@ -422,7 +422,7 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <param name="G">工质流量G</param>
         /// <param name="Alpha2">管壁向水和蒸汽的放热系数Alpha2</param>
         /// <returns>是否计算成功（0表示成功）</returns>
-        int CalculateWaterAngGasHeatCoefficient(double P1, double P2, double i1, double i2, double d, double SigMa, double G, double l, double z1, double z2, double gzyh, ref double Alpha2);
+        int CalculateWaterAngGasHeatCoefficient(double P1, double P2, double i1, double i2, double d, double SigMa, double G, double l, double z1, double z2, double gzyh, double hrqxs, double SRFS, double DelTad, double T1, double Alpha1, double H, double Qn, double Bp, double Q, double t, bool bIsWet, double rlxs, double CaO, double chzz, double Alphat, double gzlx, double gttjj, ref double Alpha2);
 
         #endregion
 
@@ -444,7 +444,7 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <param name="Psi">返回值:</param>
         /// <param name="sInfo">错误信息</param>
         /// <returns>是否计算成功（0表示成功）</returns>
-        int CalculateTemperaturePressureConvertCoefficient(double T1, double T2, double T3, double T4, double gsbz, double ns, double nn, double nx, double ljxs, double dlzjg, ref double DelTat, ref double Psi, ref string sInfo);
+        int CalculateTemperaturePressureConvertCoefficient(double T1, double T2, double T3, double T4, double gsbz, double ns, double nn, double nx, double ljxs, double dlzjg, ref double DelTat, double H, double Hs, ref double Psi, ref string sInfo);
         #endregion
     }
 }

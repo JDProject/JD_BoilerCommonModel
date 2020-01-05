@@ -151,9 +151,7 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <summary>
         /// 2.炉膛参数M计算
         /// </summary>
-        /// <param name="n">燃烧器布局参数_数量</param>
-        /// <param name="hi">燃烧器布局参数_标高</param>
-        /// <param name="Bi">燃烧器布局参数_燃料量</param>
+        /// <param name="arranges">燃烧器布局参数</param>
         /// <param name="glxs">锅炉形式（1:煤粉炉,2:循环流化床,3:链条炉,4:油气炉）</param>
         /// <param name="VrH">炉膛出口烟气容积</param>
         /// <param name="Vn2H">炉膛出口烟气N2容积</param>
@@ -167,7 +165,7 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <param name="Qir">低位发热量</param>
         /// <param name="M">返回值:炉膛参数</param>
         /// <returns></returns>
-        public int CalculateParameterM(List<CHeaterArrange> arranges, double glxs, double VrH, double Vn2H, double Vro2H, double r, int pzfs, int rsqbz, double Htao, double R, double F1,double Qir, ref double M)
+        public int CalculateParameterM(List<CHeaterArrange> arranges, double glxs, double VrH, double Vn2H, double Vro2H, double r, int pzfs, int rsqbz, double Htao, double R, double F1, double Qir, ref double M)
         {
             //Step1:燃烧器平均布置标高
             double dTemp1 = 0;
@@ -181,7 +179,7 @@ namespace JD_BoilerCommonModel.CommonModel
                 dTemp1 += ni * bi * Qir * hi;
                 dTemp2 += ni * bi * Qir;
             }
-            double htao = dTemp1/dTemp2;
+            double htao = dTemp1 / dTemp2;
             //Step2:计算燃烧器相对标高Xt
             double Xt = 0;
             if (3 == glxs)
@@ -483,7 +481,7 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <param name="e">几何参数e</param>
         /// <param name="x">返回值:水冷壁有效角系数x</param>
         /// <returns>是否计算成功（0表示成功）</returns>
-        public  int CalculateWaterCooledWallEffiectiveCoefficient(double gzlx, double SRFS, double d, double s, double n, double e, ref double x)
+        public int CalculateWaterCooledWallEffiectiveCoefficient(double gzlx, double SRFS, double d, double s, double n, double e, ref double x)
         {
             if (1 == gzlx && 1 == SRFS)
             {
@@ -692,10 +690,11 @@ namespace JD_BoilerCommonModel.CommonModel
 
         #endregion
 
-        #region 9.放热系数折算  
+        #region 9.放热系数折算   注释不全
         /// <summary>
         ///  9.放热系数折算 
         /// </summary>
+        /// <param name="gz">刚种类型</param>
         /// <param name="T1"></param>
         /// <param name="T2"></param>
         /// <param name="Alphan">燃烧产物辐射放热系数</param>
@@ -723,7 +722,8 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <param name="sb"></param>
         /// <param name="th"></param>
         /// <param name="Enn"></param>
-        /// <param name="rmzl">燃煤种类（1:无烟煤屑,2:烟煤,3:贫煤,4:褐煤,5:页岩,6:泥煤）</param>
+        /// <param name="Hrp"></param>
+        /// <param name="rmzl">Add_调用辐射放热系数模块计算Alphan 燃煤种类（1:无烟煤屑,2:烟煤,3:贫煤,4:褐煤,5:页岩,6:泥煤）</param>
         /// <param name="T3"></param>
         /// <param name="T4"></param>
         /// <param name="lodelta"></param>
@@ -743,24 +743,43 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <param name="T"></param>
         /// <param name="Hn"></param>
         /// <param name="Bp"></param>
-        /// <param name="Fr"></param>
+        /// <param name="Fr">Add调用对流换热系数模块16计算Alphak</param>
         /// <param name="Qr"></param>
         /// <param name="hb"></param>
         /// <param name="z"></param>
-        /// <param name="pwz">屏的位置屏的位置（1:前屏,2:侧面屏,3:双侧面屏,4:后屏,5:大屏,6:水平横屏,7:水平纵屏）</param>
-        /// <param name="SRFS">受热方式（1:单面,2:双面）</param>
+        /// <param name="lpDelTa"></param>
+        /// <param name="pwz">调用受热面利用系数计算模块_屏的位置屏的位置（1:前屏,2:侧面屏,3:双侧面屏,4:后屏,5:大屏,6:水平横屏,7:水平纵屏）</param>
+        /// <param name="SRFS">H调用管外壁温度计算模块得到Twb_1_受热方式（1:单面,2:双面）</param>
         /// <param name="i1"></param>
         /// <param name="Q"></param>
         /// <param name="t"></param>
         /// <param name="H"></param>
+        /// <param name="bIsWet"></param>
+        /// <param name="DelTad"></param>
+        /// <param name="P1"></param>
+        /// <param name="P2"></param>
+        /// <param name="i2"></param>
+        /// <param name="SigMa"></param>
+        /// <param name="G"></param>
+        /// <param name="gzyh"></param>
+        /// <param name="CaO"></param>
+        /// <param name="chzz"></param>
+        /// <param name="gttjj"></param>
         /// <param name="Alpha1">返回值:</param>
         /// <param name="Psip">返回值:</param>
         /// <returns>是否计算成功（0表示成功）</returns>
-        public int CalculateHeatReleaseCoefficient(double T1, double T2, double Alphan, double Alphak, double hrqxs, double gzlx, double csfs, double rlxs, double p, double s, double Tcp, double d, double l, double lb, double z1, double z2, double s2, double delTap, double delTab, double SigMa1, double SigMa2, double hp, double D, double sp, double sb, double th, double Enn,/*Add_调用辐射放热系数模块计算Alphan*/ double rmzl, double T3, double T4, double lodelta, double Todelta, double SigMaXp, double s1, double ln, double rn, double rh2o, double Ttn, double Mui3n, double glxs, double pzfs, double Alphat, double CH, double qyrl, double T, double Hn, double Bp,/*Add调用对流换热系数模块16计算Alphak*/ double Fr, double Qr, double hb, double z,/*Add 调用受热面利用系数计算模块*/double pwz, /*Add H调用管外壁温度计算模块得到Twb_1*/double SRFS, double i1, double Q, double t, ref double H, ref double Alpha1, ref double Psip)
+        public int CalculateHeatReleaseCoefficient(EGangZhong gz, double T1, double T2, double Alphan, double Alphak, double hrqxs, double gzlx, double csfs, double rlxs, double p, double s, double Tcp, double d, double l, double lb, double z1, double z2, double s2, double delTap, double delTab, double SigMa1, double SigMa2, double hp, double D, double sp, double sb, double th, double Enn, double Hrp,/*Add_调用辐射放热系数模块计算Alphan*/ double rmzl, double T3, double T4, double lodelta, double Todelta, double SigMaXp, double s1, double ln, double rn, double rh2o, double Ttn, double Mui3n, double glxs, double pzfs, double Alphat, double CH, double qyrl, double T, double Hn, double Bp,/*Add调用对流换热系数模块16计算Alphak*/ double Fr, double Qr, double hb, double z, double lpDelTa,/*Add 调用受热面利用系数计算模块*/double pwz, /*Add H调用管外壁温度计算模块得到Twb_1*/double SRFS, double DelTad, double i1, double Q, double t, bool bIsWet, double P1, double P2, double i2, double SigMa, double G, double gzyh, double CaO, double chzz, double gttjj, ref double H, ref double Alpha1, ref double Psip)
         {
             double tpdelta = (T1 + T2) / 2 + 100;
             //由tpdelta确定肋片等的导热系数LamdapDelta
-            double LamdapDelta = 0;
+            CTableGangzhongDataHelper gangzhongDataHelper = new CTableGangzhongDataHelper();
+            double A = 0, B = 0, thcx = 0;
+            int ret = gangzhongDataHelper.GetGangZhongData(gz, ref A, ref B, ref thcx);
+            if (0 != ret)
+            {
+                return ret;
+            }
+            double LamdapDelta = A * (1 - thcx) + B;
             //假定
             double Twb = tpdelta;
             bool bneedContinue = true;//是否继续循环
@@ -770,7 +789,7 @@ namespace JD_BoilerCommonModel.CommonModel
                 //调用辐射放热系数模块计算Alphan
                 Alphan = 0;
                 double Qn = 0;
-                int ret = CalculateRadiateHeaReleaseCoefficient(rlxs, rmzl, Twb, p, s, T3, T4, lodelta, Todelta, hrqxs, SigMaXp, s1, ln, rn, rh2o, Ttn, Mui3n, glxs, pzfs, Alphat, CH, qyrl, T, Hn, Bp, ref Qn, ref Alphan);
+                ret = CalculateRadiateHeaReleaseCoefficient(rlxs, rmzl, Twb, p, s, T3, T4, lodelta, Todelta, hrqxs, SigMaXp, s1, ln, rn, rh2o, Ttn, Mui3n, glxs, pzfs, Alphat, CH, qyrl, T, Hn, Bp, ref Qn, ref Alphan);
                 if (0 != ret)
                 {
                     return ret;
@@ -778,7 +797,7 @@ namespace JD_BoilerCommonModel.CommonModel
                 //调用对流换热系数模块16计算Alphak
                 Alphak = 0;
                 string sInfo = "";
-                ret = CalculateFlueGasFlowHeatCoeffiient(gzlx, csfs, hrqxs, d, l, lb, z1, z2, s1, s2, delTab, delTab, hp, D, sp, sb, T3, T4, Fr, Qr, th, hb, z, ref Alphak, ref sInfo);
+                ret = CalculateFlueGasFlowHeatCoeffiient(gzlx, csfs, hrqxs, d, l, lb, z1, z2, s1, s2, delTab, delTab, hp, D, sp, sb, T3, T4, Fr, Qr, th, hb, z, lpDelTa, Hrp, ref Alphak, ref sInfo);
                 if (0 != ret)
                 {
                     return ret;
@@ -858,11 +877,16 @@ namespace JD_BoilerCommonModel.CommonModel
                         Psip = 2 * (Math.Pow(D, 2) - 0.785 * Math.Pow(d, 2) + 2 * D * delTap) / (Math.PI * d * sp) + 1 - delTap / sp;
                         hp_1 = 0.5 * (1.13 * D - d);
                         D_1 = 1.13D;
-
-                        //???????????????????????
-
-                        H = Psip * Math.PI * d * l * z1 * z2;
                     }
+                    else if (4 == gzlx)
+                    {
+                        Psip = 2 * (Math.Pow(D, 2) - 0.785 * Math.Pow(d, 2) + 2 * D * delTap) / (Math.PI * d * sp) + 1 - delTap / sp;
+                        hp_1 = 0.5 * (D - d);
+                        D_1 = D;
+                    }
+                    double Htaop = (H / Psip) * (1 - delTap / sp);
+                    double HpDelta = H - Htaop;
+                    H = Psip * Math.PI * d * l * z1 * z2;
                     m = Math.Sqrt(2 * Alphak / (delTap * LamdapDelta));
                     double PhiE = 1 - 0.058 * m * hp;
                     //
@@ -901,7 +925,7 @@ namespace JD_BoilerCommonModel.CommonModel
                 }
                 //由Alpha1、H调用管外壁温度计算模块得到Twb_1
                 double Twb_1 = 0;
-                ret = CalculateOuterWallTemperature(hrqxs, SRFS, d, delTab, l, z1, z2, i1, T1, Alpha1, H, Qn, Bp, Q, t, ref Twb_1);
+                ret = CalculateOuterWallTemperature(hrqxs, SRFS, d, DelTad, l, z1, z2, i1, T1, Alpha1, H, Qn, Bp, Q, t, bIsWet, P1, P2, i2, SigMa, G, gzyh, rlxs, CaO, chzz, Alphat, gzlx, gttjj, ref Twb);
                 if (0 != ret)
                 {
                     return ret;
@@ -1029,7 +1053,7 @@ namespace JD_BoilerCommonModel.CommonModel
         }
         #endregion
 
-        #region 11.管外壁温度Twb 参数注释不全+一公式
+        #region 11.管外壁温度Twb 参数注释不全
         /// <summary>
         /// 11.管外壁温度Twb
         /// </summary>
@@ -1044,28 +1068,50 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <param name="T1"></param>
         /// <param name="Alpha1"></param>
         /// <param name="H"></param>
+        /// <param name="Qn"></param>
+        /// <param name="Bp"></param>
+        /// <param name="Q"></param>
+        /// <param name="t"></param>
+        /// <param name="bIsWet"></param>
         /// <param name="Twb"></param>
+        /// <param name="P1">调用Alpha2计算模块17</param>
+        /// <param name="P2">调用Alpha2计算模块17</param>
+        /// <param name="i2">调用Alpha2计算模块17</param>
+        /// <param name="SigMa">调用Alpha2计算模块17</param>
+        /// <param name="G">调用Alpha2计算模块17</param>
+        /// <param name="gzyh">调用Alpha2计算模块17</param>
+        /// <param name="G">调用Alpha2计算模块17</param>
+        /// <param name="rlxs">调用受热面污染系数计算模块13</param>
+        /// <param name="CaO">调用受热面污染系数计算模块13</param>
+        /// <param name="chzz">调用受热面污染系数计算模块13</param>
+        /// <param name="Alphat">调用受热面污染系数计算模块13</param>
+        /// <param name="gzlx">调用受热面热利用系数计算模块14</param>
+        /// <param name="gttjj">调用受热面热利用系数计算模块14</param>
         /// <returns>是否计算成功（0表示成功）</returns>
-        public int CalculateOuterWallTemperature(double hrqxs, double SRFS, double d, double DelTad, double l, double z1, double z2, double i1, double T1, double Alpha1, double H, double Qn, double Bp, double Q, double t, ref double Twb)
+        public int CalculateOuterWallTemperature(double hrqxs, double SRFS, double d, double DelTad, double l, double z1, double z2, double i1, double T1, double Alpha1, double H, double Qn, double Bp, double Q, double t, bool bIsWet, double P1, double P2, double i2, double SigMa, double G, double gzyh, double rlxs, double CaO, double chzz, double Alphat, double gzlx, double gttjj, ref double Twb)
         {
             double HBH = Math.PI * (d - 2 * DelTad) * l * z1 * z2;
-            //由T1确认ils1????
-            double ils1 = 0;
             double Alpha2 = 0;
-            if (i1 < ils1)
+            int ret = 0;
+            if (!bIsWet)//湿蒸汽
             {
-                1 / Alpha2 = 0;
+                //1 / Alpha2 = 0; 无穷大
+                Alpha2 = double.PositiveInfinity;
             }
-            else if (i1 >= ils1)
+            else if (bIsWet)//干蒸汽
             {
                 //调用Alpha2计算模块17得到Alpha2
-                Alpha2 = 0;
+                ret = CalculateWaterAngGasHeatCoefficient(P1, P2, i1, i2, d, SigMa, G, l, z1, z2, gzyh, hrqxs, SRFS, DelTad, T1, Alpha1, H, Qn, Bp, Q, t, bIsWet, rlxs, CaO, chzz, Alphat, gzlx, gttjj, ref Alpha2);
+                if (0 != ret)
+                {
+                    return ret;
+                }
             }
             if (1 == hrqxs || 1 == SRFS)
             {
                 //根据换热器参数，调用受热面污染系数计算模块13，得到epslion
                 double epslion = 0;
-                int ret = CalculateHeatingSurfacePollutionCoefficient(hrqxs, rlxs, CaO, chzz, Alphat, SRFS, ref epslion);
+                ret = CalculateHeatingSurfacePollutionCoefficient(hrqxs, rlxs, CaO, chzz, Alphat, SRFS, ref epslion);
                 if (0 != ret)
                 {
                     return ret;
@@ -1076,7 +1122,7 @@ namespace JD_BoilerCommonModel.CommonModel
             {
                 //根据换热器参数，调用受热面热利用系数计算模块14，得到psi
                 double psi = 0;
-                int ret = CalculateHeatCoefficient(hrqxs, rlxs, gzlx, CaO, chzz, gttjj, Alphat, ref psi);
+                ret = CalculateHeatCoefficient(hrqxs, rlxs, gzlx, CaO, chzz, gttjj, Alphat, ref psi);
                 if (0 != ret)
                 {
                     return ret;
@@ -1133,7 +1179,7 @@ namespace JD_BoilerCommonModel.CommonModel
         }
         #endregion
 
-        #region 13.对流受热面污染系数EpsaiLen计算
+        #region 13.对流受热面污染系数EpsaiLen计算 图形公式
         /// <summary>
         /// 13.对流受热面污染系数EpsaiLen计算
         /// </summary>
@@ -1366,10 +1412,12 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <param name="th"></param>
         /// <param name="hb"></param>
         /// <param name="z"></param>
+        /// <param name="lpDelTa"></param>
+        /// <param name="Hrp"></param>
         /// <param name="Alphak">返回值:烟气的对流放热系数计算</param>
         /// <param name="sInfo">错误信息</param>
         /// <returns>是否计算成功（0表示成功）</returns>
-        public int CalculateFlueGasFlowHeatCoeffiient(double gzlx, double csfs, double hrqxs, double d, double l, double lb, double z1, double z2, double s1, double s2, double DelTap, double DelTab, double hp, double D, double Sp, double Sb, double T3, double T4, double Fr, double Qr, double th, double hb, double z, ref double Alphak, ref string sInfo)
+        public int CalculateFlueGasFlowHeatCoeffiient(double gzlx, double csfs, double hrqxs, double d, double l, double lb, double z1, double z2, double s1, double s2, double DelTap, double DelTab, double hp, double D, double Sp, double Sb, double T3, double T4, double Fr, double Qr, double th, double hb, double z, double lpDelTa, double Hrp, ref double Alphak, ref string sInfo)
         {
             //平均温度
             double T_1 = (T3 + T4) / 2;
@@ -1380,17 +1428,6 @@ namespace JD_BoilerCommonModel.CommonModel
             double w = Qr / (Rou * Fr);
             double SigMa1 = s1 / d;
             double SigMa2 = s2 / d;
-            //double Cs = 0;
-            //double Cz = 0;
-            //double Phi = 0;
-            //double Phi_1 = 0;
-            //double Psip = 0;
-            //double Hrp = 0;//输入？？
-            //double x = 0;
-            //double n = 0;
-            //double lpDelTa = 0;
-            //double HpDelta = 0;
-            //double Htaop = 0;
             //横向冲刷顺列光管管束和屏
             if (1 == gzlx && 1 == csfs && (1 == hrqxs || 2 == hrqxs))
             {
@@ -1650,12 +1687,33 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <param name="P2"></param>
         /// <param name="i1"></param>
         /// <param name="i2"></param>
-        /// <param name="d">管子外径d</param>
-        /// <param name="SigMa">管子壁厚SigMa</param>
-        /// <param name="G">工质流量G</param>
-        /// <param name="Alpha2">管壁向水和蒸汽的放热系数Alpha2</param>
+        /// <param name="d"></param>
+        /// <param name="SigMa"></param>
+        /// <param name="G"></param>
+        /// <param name="l"></param>
+        /// <param name="z1"></param>
+        /// <param name="z2"></param>
+        /// <param name="gzyh"></param>
+        /// <param name="hrqxs">调用壁温计算模块</param>
+        /// <param name="SRFS">调用壁温计算模块</param>
+        /// <param name="DelTad">调用壁温计算模块</param>
+        /// <param name="T1">调用壁温计算模块</param>
+        /// <param name="Alpha1">调用壁温计算模块</param>
+        /// <param name="H">调用壁温计算模块</param>
+        /// <param name="Qn">调用壁温计算模块</param>
+        /// <param name="Bp">调用壁温计算模块</param>
+        /// <param name="Q">调用壁温计算模块</param>
+        /// <param name="t">调用壁温计算模块</param>
+        /// <param name="bIsWet">调用壁温计算模块</param>
+        /// <param name="rlxs">调用壁温计算模块</param>
+        /// <param name="CaO">调用壁温计算模块</param>
+        /// <param name="chzz">调用壁温计算模块</param>
+        /// <param name="Alphat">调用壁温计算模块</param>
+        /// <param name="gzlx">调用壁温计算模块</param>
+        /// <param name="gttjj">调用壁温计算模块</param>
+        /// <param name="Alpha2"></param>
         /// <returns>是否计算成功（0表示成功）</returns>
-        public int CalculateWaterAngGasHeatCoefficient(double P1, double P2, double i1, double i2, double d, double SigMa, double G, double l, double z1, double z2, double gzyh, ref double Alpha2)
+        public int CalculateWaterAngGasHeatCoefficient(double P1, double P2, double i1, double i2, double d, double SigMa, double G, double l, double z1, double z2, double gzyh, double hrqxs, double SRFS, double DelTad, double T1, double Alpha1, double H, double Qn, double Bp, double Q, double t, bool bIsWet, double rlxs, double CaO, double chzz, double Alphat, double gzlx, double gttjj, ref double Alpha2)
         {
             double di = d - 2 * SigMa;
             double P = (P1 + P2) / 2;
@@ -1715,7 +1773,7 @@ namespace JD_BoilerCommonModel.CommonModel
                 //调用壁温计算模块得到Tib以及对应的Pr1
                 double Tib = 0;
                 double Pr1 = 0;
-                int ret = CalculateOuterWallTemperature(hrqxs, SRFS, d, delTab, l, z1, z2, i1, T1, Alpha1, H, Qn, Bp, Q, t, ref Tib);
+                int ret = CalculateOuterWallTemperature(hrqxs, SRFS, d, DelTad, l, z1, z2, i1, T1, Alpha1, H, Qn, Bp, Q, t, bIsWet, P1, P2, i2, SigMa, G, gzyh, rlxs, CaO, chzz, Alphat, gzlx, gttjj, ref Tib);
                 if (0 != ret)
                 {
                     return ret;
@@ -1729,7 +1787,7 @@ namespace JD_BoilerCommonModel.CommonModel
                 {
                     Prmin = Pr1;
                 }
-                Alpha2 = 0.023 * (Lamda / di) * Math.Pow(Re, 0.8) * Math.Pow(Pr, 0.8);
+                Alpha2 = 0.023 * (Lamda / di) * Math.Pow(Re, 0.8) * Math.Pow(Prmin, 0.8);
             }
             else if (22 < P && (840 < i && 2800 > i) && 0.39 < (qi * Math.Pow(10, -3)) / (w * Rou))
             {
@@ -1759,11 +1817,13 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <param name="nx"></param>
         /// <param name="ljxs">十字交叉管束联接型式（1:C型,2:CZ或ZC型）</param>
         /// <param name="dlzjg">十字叫擦汗管束导流罩型式（1:双通道导流罩,2:三通道导流罩）</param>
+        /// <param name="H"></param>
+        /// <param name="Hs"></param>
         /// <param name="DelTat">返回值:</param>
         /// <param name="Psi">返回值:</param>
         /// <param name="sInfo">错误信息</param>
         /// <returns>是否计算成功（0表示成功）</returns>
-        public int CalculateTemperaturePressureConvertCoefficient(double T1, double T2, double T3, double T4, double gsbz, double ns, double nn, double nx, double ljxs, double dlzjg, ref double DelTat, ref double Psi, ref string sInfo)
+        public int CalculateTemperaturePressureConvertCoefficient(double T1, double T2, double T3, double T4, double gsbz, double ns, double nn, double nx, double ljxs, double dlzjg, ref double DelTat, double H, double Hs, ref double Psi, ref string sInfo)
         {
             //纯顺流温压计算
             if (1 == gsbz)
@@ -1871,7 +1931,7 @@ namespace JD_BoilerCommonModel.CommonModel
                 double tao1 = T3 - T4;
                 double tao2 = T2 - T1;
                 double taoDelta = 0;
-                double taoM =;
+                double taoM = 0;
                 if (tao1 > tao2)
                 {
                     taoDelta = tao1;
@@ -1965,319 +2025,5 @@ namespace JD_BoilerCommonModel.CommonModel
         }
         #endregion
     }
-    #region 模拟屏式受热面角系数表
-    /// <summary>
-    /// 模拟屏式受热面角系数表帮助类
-    /// </summary>
-    public class CTableScreenAreaHeatTransferHelper
-    {
-        /// <summary>
-        /// 表中数据集合
-        /// </summary>
-        private List<CTableScreenAreaHeatTransfer> TableList = new List<CTableScreenAreaHeatTransfer>();
-        /// <summary>
-        /// 构造函数
-        /// </summary>
-        public CTableScreenAreaHeatTransferHelper()
-        {
-            tableDataInit();
-        }
-        /// <summary>
-        /// 初始化表格数据
-        /// </summary>
-        private void tableDataInit()
-        {
-            //n=1
-            TableList.Add(new CTableScreenAreaHeatTransfer(1, 2.5, 0.490, 0.490));
-            TableList.Add(new CTableScreenAreaHeatTransfer(1, 5, 0.280, 0.280));
-            TableList.Add(new CTableScreenAreaHeatTransfer(1, 7.5, 0.193, 0.193));
-            TableList.Add(new CTableScreenAreaHeatTransfer(1, 10, 0.150, 0.150));
-            TableList.Add(new CTableScreenAreaHeatTransfer(1, 12.5, 0.123, 0.123));
-            TableList.Add(new CTableScreenAreaHeatTransfer(1, 15, 0.104, 0.104));
-            TableList.Add(new CTableScreenAreaHeatTransfer(1, 17.5, 0.089, 0.089));
-            TableList.Add(new CTableScreenAreaHeatTransfer(1, 20, 0.078, 0.078));
-            TableList.Add(new CTableScreenAreaHeatTransfer(1, 25, 0.062, 0.062));
-            TableList.Add(new CTableScreenAreaHeatTransfer(1, 30, 0.053, 0.053));
-            TableList.Add(new CTableScreenAreaHeatTransfer(1, 35, 0.046, 0.046));
-            TableList.Add(new CTableScreenAreaHeatTransfer(1, 40, 0.040, 0.040));
-            //n=2
-            TableList.Add(new CTableScreenAreaHeatTransfer(2, 2.5, 0.192, 0.682));
-            TableList.Add(new CTableScreenAreaHeatTransfer(2, 5, 0.155, 0.435));
-            TableList.Add(new CTableScreenAreaHeatTransfer(2, 7.5, 0.122, 0.315));
-            TableList.Add(new CTableScreenAreaHeatTransfer(2, 10, 0.100, 0.250));
-            TableList.Add(new CTableScreenAreaHeatTransfer(2, 12.5, 0.084, 0.207));
-            TableList.Add(new CTableScreenAreaHeatTransfer(2, 15, 0.071, 0.175));
-            TableList.Add(new CTableScreenAreaHeatTransfer(2, 17.5, 0.061, 0.150));
-            TableList.Add(new CTableScreenAreaHeatTransfer(2, 20, 0.054, 0.132));
-            TableList.Add(new CTableScreenAreaHeatTransfer(2, 25, 0.043, 0.105));
-            TableList.Add(new CTableScreenAreaHeatTransfer(2, 30, 0.037, 0.090));
-            TableList.Add(new CTableScreenAreaHeatTransfer(2, 35, 0.032, 0.078));
-            TableList.Add(new CTableScreenAreaHeatTransfer(2, 40, 0.029, 0.069));
-            //n=3
-            TableList.Add(new CTableScreenAreaHeatTransfer(3, 2.5, 0.120, 0.802));
-            TableList.Add(new CTableScreenAreaHeatTransfer(3, 5, 0.122, 0.557));
-            TableList.Add(new CTableScreenAreaHeatTransfer(3, 7.5, 0.104, 0.418));
-            TableList.Add(new CTableScreenAreaHeatTransfer(3, 10, 0.088, 0.338));
-            TableList.Add(new CTableScreenAreaHeatTransfer(3, 12.5, 0.076, 0.283));
-            TableList.Add(new CTableScreenAreaHeatTransfer(3, 15, 0.065, 0.240));
-            TableList.Add(new CTableScreenAreaHeatTransfer(3, 17.5, 0.057, 0.207));
-            TableList.Add(new CTableScreenAreaHeatTransfer(3, 20, 0.051, 0.183));
-            TableList.Add(new CTableScreenAreaHeatTransfer(3, 25, 0.041, 0.146));
-            TableList.Add(new CTableScreenAreaHeatTransfer(3, 30, 0.036, 0.126));
-            TableList.Add(new CTableScreenAreaHeatTransfer(3, 35, 0.031, 0.109));
-            TableList.Add(new CTableScreenAreaHeatTransfer(3, 40, 0.028, 0.097));
-            //n=4
-            TableList.Add(new CTableScreenAreaHeatTransfer(4, 2.5, 0.075, 0.876));
-            TableList.Add(new CTableScreenAreaHeatTransfer(4, 5, 0.095, 0.652));
-            TableList.Add(new CTableScreenAreaHeatTransfer(4, 7.5, 0.088, 0.506));
-            TableList.Add(new CTableScreenAreaHeatTransfer(4, 10, 0.078, 0.415));
-            TableList.Add(new CTableScreenAreaHeatTransfer(4, 12.5, 0.069, 0.352));
-            TableList.Add(new CTableScreenAreaHeatTransfer(4, 15, 0.060, 0.300));
-            TableList.Add(new CTableScreenAreaHeatTransfer(4, 17.5, 0.053, 0.260));
-            TableList.Add(new CTableScreenAreaHeatTransfer(4, 20, 0.048, 0.231));
-            TableList.Add(new CTableScreenAreaHeatTransfer(4, 25, 0.039, 0.185));
-            TableList.Add(new CTableScreenAreaHeatTransfer(4, 30, 0.034, 0.160));
-            TableList.Add(new CTableScreenAreaHeatTransfer(4, 35, 0.030, 0.139));
-            TableList.Add(new CTableScreenAreaHeatTransfer(4, 40, 0.027, 0.124));
-            //n=5
-            TableList.Add(new CTableScreenAreaHeatTransfer(5, 5, 0.075, 0.727));
-            TableList.Add(new CTableScreenAreaHeatTransfer(5, 7.5, 0.075, 0.581));
-            TableList.Add(new CTableScreenAreaHeatTransfer(5, 10, 0.069, 0.485));
-            TableList.Add(new CTableScreenAreaHeatTransfer(5, 12.5, 0.062, 0.414));
-            TableList.Add(new CTableScreenAreaHeatTransfer(5, 15, 0.055, 0.356));
-            TableList.Add(new CTableScreenAreaHeatTransfer(5, 17.5, 0.050, 0.310));
-            TableList.Add(new CTableScreenAreaHeatTransfer(5, 20, 0.045, 0.276));
-            TableList.Add(new CTableScreenAreaHeatTransfer(5, 25, 0.037, 0.222));
-            TableList.Add(new CTableScreenAreaHeatTransfer(5, 30, 0.033, 0.192));
-            TableList.Add(new CTableScreenAreaHeatTransfer(5, 35, 0.029, 0.168));
-            TableList.Add(new CTableScreenAreaHeatTransfer(5, 40, 0.026, 0.151));
-            //n=6
-            TableList.Add(new CTableScreenAreaHeatTransfer(6, 5, 0.059, 0.786));
-            TableList.Add(new CTableScreenAreaHeatTransfer(6, 7.5, 0.063, 0.644));
-            TableList.Add(new CTableScreenAreaHeatTransfer(6, 10, 0.061, 0.545));
-            TableList.Add(new CTableScreenAreaHeatTransfer(6, 12.5, 0.056, 0.470));
-            TableList.Add(new CTableScreenAreaHeatTransfer(6, 15, 0.051, 0.407));
-            TableList.Add(new CTableScreenAreaHeatTransfer(6, 17.5, 0.046, 0.356));
-            TableList.Add(new CTableScreenAreaHeatTransfer(6, 20, 0.042, 0.318));
-            TableList.Add(new CTableScreenAreaHeatTransfer(6, 25, 0.036, 0.258));
-            TableList.Add(new CTableScreenAreaHeatTransfer(6, 30, 0.032, 0.224));
-            TableList.Add(new CTableScreenAreaHeatTransfer(6, 35, 0.028, 0.198));
-            TableList.Add(new CTableScreenAreaHeatTransfer(6, 40, 0.026, 0.176));
-            //n=7
-            TableList.Add(new CTableScreenAreaHeatTransfer(7, 5, 0.046, 0.832));
-            TableList.Add(new CTableScreenAreaHeatTransfer(7, 7.5, 0.054, 0.698));
-            TableList.Add(new CTableScreenAreaHeatTransfer(7, 10, 0.053, 0.599));
-            TableList.Add(new CTableScreenAreaHeatTransfer(7, 12.5, 0.051, 0.521));
-            TableList.Add(new CTableScreenAreaHeatTransfer(7, 15, 0.047, 0.454));
-            TableList.Add(new CTableScreenAreaHeatTransfer(7, 17.5, 0.043, 0.399));
-            TableList.Add(new CTableScreenAreaHeatTransfer(7, 20, 0.040, 0.358));
-            TableList.Add(new CTableScreenAreaHeatTransfer(7, 25, 0.034, 0.292));
-            TableList.Add(new CTableScreenAreaHeatTransfer(7, 30, 0.030, 0.254));
-            TableList.Add(new CTableScreenAreaHeatTransfer(7, 35, 0.027, 0.223));
-            TableList.Add(new CTableScreenAreaHeatTransfer(7, 40, 0.025, 0.201));
-            //n=8
-            TableList.Add(new CTableScreenAreaHeatTransfer(8, 5, 0.036, 0.868));
-            TableList.Add(new CTableScreenAreaHeatTransfer(8, 7.5, 0.046, 0.744));
-            TableList.Add(new CTableScreenAreaHeatTransfer(8, 10, 0.047, 0.646));
-            TableList.Add(new CTableScreenAreaHeatTransfer(8, 12.5, 0.046, 0.568));
-            TableList.Add(new CTableScreenAreaHeatTransfer(8, 15, 0.043, 0.497));
-            TableList.Add(new CTableScreenAreaHeatTransfer(8, 17.5, 0.040, 0.439));
-            TableList.Add(new CTableScreenAreaHeatTransfer(8, 20, 0.038, 0.396));
-            TableList.Add(new CTableScreenAreaHeatTransfer(8, 25, 0.032, 0.325));
-            TableList.Add(new CTableScreenAreaHeatTransfer(8, 30, 0.029, 0.284));
-            TableList.Add(new CTableScreenAreaHeatTransfer(8, 35, 0.026, 0.249));
-            TableList.Add(new CTableScreenAreaHeatTransfer(8, 40, 0.024, 0.226));
-            //n=9
-            TableList.Add(new CTableScreenAreaHeatTransfer(9, 7.5, 0.039, 0.782));
-            TableList.Add(new CTableScreenAreaHeatTransfer(9, 10, 0.042, 0.688));
-            TableList.Add(new CTableScreenAreaHeatTransfer(9, 12.5, 0.042, 0.608));
-            TableList.Add(new CTableScreenAreaHeatTransfer(9, 15, 0.040, 0.537));
-            TableList.Add(new CTableScreenAreaHeatTransfer(9, 17.5, 0.038, 0.477));
-            TableList.Add(new CTableScreenAreaHeatTransfer(9, 20, 0.035, 0.431));
-            TableList.Add(new CTableScreenAreaHeatTransfer(9, 25, 0.031, 0.356));
-            TableList.Add(new CTableScreenAreaHeatTransfer(9, 30, 0.028, 0.312));
-            TableList.Add(new CTableScreenAreaHeatTransfer(9, 35, 0.025, 0.274));
-            TableList.Add(new CTableScreenAreaHeatTransfer(9, 40, 0.023, 0.249));
-            //n=10
-            TableList.Add(new CTableScreenAreaHeatTransfer(10, 7.5, 0.033, 0.815));
-            TableList.Add(new CTableScreenAreaHeatTransfer(10, 10, 0.037, 0.724));
-            TableList.Add(new CTableScreenAreaHeatTransfer(10, 12.5, 0.038, 0.646));
-            TableList.Add(new CTableScreenAreaHeatTransfer(10, 15, 0.037, 0.574));
-            TableList.Add(new CTableScreenAreaHeatTransfer(10, 17.5, 0.035, 0.512));
-            TableList.Add(new CTableScreenAreaHeatTransfer(10, 20, 0.033, 0.464));
-            TableList.Add(new CTableScreenAreaHeatTransfer(10, 25, 0.029, 0.385));
-            TableList.Add(new CTableScreenAreaHeatTransfer(10, 30, 0.027, 0.338));
-            TableList.Add(new CTableScreenAreaHeatTransfer(10, 35, 0.024, 0.298));
-            TableList.Add(new CTableScreenAreaHeatTransfer(10, 40, 0.023, 0.272));
-            //n=12
-            TableList.Add(new CTableScreenAreaHeatTransfer(12, 7.5, 0.024, 0.867));
-            TableList.Add(new CTableScreenAreaHeatTransfer(12, 10, 0.029, 0.785));
-            TableList.Add(new CTableScreenAreaHeatTransfer(12, 12.5, 0.031, 0.710));
-            TableList.Add(new CTableScreenAreaHeatTransfer(12, 15, 0.031, 0.639));
-            TableList.Add(new CTableScreenAreaHeatTransfer(12, 17.5, 0.030, 0.575));
-            TableList.Add(new CTableScreenAreaHeatTransfer(12, 20, 0.029, 0.525));
-            TableList.Add(new CTableScreenAreaHeatTransfer(12, 25, 0.027, 0.440));
-            TableList.Add(new CTableScreenAreaHeatTransfer(12, 30, 0.025, 0.389));
-            TableList.Add(new CTableScreenAreaHeatTransfer(12, 35, 0.023, 0.344));
-            TableList.Add(new CTableScreenAreaHeatTransfer(12, 40, 0.021, 0.315));
-            //n=14
-            TableList.Add(new CTableScreenAreaHeatTransfer(14, 10, 0.022, 0.833));
-            TableList.Add(new CTableScreenAreaHeatTransfer(14, 12.5, 0.025, 0.763));
-            TableList.Add(new CTableScreenAreaHeatTransfer(14, 15, 0.026, 0.694));
-            TableList.Add(new CTableScreenAreaHeatTransfer(14, 17.5, 0.026, 0.630));
-            TableList.Add(new CTableScreenAreaHeatTransfer(14, 20, 0.026, 0.579));
-            TableList.Add(new CTableScreenAreaHeatTransfer(14, 25, 0.024, 0.490));
-            TableList.Add(new CTableScreenAreaHeatTransfer(14, 30, 0.023, 0.436));
-            TableList.Add(new CTableScreenAreaHeatTransfer(14, 35, 0.021, 0.388));
-            TableList.Add(new CTableScreenAreaHeatTransfer(14, 40, 0.020, 0.358));
-            //n=16
-            TableList.Add(new CTableScreenAreaHeatTransfer(16, 10, 0.017, 0.870));
-            TableList.Add(new CTableScreenAreaHeatTransfer(16, 12.5, 0.021, 0.806));
-            TableList.Add(new CTableScreenAreaHeatTransfer(16, 15, 0.022, 0.740));
-            TableList.Add(new CTableScreenAreaHeatTransfer(16, 17.5, 0.023, 0.678));
-            TableList.Add(new CTableScreenAreaHeatTransfer(16, 20, 0.023, 0.627));
-            TableList.Add(new CTableScreenAreaHeatTransfer(16, 25, 0.022, 0.536));
-            TableList.Add(new CTableScreenAreaHeatTransfer(16, 30, 0.021, 0.479));
-            TableList.Add(new CTableScreenAreaHeatTransfer(16, 35, 0.020, 0.428));
-            TableList.Add(new CTableScreenAreaHeatTransfer(16, 40, 0.019, 0.394));
-            //n=18
-            TableList.Add(new CTableScreenAreaHeatTransfer(18, 10, 0.013, 0.699));
-            TableList.Add(new CTableScreenAreaHeatTransfer(18, 12.5, 0.017, 0.842));
-            TableList.Add(new CTableScreenAreaHeatTransfer(18, 15, 0.019, 0.780));
-            TableList.Add(new CTableScreenAreaHeatTransfer(18, 17.5, 0.020, 0.720));
-            TableList.Add(new CTableScreenAreaHeatTransfer(18, 20, 0.020, 0.670));
-            TableList.Add(new CTableScreenAreaHeatTransfer(18, 25, 0.020, 0.578));
-            TableList.Add(new CTableScreenAreaHeatTransfer(18, 30, 0.020, 0.519));
-            TableList.Add(new CTableScreenAreaHeatTransfer(18, 35, 0.018, 0.466));
-            TableList.Add(new CTableScreenAreaHeatTransfer(18, 40, 0.018, 0.430));
-            //n=20
-            TableList.Add(new CTableScreenAreaHeatTransfer(20, 12.5, 0.014, 0.870));
-            TableList.Add(new CTableScreenAreaHeatTransfer(20, 15, 0.016, 0.813));
-            TableList.Add(new CTableScreenAreaHeatTransfer(20, 17.5, 0.018, 0.756));
-            TableList.Add(new CTableScreenAreaHeatTransfer(20, 20, 0.018, 0.707));
-            TableList.Add(new CTableScreenAreaHeatTransfer(20, 25, 0.018, 0.615));
-            TableList.Add(new CTableScreenAreaHeatTransfer(20, 30, 0.018, 0.556));
-            TableList.Add(new CTableScreenAreaHeatTransfer(20, 35, 0.017, 0.501));
-            TableList.Add(new CTableScreenAreaHeatTransfer(20, 40, 0.017, 0.464));
-            //n=25
-            TableList.Add(new CTableScreenAreaHeatTransfer(25, 15, 0.011, 0.876));
-            TableList.Add(new CTableScreenAreaHeatTransfer(25, 17.5, 0.012, 0.827));
-            TableList.Add(new CTableScreenAreaHeatTransfer(25, 20, 0.013, 0.783));
-            TableList.Add(new CTableScreenAreaHeatTransfer(25, 25, 0.015, 0.696));
-            TableList.Add(new CTableScreenAreaHeatTransfer(25, 30, 0.015, 0.636));
-            TableList.Add(new CTableScreenAreaHeatTransfer(25, 35, 0.015, 0.579));
-            TableList.Add(new CTableScreenAreaHeatTransfer(25, 40, 0.014, 0.540));
-            //n=30
-            TableList.Add(new CTableScreenAreaHeatTransfer(30, 17.5, 0.009, 0.878));
-            TableList.Add(new CTableScreenAreaHeatTransfer(30, 20, 0.010, 0.840));
-            TableList.Add(new CTableScreenAreaHeatTransfer(30, 25, 0.012, 0.759));
-            TableList.Add(new CTableScreenAreaHeatTransfer(30, 30, 0.012, 0.702));
-            TableList.Add(new CTableScreenAreaHeatTransfer(30, 35, 0.012, 0.645));
-            TableList.Add(new CTableScreenAreaHeatTransfer(30, 40, 0.012, 0.606));
-            //n=35
-            TableList.Add(new CTableScreenAreaHeatTransfer(35, 25, 0.009, 0.810));
-            TableList.Add(new CTableScreenAreaHeatTransfer(35, 30, 0.010, 0.756));
-            TableList.Add(new CTableScreenAreaHeatTransfer(35, 35, 0.010, 0.701));
-            TableList.Add(new CTableScreenAreaHeatTransfer(35, 40, 0.010, 0.662));
-            //n=40
-            TableList.Add(new CTableScreenAreaHeatTransfer(40, 25, 0.007, 0.850));
-            TableList.Add(new CTableScreenAreaHeatTransfer(40, 30, 0.008, 0.800));
-            TableList.Add(new CTableScreenAreaHeatTransfer(40, 35, 0.009, 0.748));
-            TableList.Add(new CTableScreenAreaHeatTransfer(40, 40, 0.009, 0.710));
-            //n=45
-            TableList.Add(new CTableScreenAreaHeatTransfer(45, 30, 0.006, 0.836));
-            TableList.Add(new CTableScreenAreaHeatTransfer(45, 35, 0.007, 0.787));
-            TableList.Add(new CTableScreenAreaHeatTransfer(45, 40, 0.008, 0.751));
-            //n=50
-            TableList.Add(new CTableScreenAreaHeatTransfer(50, 35, 0.006, 0.821));
-            TableList.Add(new CTableScreenAreaHeatTransfer(50, 40, 0.007, 0.786));
-            //n=55
-            TableList.Add(new CTableScreenAreaHeatTransfer(55, 35, 0.005, 0.849));
-            TableList.Add(new CTableScreenAreaHeatTransfer(55, 40, 0.006, 0.817));
-            //n=60
-            TableList.Add(new CTableScreenAreaHeatTransfer(60, 40, 0.005, 0.843));
-        }
-        /// <summary>
-        /// 模拟表7-1,查询SigMaxp
-        /// </summary>
-        /// <param name="n"></param>
-        /// <param name="SigMa1"></param>
-        /// <param name="SigMaxp"></param>
-        /// <returns></returns>
-        public int GetSigMaxp(double n, double SigMa1, ref double xp, ref double SigMaxp)
-        {
-            int ret = -1;
-            double xpTemp = 0;
-            double SigMaxpTemp = 0;
-            foreach (CTableScreenAreaHeatTransfer table in TableList)
-            {
-                ret = table.GetxpAndSigMaxp(n, SigMa1, ref xpTemp, ref SigMaxpTemp);
-                if (0 == ret)
-                {
-                    xp = xpTemp;
-                    SigMaxp = SigMaxpTemp;
-                    return 0;
-                }
-            }
-            return ret;
-        }
-    }
 
-    /// <summary>
-    /// 模拟屏式受热面角系数表中数据类
-    /// </summary>
-    public class CTableScreenAreaHeatTransfer
-    {
-        #region Properities
-        /// <summary>
-        /// SigMa1值
-        /// </summary>
-        private double dSigMa1;
-        /// <summary>
-        /// 管排序号n
-        /// </summary>
-        private double dn;
-        /// <summary>
-        /// 角系数xp
-        /// </summary>
-        private double dxp;
-        /// <summary>
-        /// 角系数和
-        /// </summary>
-        private double dSigMaxp;
-        #endregion
-        /// <summary>
-        /// 构造函数
-        /// </summary>
-        /// <param name="n"></param>
-        /// <param name="SigMa1"></param>
-        /// <param name="xp"></param>
-        /// <param name="SigMaxp"></param>
-        public CTableScreenAreaHeatTransfer(double n, double SigMa1, double xp, double SigMaxp)
-        {
-            dn = n;
-            dSigMa1 = SigMa1;
-            dxp = xp;
-            dSigMaxp = SigMaxp;
-        }
-        /// <summary>
-        /// 查找xp的值
-        /// </summary>
-        /// <param name="SigMa1"></param>
-        /// <param name="n"></param>
-        /// <param name="xp"></param>
-        /// <param name="SigMaxp"></param>
-        /// <returns></returns>
-        public int GetxpAndSigMaxp(double SigMa1, double n, ref double xp, ref double SigMaxp)
-        {
-            if (dSigMa1 == SigMa1 && dn == n)
-            {
-                xp = dxp;
-                SigMa1 = dSigMa1;
-                return 0;
-            }
-            return -1;
-        }
-    }
-    #endregion
 }
