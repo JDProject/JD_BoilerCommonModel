@@ -265,7 +265,7 @@ namespace JD_BoilerCommonModel.CommonModel
             double TT_1 = 0;
             double IT_2 = 0;
             bool bContinue = true;
-                double Hslf = 0, Hsl = 0, Hp = 0, Hbg = 0, HT = 0, Bu = 0, PeSaicp = 0;
+            double Hslf = 0, Hsl = 0, Hp = 0, Hbg = 0, HT = 0, Bu = 0, PeSaicp = 0;
             do
             {
                 double Vccp = (QT - IT_2) / (Ta - TT_2);
@@ -289,13 +289,13 @@ namespace JD_BoilerCommonModel.CommonModel
                 double yf = (1 - (HT - Hslf) * ypy / HT) * (HT / Hslf);
                 double qn = Phi * (QT - IT_2) / HT;
                 double Qsl_1 = Hslf * yf * qn + (Hsl - Hslf) * ypy * qn;
-               double dTempRestult = Math.Abs((Qsl_1 - Qsl) / Qsl_1);
+                double dTempRestult = Math.Abs((Qsl_1 - Qsl) / Qsl_1);
                 if (0.0001 < dTempRestult)
                 {
                     return -1;//给出dTempResult
                 }
                 double BuAvg = 1.6 * Math.Log((1.4 * Math.Pow(Bu, 2) + Bu + 2) / (1.4 * Math.Pow(Bu, 2) - Bu + 2));
-                 TT_1 = Ta / (1 + M * Math.Pow(BuAvg, 0.3) * Math.Pow((5.67 * Math.Pow(10, -11) * PeSaicp * F1 * Math.Pow(Ta, 3)), 0.6));
+                TT_1 = Ta / (1 + M * Math.Pow(BuAvg, 0.3) * Math.Pow((5.67 * Math.Pow(10, -11) * PeSaicp * F1 * Math.Pow(Ta, 3)), 0.6));
                 dTempRestult = Math.Abs(TT_1 - TT_2);
                 if (20 < dTempRestult)
                 {
@@ -330,19 +330,121 @@ namespace JD_BoilerCommonModel.CommonModel
         #region 能量分配（公用方法）
         public int EnergyAssignment()
         {
-            //5.2
+            double sigMa1 = s1 / d;
+            double sigMa2 = s2 / d;
+            if ((1 == gzlx && 2 == hrqxs && 3 < sigMa1 && 1.5 > sigMa2) || (2 == gzlx && 3 < sigMa2 && 2 > sigMa2))
+            {
+                hrqxs = 1;
+            }
+            if (1 == hrqxs)
+            {
+                //由Z2和SigMa1 计算Sigmaxp
+                7 - 1
+            }
+            else
+            {
+                //由Z2和SigMa1 计算Sigmaxp
+                7 - 2
+            }
+            //调用有效辐射层厚度或烟气流黑度计算模块，得到黑度a
+            double Qn = 0, Q4n = 0;
+            if (0 == fsrcd)
+            {
+                Qn = Qyc / Bp;
+                Q4n = 0;
+            }
+            else
+            {
+                Qn = Qyc * SigMaxp * (1 - a) / Bp;
+                Q4n = Qyc * (1 - sigMaxp * (1 - a)) / Bp;
+            }
+            double Qt = D1 * (H2 - H1) / Bp;
+            double Q = Qt - Qn;
             return 0;
         }
         #endregion
         #region 传热系数（公用方法）
-        public int HeatTransferCofficientCalculate()
+        public int HeatTransferCofficientCalculate(double hrqxs)
         {//5.3
+            double Psi = 0;
+            double Epsilon = 0;
+            if (1 == hrqxs)
+            {
+                Psi = 1.0;
+                //由rlxs、CaO、chzz、AlphaT、SRFS、调用对流受热污染系数得到Epsilon
+            }
+            else
+            {
+                Epsilon = 0;
+                //由hrqxs、rlxs、gzlx、CaO、chzz、gttjj调用热利用系数得到Psi
+            }
+            //由hrqxs、pwz、csfs 调用受热面利用系数计算模块，得到xi
+            double xi = 0;
+            double HBH = Math.PI * (d - 2 * Deltad) * l * z1 * z2;
+            //调用辐射放热系数模块alphan计算
+            double alphan = 0;
+            //调用对流换热系数模块alphak计算
+            double alphat = 0;
+
+            double alpha1 = 0, H = 0;
+            //屏
+            if (1 == hrqxs)
+            {
+                if (1 == gzlx)
+                {
+                    x = 1 - Math.Sqrt(1 - Math.Pow(d / s2, 2)) + d / s2 * Math.Atan(Math.Sqrt(Math.Pow(s2 / d, 2) - 1));
+                    alpha1 = xi * (alphak * Math.PI / (2 * sigMa2 * x) + alphan);
+                    H = Math.PI * d * l * z1 * z2;
+                }
+                else if (2 == gzlx)
+                {
+                    alpha1 = xi * (alphak * (0.57 / sigMa2 + 1) + alphan);
+                    H = 2 * l * z1 * z2 * (d * Math.Acos(Deltap / (2 * d)) + 2 * Deltap * l + 4 * hp * l);
+                }
+            }
+            //管束
+            else if (2 == hrqxs && 3 == hrqxs)
+            {
+                //根据管束几何参数，调用放热系数折算模块，得到alpha1,H
+            }
+            //调用管内换热系数计算模块，得到alpha2
+
+            //传热系数K
+            double K = Psi * alpha1 / (1 + (1 + Qn / Q) * (Epsilon + H / (alpha2 * HBH)) * alpha1);
             return 0;
         }
         #endregion
         #region 换热器热力设计计算
         public int HeatExchangerDesignCalculate()
         {//5.5
+            double P2 = P1 - DeltaPw;
+            double P4 = p3 - Deltapf;
+            //由P1，T1 得到H1;
+            double H1 = 0;
+            //由P2，T2 得到H2;
+            double H2 = 0;
+            //由P3，T3 得到H3;
+            double H3 = 0;
+            //由P4，T4 得到H4;
+            double H4 = 0;
+            double Qt = H2 - H1;
+            //调用能量分配模块，得到Qn,Qn4  Qt Q
+
+            //根据设置好的结构参数，调用传热系数计算模块，得到传热系数H K
+            double K = 0;
+            double H = 0;
+            //调用温压计算模块，得到Deltat
+            double Deltat = 0;
+            double H_1 = Qt * Bp / (H * Deltat);
+            double dTempResult = Math.Abs((H - H_1) / H_1);
+            if (0.001 < dTempResult)
+            {
+                //手动按偏差比例调整换热器结构参数
+            }
+            else
+            {
+                //确定结构参数和Qn4
+            }
             return 0;
         }
         #endregion
