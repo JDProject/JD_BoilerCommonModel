@@ -423,7 +423,7 @@ namespace JD_BoilerCommonModel.CommonModel
             double H1 = 0;
             //由P2，T2 得到H2;
             double H2 = 0;
-            //由P3，T3 得到H3;
+            //由P3，T3 及烟气成分得到H3;
             double H3 = 0;
             //由P4，T4 得到H4;
             double H4 = 0;
@@ -449,41 +449,291 @@ namespace JD_BoilerCommonModel.CommonModel
         }
         #endregion
         #region 换热器热力校核计算
-        public int HeatExchangerCheckCalculate()
+        public int HeatExchangerCheckCalculate(double P1, double T1, double P3, double T3, double Gw, double Gf, double DeltaPw, double DeltaPf, List<CHeaterArrange> heaterArranges, double glxs, double rlxs, double pzfs, double rmzl, double qyrl, double Qyc, ref double T2, ref double T4, ref double Qn, ref double Q4n, ref double Qt, ref double Q)
         {//5.6
+            bool bContinue = true;
+            T2 = 0;//假定T2初值，默认为设计值
+            double P2 = P1 - DeltaPw;
+            double P4 = P3 - DeltaPf;
+            //由P1，T1 得到H1;
+            double H1 = 0;
+            //由P2，T2 得到H2;
+            double H2 = 0;
+            //由P3，T3 及烟气成分得到H3;
+            double H3 = 0;
+            //由P4，T4 得到H4;
+            double H4 = 0;
+            Qt = H2 - H1;
+            do
+            {
+                //调用能量分配模块，得到Qn,Qn4  Qt Q
+
+                //根据设置好的结构参数，调用传热系数计算模块，得到传热系数H K
+                double K = 0;
+                double H = 0;
+                //调用温压计算模块，得到Deltat
+                double Deltat = 0;
+                double Qt_1 = K * H * Deltat / Bp;
+                double H2_1 = Qt_1 + H1;
+                //由H2_1得到T2_1;
+                double T2_1 = 0;
+                T2 = T2_1;
+                double dTempResult = Math.Abs((T2 - T2_1) / T2_1);
+                if (0.001 >= dTempResult)
+                {
+                    bContinue = false;
+                }
+            }
+            while (bContinue);
+
             return 0;
         }
         #endregion
         #region 省煤器换热系数计算
-        public int EconomizerHeatExchangeCofficientCalculate()
+        public int EconomizerHeatExchangeCofficientCalculate(double P1, double P2, double T1, double T2, double P3, double P4, double T3, double T4, double Gf, double hrqxs, double rlxs, double chfs, double l, double n1, double n2, ref double K, ref double Hyq)
         {//6.2
 
             //Step 1:污染系数计算
-
+            double a = 0;
+            if (1 == chfs)
+            {
+                if (1 == rlxs)
+                {
+                    a = 0.1;
+                }
+                else if (2 == rlxs)
+                {
+                    a = 0.25;
+                }
+            }
+            else if (2 == chfs)
+            {
+                if (1 == rlxs)
+                {
+                    a = 0.05;
+                }
+                else if (2 == rlxs)
+                {
+                    a = 0.2;
+                }
+            }
             //Step 2:几何参数计算
+            double d1 = 0, d2 = 0, Hd = 0, Flt = 0;
+            if (1 == hrqxs)
+            {
+                d1 = 0.15;
+                d2 = 0.15;
+                if (1.5 == l)
+                {
+                    Hd = 2.18;
+                    Flt = 0.088;
+                }
+                else if (2 == l)
+                {
+                    Hd = 2.95;
+                    Flt = 0.12;
+                }
+                else if (2.5 == l)
+                {
+                    Hd = 3.72;
+                    Flt = 0.152;
+                }
+                else if (3 == l)
+                {
+                    Hd = 4.49;
+                    Flt = 0.184;
+                }
+            }
+            else if (2 == hrqxs)
+            {
+                d1 = 0.15;
+                d2 = 0.15;
+                if (2 == l)
+                {
+                    Hd = 3.14;
+                    Flt = 0.12;
+                }
+                else if (3 == l)
+                {
+                    Hd = 4.78;
+                    Flt = 0.184;
+                }
+            }
+            else if (3 == hrqxs)
+            {
+                d1 = 0.243;
+                d2 = 0.288;
+                if (0.199 == l)
+                {
+                    Hd = 5.5;
+                    Flt = 0.21;
+                }
+            }
+            //烟气侧有效换热面积
+            Hyq = n1 * n2 * Hd;
+            //烟气侧流通面积
+            Fyq = n1 * n2 * Flt;
+            //烟气流速
+            wyq = Gf / (Rou3 * Fyq);
+            //省煤器宽度
+            Wyq1 = n1 * d1;
+            //省煤器高度
+            Wyq2 = n2 * d2;
 
             //Step 3:换热系数计算
+            //由Wyq 和hrqxs,得到KH
+            KH = Sos;
+            //由
+            Tyq = 0.5 * (T3 + T4);
+            //利用线算图 5 可以得到温度修正系数
+            double CT = ss;
+            //换热系数
+            K = KH * CT * (1 - a);
             return 0;
         }
 
         #endregion
         #region 省煤器设计计算
-        public int EconomizerDesignCalculate()
+        public int EconomizerDesignCalculate(double P1, double P2, double T1, double T2, double P3, double P4, double T3, double Gw, double Gf, double rlxs)
         {//6.3
+            P2 = P1 * (1 - xi1);//P2=P1-DeltaPw
+            P4 = P3 * (1 - xi3);//P4=P3-Deltafw
+            //手动设置hrqxs,chfs,l,n1,n2
+            T2 = T3 - DeltaT1;
+            //由P1 T1 得到H1
+            double H1 = 0;
+            //由P2 T2 得到H2
+            double H2 = 0;
+            //由P3 T3 得到H3
+            double H3 = 0;
+            //由H1，H2 H3 Gw Gf得到H4 ,由H4得到T4
+            double H4 = (H2 - H1) * Gw / Gf;
+
+            //换热量Qt
+            double Qt = H2 - H1;
+
+            //调用省煤器换热系数计算模块，得到K Hyq
+
+            //调用温压计算模块，按纯逆流计算，得到Deltat
+
+            //计算所需有效换热面积
+            Hyq_1 = Qt * Bp / (K * Deltat);
+            double dTempResult = Math.Abs((Hyq - Hyq_1) / Hyq_1);
+            if (0.001 < dTempResult)
+            {
+                //手动按偏差比例调整换热器结构参数
+            }
+            //确定省煤器结构参数
             return 0;
         }
         #endregion
 
         #region 省煤器校核计算
-        public int EconomizerCheckCalculate()
+        public int EconomizerCheckCalculate(double P1, double P2, double T1, double P3, double P4, double T3, double Gw, double Gf, double rlxs, double hrqxs, double chfs, double l, double n1, double n2, ref double T2, ref double T4, ref double Qt)
         {//6.4
+         //假定T2初值（默认为设计值）
+            P2 = P1 * (1 - xi1);//P2=P1-DeltaPw
+            P4 = P3 * (1 - xi3);//P4=P3-Deltafw
+            //手动设置hrqxs,chfs,l,n1,n2
+            T2 = T3 - DeltaT1;
+            //由P1 T1 得到H1
+            double H1 = 0;
+            //由P2 T2 得到H2
+            double H2 = 0;
+            //由P3 T3 得到H3
+            double H3 = 0;
+            //由H1，H2 H3 Gw Gf得到H4 ,由H4得到T4
+            double H4 = (H2 - H1) * Gw / Gf;
+
+            //换热量Qt
+            double Qt = H2 - H1;
+            bool bContinue = true;
+            do
+            {
+                //调用省煤器换热系数计算模块，得到K Hyq
+
+                //调用温压计算模块，按纯逆流计算，得到Deltat
+
+                //计算换热量
+                double Qt_1 = K * Deltat * Hyq / Bp;
+                H2_1 = Qt_1 + H1;
+                //由H2_1  得到T2_1
+                double dTempResult = Math.Abs((T2 - T2_1) / T2_1);
+                if (0.001 >= dTempResult)
+                {
+                    bContinue = false;
+                }
+                else
+                {
+                    T2 = T2_1;
+                }
+            }
+            while (bContinue);
+            //确定 T2  T4  Qt;
             return 0;
         }
         #endregion
 
         #region 管式空预热器换热系数计算
-        public int TubularPreheaterCofficientCalaulate()
+        public int TubularPreheaterCofficientCalaulate(double P1, double P2, double T1, double T2, double P3, double P4, double T3, double T4, double Gf, double hrqxs, double rlxs, double yqgn, double l, double z1, double z2, ref double K)
         {//7.2
+            double Fr = 0;
+            double csfs = 0;
+            double alpha1 = 0;
+            double alpha2 = 0;
+            double alphan = 0;
+            if (1 == yqgn)
+            {
+                //由 P1、 P2、T1 、T2 和空气参数，调用烟气流通截面积计算模块，得到Fr
+                Fr = eee;
+                csfs = 1;
+                //调用对流换热系数模块计算alpha1
+                alpha1 = oo;
+            }
+            else
+            {
+                //由 P3、 P4、T3 、T4 和空气参数，调用烟气流通截面积计算模块，得到Fr
+                Fr = eee;
+                csfs = 2;
+                if (300 < (T1 + T2) / 2)
+                {
+                    //调用辐射放热系数模块计算alphan
+                    alphan = dd;
+                }
+            }
+            //调用辐射放热系数模块计算alphak
+            double alphak = 0;
+            //由 hrqxs、rlxs 、gzlx 、CaO 、chzz 、gttjj ，调用热利用系数计算模块，得到Psi
+            double Psi = 0;
+            //由 hrqxs、 csfs，调用受热面利用系数计算模块，得到xi
+            double xi = 0;
+             alpha1 = xi * (alphak + alphan);
+            if (2 == yqgn)
+            {
+                //由 P1、 P2、T1 、T2 和空气参数，调用烟气流通截面积计算模块，得到Fr
+                Fr = eee;
+                csfs = 1;
+                //调用对流换热系数模块计算alpha2
+            }
+            else
+            {
+                //由 P3、 P4、T3 、T4 和空气参数，调用烟气流通截面积计算模块，得到Fr
+                Fr = eee;
+                csfs = 2;
+                if (300 < (T3 + T4) / 2)
+                {
+                    //调用辐射放热系数模块计算alphan
+                }
+            }
+            //调用辐射放热系数模块计算alphak
+            double alphak = 0;
+            //由 hrqxs、rlxs 、gzlx 、CaO 、chzz 、gttjj ，调用热利用系数计算模块，得到Psi
+            double Psi = 0;
+            //由 hrqxs、 csfs，调用受热面利用系数计算模块，得到xi
+            double xi = 0;
+            alpha2 = xi * (alphak + alphan);
+            K = psi * alpha1 / (1 + alpha1 / alpha2);
+
             return 0;
         }
         #endregion
