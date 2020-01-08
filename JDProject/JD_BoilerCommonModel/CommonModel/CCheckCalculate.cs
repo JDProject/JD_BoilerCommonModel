@@ -213,11 +213,12 @@ namespace JD_BoilerCommonModel.CommonModel
             return 0;
         }
         #endregion
-        #region 锅炉热力设计计算
-        public int BoilerHeatDesignCalculate(double Bp, double Qsl)
+        #region 2.2锅炉热力设计计算  得到排眼焓？？？？
+        public int BoilerHeatDesignCalculate(double QT, double Ta, double q5, double etak, double Bp, double Qsl, double ypy, double Hyc, double TT_1,/*调用M模块计算M Add Start*/ List<CHeaterArrange> arranges, double glxs, double VrH, double Vn2H, double Vro2H, double r, int pzfs, int rsqbz, double Htao, double R, double F1, double Qir,/*调用有效辐射面积计算模块 Add Start*/ double p, double Vf, double Vp, double Fslf, double Fbgf, double Fjmp, double Fbgp, double Fslp, double Fp, double s1, double A, double b, double xsl, double xbg, double xp, double ZeTasl, double ZeTabg, double ZeTap, double ycjg, double rlxs, double Fyc, double rn, double rh2o, double Ttn, double Mui3n, double s, double rmzl, double V1, double PeSaip)
         {
+            //假定炉膛出口烟温TT_2  ，得到IT_2
             double TT_2 = 0;
-            double IT_2 = 0;
+            double IT_2 = sss;
             double Vccp = (QT - IT_2) / (Ta - TT_2);
             double Phi = 1 - q5 / (etak + q5);
             ICommonModelCalaulate commonModelCalaulate = new CCommonModelCalaulate();
@@ -243,6 +244,7 @@ namespace JD_BoilerCommonModel.CommonModel
             double dTempRestult = Math.Abs((Qsl_1 - Qsl) / Qsl_1);
             if (0.0001 < dTempRestult)
             {
+                //输出调整比例系数(Qsl_1 - Qsl) / Qsl_1，手动调节水冷壁几何参数，重新计算,直到dTempResult<=0.001
                 return -1;//给出dTempResult
             }
             double BuAvg = 1.6 * Math.Log((1.4 * Math.Pow(Bu, 2) + Bu + 2) / (1.4 * Math.Pow(Bu, 2) - Bu + 2));
@@ -250,6 +252,7 @@ namespace JD_BoilerCommonModel.CommonModel
             dTempRestult = Math.Abs((F1_1 - F1) / F1_1);
             if (0.001 < dTempRestult)
             {
+                //给定调整比例系数F1_1/F1 ，手动调整壁面过热器、屏式过热器以及炉墙几何参数，重新计算，直到给出dTempResult<=0.001
                 return -1;//给出dTempResult
             }
             double Qp = Hp * ypy * qn;
@@ -258,18 +261,20 @@ namespace JD_BoilerCommonModel.CommonModel
             return 0;
         }
         #endregion
-        #region 锅炉热力校验计算
-        public int BoilerHeatCheckCalculate()
+        #region 2.3锅炉热力校验计算  得到排眼焓？？？？
+        public int BoilerHeatCheckCalculate(double QT, double Ta, double q5, double etak, double ypy, double Hyc, double Qsl, /*调用M模块计算M Add Start*/ List<CHeaterArrange> arranges, double glxs, double VrH, double Vn2H, double Vro2H, double r, int pzfs, int rsqbz, double Htao, double R, double F1, double Qir,/*调用有效辐射面积计算模块 Add Start*/ double p, double Vf, double Vp, double Fslf, double Fbgf, double Fjmp, double Fbgp, double Fslp, double Fp, double s1, double A, double b, double xsl, double xbg, double xp, double ZeTasl, double ZeTabg, double ZeTap, double ycjg, double rlxs, double Fyc, double rn, double rh2o, double Ttn, double Mui3n, double s, double rmzl, double V1, double PeSaip)
         {
+            //假定TT_2,,得到IT_2
             double TT_2 = 0;
-            double TT_1 = 0;
-            double IT_2 = 0;
+            double IT_2 = dddd;
+            double Phi = 0;
             bool bContinue = true;
+            double yf = 0, qn = 0;
             double Hslf = 0, Hsl = 0, Hp = 0, Hbg = 0, HT = 0, Bu = 0, PeSaicp = 0;
             do
             {
                 double Vccp = (QT - IT_2) / (Ta - TT_2);
-                double Phi = 1 - q5 / (etak + q5);
+                Phi = 1 - q5 / (etak + q5);
                 ICommonModelCalaulate commonModelCalaulate = new CCommonModelCalaulate();
                 //List < CHeaterArrange > arranges, double glxs, double VrH, double Vn2H, double Vro2H, double r, int pzfs, int rsqbz, double Htao, double R, double F1, double Qir
                 double M = 0;
@@ -286,8 +291,8 @@ namespace JD_BoilerCommonModel.CommonModel
                 {
                     return ret;
                 }
-                double yf = (1 - (HT - Hslf) * ypy / HT) * (HT / Hslf);
-                double qn = Phi * (QT - IT_2) / HT;
+                yf = (1 - (HT - Hslf) * ypy / HT) * (HT / Hslf);
+                qn = Phi * (QT - IT_2) / HT;
                 double Qsl_1 = Hslf * yf * qn + (Hsl - Hslf) * ypy * qn;
                 double dTempRestult = Math.Abs((Qsl_1 - Qsl) / Qsl_1);
                 if (0.0001 < dTempRestult)
@@ -295,7 +300,7 @@ namespace JD_BoilerCommonModel.CommonModel
                     return -1;//给出dTempResult
                 }
                 double BuAvg = 1.6 * Math.Log((1.4 * Math.Pow(Bu, 2) + Bu + 2) / (1.4 * Math.Pow(Bu, 2) - Bu + 2));
-                TT_1 = Ta / (1 + M * Math.Pow(BuAvg, 0.3) * Math.Pow((5.67 * Math.Pow(10, -11) * PeSaicp * F1 * Math.Pow(Ta, 3)), 0.6));
+                double TT_1 = Ta / (1 + M * Math.Pow(BuAvg, 0.3) * Math.Pow((5.67 * Math.Pow(10, -11) * PeSaicp * F1 * Math.Pow(Ta, 3)), 0.6));
                 dTempRestult = Math.Abs(TT_1 - TT_2);
                 if (20 < dTempRestult)
                 {
@@ -307,28 +312,26 @@ namespace JD_BoilerCommonModel.CommonModel
                 }
             }
             while (bContinue);
-            double yf = (1 - (HT - Hslf) * ypy / HT) * (HT / Hslf);
-            double qn = Phi * (QT - IT_2) / HT;
+            yf = (1 - (HT - Hslf) * ypy / HT) * (HT / Hslf);
+            qn = Phi * (QT - IT_2) / HT;
             double Qp = Hp * ypy * qn;
             double Qbg = Hbg * ypy * qn;
             double Qyc = Hyc * ypy * qn;
             return 0;
         }
         #endregion
-        #region 壁面换热器参数计算
+        #region 3.2壁面换热器参数计算 未实现
         public int WallHeatExchangeParameterCalculate()
         {
             //3.2
             return 0;
         }
         #endregion
-
-        #region 屏区参数计算 是否需要
+        #region 4.3屏区参数计算 是否需要
         //4.3
         #endregion
-
-        #region 能量分配（公用方法）
-        public int EnergyAssignment()
+        #region 5.2能量分配（公用方法） 22
+        public int EnergyAssignment(double s1, double s2, double Z1, double Z2, double d, double gzlx, double hrqxs, double fsrcd, double Qyc, double Bp, double D1, double H1, double H2)
         {
             double sigMa1 = s1 / d;
             double sigMa2 = s2 / d;
@@ -336,17 +339,21 @@ namespace JD_BoilerCommonModel.CommonModel
             {
                 hrqxs = 1;
             }
+            double SigMaxp = 0;
             if (1 == hrqxs)
             {
-                //由Z2和SigMa1 计算Sigmaxp
+                //由Z1和SigMa1 SigMaxp
+                SigMaxp = sss;
                 7 - 1
             }
             else
             {
-                //由Z2和SigMa1 计算Sigmaxp
+                //由Z2和SigMa2 SigMaxp
+                SigMaxp = sss;
                 7 - 2
             }
-            //调用有效辐射层厚度或烟气流黑度计算模块，得到黑度a
+            //调用有效辐射层厚度s或烟气流黑度a计算模块，得到黑度a
+            double a = sss;
             double Qn = 0, Q4n = 0;
             if (0 == fsrcd)
             {
@@ -356,14 +363,14 @@ namespace JD_BoilerCommonModel.CommonModel
             else
             {
                 Qn = Qyc * SigMaxp * (1 - a) / Bp;
-                Q4n = Qyc * (1 - sigMaxp * (1 - a)) / Bp;
+                Q4n = Qyc * (1 - SigMaxp * (1 - a)) / Bp;
             }
             double Qt = D1 * (H2 - H1) / Bp;
             double Q = Qt - Qn;
             return 0;
         }
         #endregion
-        #region 传热系数（公用方法）
+        #region 传热系数（公用方法）11
         public int HeatTransferCofficientCalculate(double hrqxs)
         {//5.3
             double Psi = 0;
@@ -414,7 +421,7 @@ namespace JD_BoilerCommonModel.CommonModel
             return 0;
         }
         #endregion
-        #region 换热器热力设计计算
+        #region 换热器热力设计计算 11
         public int HeatExchangerDesignCalculate()
         {//5.5
             double P2 = P1 - DeltaPw;
@@ -448,7 +455,7 @@ namespace JD_BoilerCommonModel.CommonModel
             return 0;
         }
         #endregion
-        #region 换热器热力校核计算
+        #region 换热器热力校核计算 11
         public int HeatExchangerCheckCalculate(double P1, double T1, double P3, double T3, double Gw, double Gf, double DeltaPw, double DeltaPf, List<CHeaterArrange> heaterArranges, double glxs, double rlxs, double pzfs, double rmzl, double qyrl, double Qyc, ref double T2, ref double T4, ref double Qn, ref double Q4n, ref double Qt, ref double Q)
         {//5.6
             bool bContinue = true;
@@ -489,7 +496,7 @@ namespace JD_BoilerCommonModel.CommonModel
             return 0;
         }
         #endregion
-        #region 省煤器换热系数计算
+        #region 省煤器换热系数计算 11
         public int EconomizerHeatExchangeCofficientCalculate(double P1, double P2, double T1, double T2, double P3, double P4, double T3, double T4, double Gf, double hrqxs, double rlxs, double chfs, double l, double n1, double n2, ref double K, ref double Hyq)
         {//6.2
 
@@ -593,7 +600,7 @@ namespace JD_BoilerCommonModel.CommonModel
         }
 
         #endregion
-        #region 省煤器设计计算
+        #region 省煤器设计计算 11
         public int EconomizerDesignCalculate(double P1, double P2, double T1, double T2, double P3, double P4, double T3, double Gw, double Gf, double rlxs)
         {//6.3
             P2 = P1 * (1 - xi1);//P2=P1-DeltaPw
@@ -627,8 +634,7 @@ namespace JD_BoilerCommonModel.CommonModel
             return 0;
         }
         #endregion
-
-        #region 省煤器校核计算
+        #region 省煤器校核计算 11
         public int EconomizerCheckCalculate(double P1, double P2, double T1, double P3, double P4, double T3, double Gw, double Gf, double rlxs, double hrqxs, double chfs, double l, double n1, double n2, ref double T2, ref double T4, ref double Qt)
         {//6.4
          //假定T2初值（默认为设计值）
@@ -673,8 +679,7 @@ namespace JD_BoilerCommonModel.CommonModel
             return 0;
         }
         #endregion
-
-        #region 管式空预热器换热系数计算
+        #region 管式空预热器换热系数计算 11
         public int TubularPreheaterCofficientCalaulate(double P1, double P2, double T1, double T2, double P3, double P4, double T3, double T4, double Gf, double hrqxs, double rlxs, double yqgn, double l, double z1, double z2, ref double K)
         {//7.2
             double Fr = 0;
@@ -707,7 +712,7 @@ namespace JD_BoilerCommonModel.CommonModel
             double Psi = 0;
             //由 hrqxs、 csfs，调用受热面利用系数计算模块，得到xi
             double xi = 0;
-             alpha1 = xi * (alphak + alphan);
+            alpha1 = xi * (alphak + alphan);
             if (2 == yqgn)
             {
                 //由 P1、 P2、T1 、T2 和空气参数，调用烟气流通截面积计算模块，得到Fr
@@ -737,16 +742,88 @@ namespace JD_BoilerCommonModel.CommonModel
             return 0;
         }
         #endregion
-
-        #region 管式空预器设计计算
-        public int TubularPreheaterDesignCalculate()
+        #region 管式空预器设计计算 11
+        public int TubularPreheaterDesignCalculate(double P1, double P2, double T1, double T2, double P3, double P4, double T3, double T4, double Ga, double Gf, double rlxs, double ljxs, double ns)
         {//7.3
+
+            P2 = P1 * (1 - xi1);//或者P2 = P1 - DeltaPw;
+            P4 = P3 * (1 - xi3);//或者P4 = P3 - DeltaPf;
+            //手动设置hrqxs,yqgn,nx,gzlx,d,Sigmad，s1,s2,l,z1,z2
+
+            T2 = T3 - DeltaT1;
+
+            //由P1  T1得到H1
+            double H1 = 0;
+            //由P2  T2得到H2
+            double H2 = 0;
+            //由P3  T3 烟气成分得到H3
+            double H3 = 0;
+
+            //由H1  H2  H3  Gw Gf得到H4,由H4得到T4
+            H4 = (H2 - H1) * Gw / Gf;
+            T4 = 0;
+            double F = Math.PI * (d - SigMad) * l * z1 * z2;
+            //调用管式空气预热器换热系数计算模块，得到K
+            double K = ss;
+            //调用温压计算模块，按纯逆流计算，得到Delta
+            double Delta = ss;
+            //计算所需有效换热面积
+            F_1 = Qt * Bp / (K * Delta);
+            double dTempResult = Math.Abs((F - F_1) / F_1);
+            if (0.001 < dTempResult)
+            {
+                //手动按偏差比例调正换热器结构参数
+
+            }
+            //直到dTempResult<=0.001
+            //确定管式空气预热器结构参数
             return 0;
         }
         #endregion
-        #region 管式空预器校核计算
-        public int TubularPreheaterCheckCalaulate()
+        #region 管式空预器校核计算 11
+        public int TubularPreheaterCheckCalaulate(double P1, double P2, double T1, double P3, double P4, double T3, double Ga, double Gf, double hrqxs, double yqgn, double ljxs, double nx, double gzlx, double d, double SigMad, double s1, double s2, double l, double z1, double z2, ref double T2, ref double T4, ref double Qt)
         {
+            //假定T2初值，默认为设计值
+            P2 = P1 * (1 - xi1);//或者P2 = P1 - DeltaPw;
+            P4 = P3 * (1 - xi3);//或者P4 = P3 - DeltaPf;
+            //手动设置hrqxs,yqgn,nx,gzlx,d,Sigmad，s1,s2,l,z1,z2
+
+            T2 = T3 - DeltaT1;
+
+            //由P1  T1得到H1
+            double H1 = 0;
+            //由P2  T2得到H2
+            double H2 = 0;
+            //由P3  T3 烟气成分得到H3
+            double H3 = 0;
+
+            //由H1  H2  H3  Gw Gf得到H4,由H4得到T4
+            H4 = (H2 - H1) * Gw / Gf;
+            T4 = 0;
+            //换热量
+            Qt = H2 - H1;
+            double F = Math.PI * (d - SigMad) * l * z1 * z2;
+            bool bContinue = true;
+            do
+            {
+                //调用管式空气预热器换热系数计算模块，得到K
+                double K = ss;
+                //调用温压计算模块，按纯逆流计算，得到Delta
+                double Delta = ss;
+                //计算换热量
+
+                double dTempResult = Math.Abs((T2 - T2_1) / T2_1);
+                if (0.001 >= dTempResult)
+                {
+                    bContinue = false;
+                }
+                else
+                {
+                    T2 = T2_1;
+                }
+            }
+            while (bContinue);
+            //确定T2, T4 Qt
             return 0;
         }
         #endregion
