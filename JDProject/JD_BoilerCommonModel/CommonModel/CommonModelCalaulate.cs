@@ -764,7 +764,7 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <param name="G"></param>
         /// <param name="gzyh"></param>
         /// <param name="CaO"></param>
-        /// <param name="chzz"></param>
+        /// <param name="chzz"></param>alpha2
         /// <param name="gttjj"></param>
         /// <param name="Alpha1">返回值:</param>
         /// <param name="Psip">返回值:</param>
@@ -1196,9 +1196,9 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <param name="chzz">吹灰装置（1:有,2:无）</param>
         /// <param name="Alphat"></param>
         /// <param name="SRFS">受热方式（1:单面,2:双面）</param>
-        /// <param name="EpsaiLen">返回值:对流受热面污染系数</param>
+        /// <param name="Epsilon">返回值:对流受热面污染系数</param>
         /// <returns>是否计算成功（0表示成功）</returns>
-        public int CalculateHeatingSurfacePollutionCoefficient(double hrqxs, double rlxs, double CaO, double chzz, double Alphat, double SRFS, ref double EpsaiLen)
+        public int CalculateHeatingSurfacePollutionCoefficient(double hrqxs, double rlxs, double CaO, double chzz, double Alphat, double SRFS, ref double Epsilon)
         {
             if (1 == hrqxs)
             {
@@ -1207,44 +1207,44 @@ namespace JD_BoilerCommonModel.CommonModel
                     if (0.13 > CaO)
                     {
                         //按曲线1计算 拟合公式未知
-                        EpsaiLen = sad;
+                        Epsilon = sad;
                     }
                     else if (0.13 <= CaO && 0 == chzz)
                     {
                         //按曲线2计算
-                        EpsaiLen = sad;
+                        Epsilon = sad;
                     }
                     else if (0.13 <= CaO && 1 == chzz)
                     {
                         //按曲线3计算
-                        EpsaiLen = sad;
+                        Epsilon = sad;
                     }
                 }
                 else if (2 == rlxs)
                 {
                     if (1.03 > Alphat)
                     {
-                        EpsaiLen = 0.0025;
+                        Epsilon = 0.0025;
                     }
                     else
                     {
-                        EpsaiLen = 0.005;
+                        Epsilon = 0.005;
                     }
                 }
                 else if (3 == rlxs)
                 {
-                    EpsaiLen = 0.0015;
+                    Epsilon = 0.0015;
                 }
             }
             else if (2 == hrqxs || 3 == hrqxs)
             {
                 if (1 == SRFS && 1 == rlxs)
                 {
-                    EpsaiLen = 0.005;
+                    Epsilon = 0.005;
                 }
                 else if (1 == SRFS && 2 == rlxs)
                 {
-                    EpsaiLen = 0.003;
+                    Epsilon = 0.003;
                 }
             }
             return 0;

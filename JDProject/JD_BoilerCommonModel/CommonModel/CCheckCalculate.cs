@@ -370,36 +370,63 @@ namespace JD_BoilerCommonModel.CommonModel
             return 0;
         }
         #endregion
-        #region 传热系数（公用方法）11
-        public int HeatTransferCofficientCalculate(double hrqxs)
+        #region 传热系数（公用方法）
+        public int HeatTransferCofficientCalculate(double hrqxs, double d, double Deltad, double Deltap, double l, double z1, double z2, double gzlx, double s2, double sigMa2, double Qn, double Q, double hp,/*调用对流受热污染系数得到Epsilon Add*/double rlxs, double CaO, double chzz, double Alphat, double SRFS,/*调用热利用系数得到Psi add*/double gttjj,/*调用受热面利用系数计算模块xi/Kesai*/double pwz, double csfs/*调用辐射放热系数模块alphan add*/, double rmzl, double Twb, double p, double s, double T3, double T4, double lodelta, double Todelta, double SigMaXp, double s1, double ln, double rn, double rh2o, double Ttn, double Mui3n, double glxs, double pzfs, double CH, double qyrl, double T, double Hn, double Bp/*调用对流换热系数模块alphak*/, double lb, double delTab, double D, double sp, double sb, double Fr, double Qr, double th, double hb, double z, double lpDelTa, double Hrp/* */, EGangZhong gz, double T1, double T2, double delTap, double SigMa1, double SigMa2, double Enn, double DelTad, double i1, double t, bool bIsWet, double P1, double P2, double i2, double SigMa, double G, double gzyh, double Tcp, ref double K, ref double H)
         {//5.3
             double Psi = 0;
             double Epsilon = 0;
+            int ret = 0;
+            ICommonModelCalaulate commonModelCalaulate = new CCommonModelCalaulate();
             if (1 == hrqxs)
             {
                 Psi = 1.0;
                 //由rlxs、CaO、chzz、AlphaT、SRFS、调用对流受热污染系数得到Epsilon
+                ret = commonModelCalaulate.CalculateHeatingSurfacePollutionCoefficient(hrqxs, rlxs, CaO, chzz, Alphat, SRFS, ref Epsilon);
+                if (0 != ret)
+                {
+                    return ret;
+                }
             }
             else
             {
                 Epsilon = 0;
                 //由hrqxs、rlxs、gzlx、CaO、chzz、gttjj调用热利用系数得到Psi
+                ret = commonModelCalaulate.CalculateHeatCoefficient(hrqxs, rlxs, gzlx, CaO, chzz, gttjj, Alphat, ref Psi);
+                if (0 != ret)
+                {
+                    return ret;
+                }
             }
             //由hrqxs、pwz、csfs 调用受热面利用系数计算模块，得到xi
             double xi = 0;
+            ret = commonModelCalaulate.CalaulateHeatSurfaceUtilizationCoeddicient(hrqxs, pwz, csfs, ref xi);
+            if (0 != ret)
+            {
+                return ret;
+            }
             double HBH = Math.PI * (d - 2 * Deltad) * l * z1 * z2;
             //调用辐射放热系数模块alphan计算
             double alphan = 0;
+            ret = commonModelCalaulate.CalculateRadiateHeaReleaseCoefficient(rlxs, rmzl, Twb, p, s, T3, T4, lodelta, Todelta, hrqxs, SigMaXp, s1, ln, rn, rh2o, Ttn, Mui3n, glxs, pzfs, Alphat, CH, qyrl, T, Hn, Bp, ref Qn, ref alphan);
+            if (0 != ret)
+            {
+                return ret;
+            }
             //调用对流换热系数模块alphak计算
-            double alphat = 0;
-
-            double alpha1 = 0, H = 0;
+            double alphak = 0;
+            string sInfo = "";
+            ret = commonModelCalaulate.CalculateFlueGasFlowHeatCoeffiient(gzlx, csfs, hrqxs, d, l, lb, z1, z2, s1, s2, delTab, delTab, hp, D, sp, sb, T3, T4, Fr, Qr, th, hb, z, lpDelTa, Hrp, ref alphak, ref sInfo);
+            if (0 != ret)
+            {
+                return ret;
+            }
+            double alpha1 = 0;
             //屏
             if (1 == hrqxs)
             {
                 if (1 == gzlx)
                 {
-                    x = 1 - Math.Sqrt(1 - Math.Pow(d / s2, 2)) + d / s2 * Math.Atan(Math.Sqrt(Math.Pow(s2 / d, 2) - 1));
+                    double x = 1 - Math.Sqrt(1 - Math.Pow(d / s2, 2)) + d / s2 * Math.Atan(Math.Sqrt(Math.Pow(s2 / d, 2) - 1));
                     alpha1 = xi * (alphak * Math.PI / (2 * sigMa2 * x) + alphan);
                     H = Math.PI * d * l * z1 * z2;
                 }
@@ -413,19 +440,26 @@ namespace JD_BoilerCommonModel.CommonModel
             else if (2 == hrqxs && 3 == hrqxs)
             {
                 //根据管束几何参数，调用放热系数折算模块，得到alpha1,H
+                double Psip = 0;
+                ret = commonModelCalaulate.CalculateHeatReleaseCoefficient(gz, T1, T2, alphan, alphak, hrqxs, gzlx, csfs, rlxs, p, s, Tcp, d, l, lb, z1, z2, s2, delTap, delTab, SigMa1, SigMa2, hp, D, sp, sb, th, Enn, Hrp, rmzl, T3, T4, lodelta, Todelta, SigMaXp, s1, ln, rn, rh2o, Ttn, Mui3n, glxs, pzfs, Alphat, CH, qyrl, T, Hn, Bp, Fr, Qr, hb, z, lpDelTa, pwz, SRFS, DelTad, i1, Q, t, bIsWet, P1, P2, i2, SigMa, G, gzyh, CaO, chzz, gttjj, ref H, ref alpha1, ref Psip);
             }
             //调用管内换热系数计算模块，得到alpha2
-
+            double alpha2 = 0;
+            ret = commonModelCalaulate.CalculateWaterAngGasHeatCoefficient(P1, P2, i1, i2, d, SigMa, G, l, z1, z2, gzyh, hrqxs, SRFS, DelTad, T1, alpha1, H, Qn, Bp, Q, t, bIsWet, rlxs, CaO, chzz, Alphat, gzlx, gttjj, ref alpha2);
+            if (0 != ret)
+            {
+                return ret;
+            }
             //传热系数K
-            double K = Psi * alpha1 / (1 + (1 + Qn / Q) * (Epsilon + H / (alpha2 * HBH)) * alpha1);
+            K = Psi * alpha1 / (1 + (1 + Qn / Q) * (Epsilon + H / (alpha2 * HBH)) * alpha1);
             return 0;
         }
         #endregion
-        #region 换热器热力设计计算 11
-        public int HeatExchangerDesignCalculate()
+        #region 换热器热力设计计算
+        public int HeatExchangerDesignCalculate(double P1, double P3, double DeltaPw, double Deltapf, double Bp,/*调用能量分配模块*/double s1, double s2, double Z1, double Z2, double d, double gzlx, double hrqxs, double fsrcd, double Qyc, double D1 /*调用传热系数计算模块，得到传热系数H K*/, double Deltad, double Deltap, double l, double z1, double z2, double sigMa2, double Qn, double Q, double hp, double rlxs, double CaO, double chzz, double Alphat, double SRFS, double gttjj, double pwz, double csfs, double rmzl, double Twb, double p, double s, double T3, double T4, double lodelta, double Todelta, double SigMaXp, double ln, double rn, double rh2o, double Ttn, double Mui3n, double glxs, double pzfs, double CH, double qyrl, double T, double Hn, double lb, double delTab, double D, double sp, double sb, double Fr, double Qr, double th, double hb, double z, double lpDelTa, double Hrp, EGangZhong gz, double T1, double T2, double delTap, double SigMa1, double SigMa2, double Enn, double DelTad, double i1, double t, bool bIsWet, double i2, double SigMa, double G, double gzyh, double Tcp,/*调用温压计算模块，得到Deltat*/double gsbz, double ns, double nn, double nx, double ljxs, double dlzjg, double Hs)
         {//5.5
             double P2 = P1 - DeltaPw;
-            double P4 = p3 - Deltapf;
+            double P4 = P3 - Deltapf;
             //由P1，T1 得到H1;
             double H1 = 0;
             //由P2，T2 得到H2;
@@ -436,12 +470,31 @@ namespace JD_BoilerCommonModel.CommonModel
             double H4 = 0;
             double Qt = H2 - H1;
             //调用能量分配模块，得到Qn,Qn4  Qt Q
-
+            int ret = EnergyAssignment(s1, s2, Z1, Z2, d, gzlx, hrqxs, fsrcd, Qyc, Bp, D1, H1, H2);
+            if (0 != ret)
+            {
+                return ret;
+            }
             //根据设置好的结构参数，调用传热系数计算模块，得到传热系数H K
             double K = 0;
             double H = 0;
+            // d, double Deltad, double Deltap, double l, double z1, double z2, double gzlx, double s2, double sigMa2, double Qn, double Q, double hp,/*调用对流受热污染系数得到Epsilon Add*/double rlxs, double CaO, double chzz, double Alphat, double SRFS,/*调用热利用系数得到Psi add*/double gttjj,/*调用受热面利用系数计算模块xi/Kesai*/double pwz, double csfs/*调用辐射放热系数模块alphan add*/, double rmzl, double Twb, double p, double s, double T3, double T4, double lodelta, double Todelta, double SigMaXp, double s1, double ln, double rn, double rh2o, double Ttn, double Mui3n, double glxs, double pzfs, double CH, double qyrl, double T, double Hn, double Bp/*调用对流换热系数模块alphak*/, double lb, double delTab, double D, double sp, double sb, double Fr, double Qr, double th, double hb, double z, double lpDelTa, double Hrp/* */, EGangZhong gz, double T1, double T2, double delTap, double SigMa1, double SigMa2, double Enn, double DelTad, double i1, double t, bool bIsWet, double P1, double P2, double i2, double SigMa, double G, double gzyh, double Tcp)
+            ret = HeatTransferCofficientCalculate(hrqxs, d, Deltad, Deltap, l, z1, z2, gzlx, s2, sigMa2, Qn, Q, hp, rlxs, CaO, chzz, Alphat, SRFS, gttjj, pwz, csfs, rmzl, Twb, p, s, T3, T4, lodelta, Todelta, SigMaXp, s1, ln, rn, rh2o, Ttn, Mui3n, glxs, pzfs, CH, qyrl, T, Hn, Bp, lb, delTab, D, sp, sb, Fr, Qr, th, hb, z, lpDelTa, Hrp, gz, T1, T2, delTap, SigMa1, SigMa2, Enn, DelTad, i1, t, bIsWet, P1, P2, i2, SigMa, G, gzyh, Tcp, ref K, ref H);
+            if (0 != ret)
+            {
+                return ret;
+            }
             //调用温压计算模块，得到Deltat
             double Deltat = 0;
+            string sInfo = "";
+            double Psi = 0;
+            ICommonModelCalaulate commonModelCalaulate = new CCommonModelCalaulate();
+            //double T1, double T2, double T3, double T4, double gsbz, double ns, double nn, double nx, double ljxs, double dlzjg, ref double DelTat, double H, double Hs, ref double Psi, ref string sInfo);
+            ret = commonModelCalaulate.CalculateTemperaturePressureConvertCoefficient(T1, T2, T3, T4, gsbz, ns, nn, nx, ljxs, dlzjg, ref Deltat, H, Hs, ref Psi, ref sInfo);
+            if (0 != ret)
+            {
+                return ret;
+            }
             double H_1 = Qt * Bp / (H * Deltat);
             double dTempResult = Math.Abs((H - H_1) / H_1);
             if (0.001 < dTempResult)

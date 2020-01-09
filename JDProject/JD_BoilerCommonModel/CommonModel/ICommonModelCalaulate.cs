@@ -328,9 +328,9 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <param name="chzz">吹灰装置（1:有,2:无）</param>
         /// <param name="Alphat"></param>
         /// <param name="SRFS">受热方式（1:单面,2:双面）</param>
-        /// <param name="EpsaiLen">返回值:对流受热面污染系数</param>
+        /// <param name="Epsilon">返回值:对流受热面污染系数</param>
         /// <returns>是否计算成功（0表示成功）</returns>
-        int CalculateHeatingSurfacePollutionCoefficient(double hrqxs, double rlxs, double CaO, double chzz, double Alphat, double SRFS, ref double EpsaiLen);
+        int CalculateHeatingSurfacePollutionCoefficient(double hrqxs, double rlxs, double CaO, double chzz, double Alphat, double SRFS, ref double Epsilon);
 
         #endregion
 
