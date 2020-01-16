@@ -30,7 +30,7 @@ namespace JD_BoilerCommonModel.CommonModel
         /// <param name="qamin">炉膛截面最小热负荷</param>
         /// <param name="sTipInfo">提示信息</param>
         /// <returns>验证是否成功（0:成功）</returns>
-        int CheckWidthDepth(double W, double D, double Bp, double Qnetar, double qamax, double qamin, ref string sTipInfo);
+        int CheckWidthDepth(double W,  double D, double Bp, double Qnetar, double qamax, double qamin, ref string sTipInfo);
         /// <summary>
         /// 验证高度，计算qv
         /// </summary>
